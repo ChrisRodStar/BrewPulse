@@ -1,0 +1,56 @@
+{
+  "formulae": [
+    {
+      "name": "git",
+      "full_name": "git",
+      "pinned": false,
+      "disabled": false
+    },
+    {
+      "name": "widget",
+      "full_name": "custom/tools/widget",
+      "pinned": true,
+      "disabled": false
+    },
+    {
+      "name": "legacy-tool",
+      "full_name": "legacy-tool",
+      "pinned": false,
+      "disabled": true
+    }
+  ],
+  "casks": [
+    {
+      "token": "visual-studio-code",
+      "version": "1.105.0",
+      "auto_updates": true,
+      "pinned": false,
+      "pinned_version": null,
+      "disabled": false
+    },
+    {
+      "token": "rolling-app",
+      "version": "latest",
+      "auto_updates": null,
+      "pinned": false,
+      "pinned_version": null,
+      "disabled": false
+    },
+    {
+      "token": "blocked-app",
+      "version": "2.0",
+      "auto_updates": true,
+      "pinned": true,
+      "pinned_version": "1.0",
+      "disabled": true
+    },
+    {
+      "token": "unavailable-app",
+      "version": null,
+      "auto_updates": null,
+      "pinned": false,
+      "pinned_version": null,
+      "disabled": false
+    }
+  ]
+}

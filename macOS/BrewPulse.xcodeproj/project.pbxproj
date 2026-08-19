@@ -1,0 +1,844 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* BrewPulseApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* BrewPulseApp.swift */; };
+		A10000000000000000000002 /* StatusMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* StatusMenuView.swift */; };
+		A10000000000000000000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* Assets.xcassets */; };
+		A10000000000000000000004 /* HomebrewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* HomebrewService.swift */; };
+		A10000000000000000000005 /* PackageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000007 /* PackageStore.swift */; };
+		A10000000000000000000006 /* CommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* CommandRunner.swift */; };
+		A10000000000000000000007 /* ProcessCommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* ProcessCommandRunner.swift */; };
+		A10000000000000000000008 /* SerializedCommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* SerializedCommandRunner.swift */; };
+		B10000000000000000000001 /* ProcessCommandRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* ProcessCommandRunnerTests.swift */; };
+		B10000000000000000000002 /* SerializedCommandRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* SerializedCommandRunnerTests.swift */; };
+		C10000000000000000000001 /* HomebrewPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000001 /* HomebrewPackage.swift */; };
+		C10000000000000000000002 /* HomebrewInventory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000002 /* HomebrewInventory.swift */; };
+		C10000000000000000000003 /* HomebrewPackageListParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000003 /* HomebrewPackageListParser.swift */; };
+		C10000000000000000000004 /* HomebrewPackageListParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000004 /* HomebrewPackageListParserTests.swift */; };
+		C10000000000000000000005 /* FixtureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000005 /* FixtureLoader.swift */; };
+		C10000000000000000000006 /* casks.txt in Resources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000006 /* casks.txt */; };
+		C10000000000000000000007 /* formulae.txt in Resources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000007 /* formulae.txt */; };
+		D10000000000000000000001 /* HomebrewServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000001 /* HomebrewServiceTests.swift */; };
+		D10000000000000000000002 /* RecordingCommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000002 /* RecordingCommandRunner.swift */; };
+		E10000000000000000000001 /* HomebrewExecutableLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000001 /* HomebrewExecutableLocator.swift */; };
+		E10000000000000000000002 /* HomebrewExecutableLocatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20000000000000000000002 /* HomebrewExecutableLocatorTests.swift */; };
+		F10000000000000000000001 /* HomebrewInventoryReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000001 /* HomebrewInventoryReport.swift */; };
+		F10000000000000000000002 /* PackageStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20000000000000000000002 /* PackageStoreTests.swift */; };
+		G10000000000000000000001 /* HomebrewOutdatedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000001 /* HomebrewOutdatedData.swift */; };
+		G10000000000000000000002 /* HomebrewOutdatedDataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000002 /* HomebrewOutdatedDataParser.swift */; };
+		G10000000000000000000003 /* HomebrewOutdatedReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000003 /* HomebrewOutdatedReport.swift */; };
+		G10000000000000000000004 /* HomebrewOutdatedDataParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000004 /* HomebrewOutdatedDataParserTests.swift */; };
+		G10000000000000000000005 /* outdated.json in Resources */ = {isa = PBXBuildFile; fileRef = G20000000000000000000005 /* outdated.json */; };
+		H10000000000000000000001 /* HomebrewPackageVersions.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000001 /* HomebrewPackageVersions.swift */; };
+		H10000000000000000000002 /* HomebrewPackageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = H20000000000000000000002 /* HomebrewPackageTests.swift */; };
+		I10000000000000000000001 /* HomebrewOutdatedPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = I20000000000000000000001 /* HomebrewOutdatedPackage.swift */; };
+		J10000000000000000000001 /* HomebrewPackageUpgradeEligibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = J20000000000000000000001 /* HomebrewPackageUpgradeEligibility.swift */; };
+		J10000000000000000000002 /* HomebrewPackageMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = J20000000000000000000002 /* HomebrewPackageMetadata.swift */; };
+		J10000000000000000000003 /* HomebrewPackageMetadataData.swift in Sources */ = {isa = PBXBuildFile; fileRef = J20000000000000000000003 /* HomebrewPackageMetadataData.swift */; };
+		J10000000000000000000004 /* HomebrewPackageMetadataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = J20000000000000000000004 /* HomebrewPackageMetadataParser.swift */; };
+		J10000000000000000000005 /* HomebrewPackageMetadataParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = J20000000000000000000005 /* HomebrewPackageMetadataParserTests.swift */; };
+		J10000000000000000000006 /* installed-metadata.json in Resources */ = {isa = PBXBuildFile; fileRef = J20000000000000000000006 /* installed-metadata.json */; };
+		K10000000000000000000001 /* HomebrewInventoryMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = K20000000000000000000001 /* HomebrewInventoryMerger.swift */; };
+		K10000000000000000000002 /* HomebrewInventoryMergerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = K20000000000000000000002 /* HomebrewInventoryMergerTests.swift */; };
+		K10000000000000000000003 /* HomebrewRefreshTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = K20000000000000000000003 /* HomebrewRefreshTests.swift */; };
+		L10000000000000000000001 /* PackageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = L20000000000000000000001 /* PackageRow.swift */; };
+		L10000000000000000000002 /* PackageVersionPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = L20000000000000000000002 /* PackageVersionPresentationTests.swift */; };
+		M10000000000000000000001 /* PackageStatusLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = M20000000000000000000001 /* PackageStatusLabel.swift */; };
+		M10000000000000000000002 /* PackageUpdateStatusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = M20000000000000000000002 /* PackageUpdateStatusTests.swift */; };
+		N10000000000000000000001 /* BrewPulseMenuBarLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = N20000000000000000000001 /* BrewPulseMenuBarLabel.swift */; };
+		N10000000000000000000002 /* HomebrewInventoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = N20000000000000000000002 /* HomebrewInventoryTests.swift */; };
+		N10000000000000000000003 /* BrewPulseMenuBarLabelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = N20000000000000000000003 /* BrewPulseMenuBarLabelTests.swift */; };
+		O10000000000000000000001 /* StatusMenuContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = O20000000000000000000001 /* StatusMenuContent.swift */; };
+		O10000000000000000000002 /* RefreshFailureBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = O20000000000000000000002 /* RefreshFailureBanner.swift */; };
+		O10000000000000000000003 /* PackageInventoryList.swift in Sources */ = {isa = PBXBuildFile; fileRef = O20000000000000000000003 /* PackageInventoryList.swift */; };
+		O10000000000000000000004 /* SuspendedCommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = O20000000000000000000004 /* SuspendedCommandRunner.swift */; };
+		P10000000000000000000001 /* StatusMenuHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = P20000000000000000000001 /* StatusMenuHeader.swift */; };
+		Q10000000000000000000001 /* PackageUpdateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q20000000000000000000001 /* PackageUpdateButton.swift */; };
+		R10000000000000000000001 /* HomebrewPackageOperationCommandBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = R20000000000000000000001 /* HomebrewPackageOperationCommandBuilder.swift */; };
+		R10000000000000000000002 /* HomebrewPackageOperationCommandBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = R20000000000000000000002 /* HomebrewPackageOperationCommandBuilderTests.swift */; };
+		S10000000000000000000001 /* CommandTextFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = S20000000000000000000001 /* CommandTextFormatter.swift */; };
+		S10000000000000000000002 /* HomebrewPackageOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = S20000000000000000000002 /* HomebrewPackageOperation.swift */; };
+		S10000000000000000000003 /* PackageOperationCommandPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = S20000000000000000000003 /* PackageOperationCommandPreview.swift */; };
+		S10000000000000000000004 /* CommandTextFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = S20000000000000000000004 /* CommandTextFormatterTests.swift */; };
+		T10000000000000000000001 /* HomebrewPackageOperationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20000000000000000000001 /* HomebrewPackageOperationState.swift */; };
+		T10000000000000000000002 /* PackageOperationProgressBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = T20000000000000000000002 /* PackageOperationProgressBanner.swift */; };
+		U10000000000000000000001 /* HomebrewPackageOperationOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = U20000000000000000000001 /* HomebrewPackageOperationOutput.swift */; };
+		U10000000000000000000002 /* PackageOperationOutputBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = U20000000000000000000002 /* PackageOperationOutputBanner.swift */; };
+		U10000000000000000000003 /* PackageOperationOutputDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = U20000000000000000000003 /* PackageOperationOutputDetails.swift */; };
+		U10000000000000000000004 /* HomebrewPackageOperationOutputTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = U20000000000000000000004 /* HomebrewPackageOperationOutputTests.swift */; };
+		V10000000000000000000001 /* HomebrewCommandGuidance.swift in Sources */ = {isa = PBXBuildFile; fileRef = V20000000000000000000001 /* HomebrewCommandGuidance.swift */; };
+		V10000000000000000000002 /* HomebrewCommandGuidanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = V20000000000000000000002 /* HomebrewCommandGuidanceTests.swift */; };
+		W10000000000000000000001 /* LaunchAtLoginService.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000000000000000000001 /* LaunchAtLoginService.swift */; };
+		W10000000000000000000002 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000000000000000000002 /* AppSettings.swift */; };
+		W10000000000000000000003 /* BrewPulseSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000000000000000000003 /* BrewPulseSettingsView.swift */; };
+		W10000000000000000000004 /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000000000000000000004 /* GeneralSettingsView.swift */; };
+		W10000000000000000000005 /* AppSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = W20000000000000000000005 /* AppSettingsTests.swift */; };
+		X10000000000000000000001 /* OpenSettingsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = X20000000000000000000001 /* OpenSettingsButton.swift */; };
+		Y10000000000000000000001 /* ApplicationPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = Y20000000000000000000001 /* ApplicationPresentationController.swift */; };
+		Y10000000000000000000002 /* SettingsWindowLifecycleObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = Y20000000000000000000002 /* SettingsWindowLifecycleObserver.swift */; };
+		Y10000000000000000000003 /* ApplicationPresentationControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = Y20000000000000000000003 /* ApplicationPresentationControllerTests.swift */; };
+		Z10000000000000000000001 /* PackageInventoryCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = Z20000000000000000000001 /* PackageInventoryCategory.swift */; };
+		Z10000000000000000000002 /* StatusMenuSectionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = Z20000000000000000000002 /* StatusMenuSectionPicker.swift */; };
+		Z10000000000000000000003 /* HomebrewStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = Z20000000000000000000003 /* HomebrewStatusView.swift */; };
+		Z10000000000000000000004 /* PackageInventoryCategoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = Z20000000000000000000004 /* PackageInventoryCategoryTests.swift */; };
+		Z10000000000000000000005 /* StatusMenuSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = Z20000000000000000000005 /* StatusMenuSection.swift */; };
+		Z10000000000000000000006 /* HomebrewVersionParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = Z20000000000000000000006 /* HomebrewVersionParser.swift */; };
+		Z10000000000000000000007 /* HomebrewVersionParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = Z20000000000000000000007 /* HomebrewVersionParserTests.swift */; };
+		Z10000000000000000000008 /* PackageOperationReviewPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = Z20000000000000000000008 /* PackageOperationReviewPresentation.swift */; };
+		Z10000000000000000000009 /* PackageOperationReviewPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = Z20000000000000000000009 /* PackageOperationReviewPresentationTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B60000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A60000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A50000000000000000000001;
+			remoteInfo = BrewPulse;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		A20000000000000000000001 /* BrewPulseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewPulseApp.swift; sourceTree = "<group>"; };
+		A20000000000000000000002 /* StatusMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMenuView.swift; sourceTree = "<group>"; };
+		A20000000000000000000003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A20000000000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A20000000000000000000005 /* BrewPulse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BrewPulse.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000000000000000000006 /* HomebrewService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewService.swift; sourceTree = "<group>"; };
+		A20000000000000000000007 /* PackageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageStore.swift; sourceTree = "<group>"; };
+		A20000000000000000000008 /* CommandRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandRunner.swift; sourceTree = "<group>"; };
+		A20000000000000000000009 /* ProcessCommandRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessCommandRunner.swift; sourceTree = "<group>"; };
+		A20000000000000000000010 /* SerializedCommandRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializedCommandRunner.swift; sourceTree = "<group>"; };
+		B20000000000000000000001 /* ProcessCommandRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessCommandRunnerTests.swift; sourceTree = "<group>"; };
+		B20000000000000000000002 /* SerializedCommandRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializedCommandRunnerTests.swift; sourceTree = "<group>"; };
+		B20000000000000000000003 /* BrewPulseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BrewPulseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C20000000000000000000001 /* HomebrewPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackage.swift; sourceTree = "<group>"; };
+		C20000000000000000000002 /* HomebrewInventory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewInventory.swift; sourceTree = "<group>"; };
+		C20000000000000000000003 /* HomebrewPackageListParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageListParser.swift; sourceTree = "<group>"; };
+		C20000000000000000000004 /* HomebrewPackageListParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageListParserTests.swift; sourceTree = "<group>"; };
+		C20000000000000000000005 /* FixtureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureLoader.swift; sourceTree = "<group>"; };
+		C20000000000000000000006 /* casks.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = casks.txt; sourceTree = "<group>"; };
+		C20000000000000000000007 /* formulae.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = formulae.txt; sourceTree = "<group>"; };
+		D20000000000000000000001 /* HomebrewServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewServiceTests.swift; sourceTree = "<group>"; };
+		D20000000000000000000002 /* RecordingCommandRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingCommandRunner.swift; sourceTree = "<group>"; };
+		E20000000000000000000001 /* HomebrewExecutableLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewExecutableLocator.swift; sourceTree = "<group>"; };
+		E20000000000000000000002 /* HomebrewExecutableLocatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewExecutableLocatorTests.swift; sourceTree = "<group>"; };
+		F20000000000000000000001 /* HomebrewInventoryReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewInventoryReport.swift; sourceTree = "<group>"; };
+		F20000000000000000000002 /* PackageStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageStoreTests.swift; sourceTree = "<group>"; };
+		G20000000000000000000001 /* HomebrewOutdatedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewOutdatedData.swift; sourceTree = "<group>"; };
+		G20000000000000000000002 /* HomebrewOutdatedDataParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewOutdatedDataParser.swift; sourceTree = "<group>"; };
+		G20000000000000000000003 /* HomebrewOutdatedReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewOutdatedReport.swift; sourceTree = "<group>"; };
+		G20000000000000000000004 /* HomebrewOutdatedDataParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewOutdatedDataParserTests.swift; sourceTree = "<group>"; };
+		G20000000000000000000005 /* outdated.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = outdated.json; sourceTree = "<group>"; };
+		H20000000000000000000001 /* HomebrewPackageVersions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageVersions.swift; sourceTree = "<group>"; };
+		H20000000000000000000002 /* HomebrewPackageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageTests.swift; sourceTree = "<group>"; };
+		I20000000000000000000001 /* HomebrewOutdatedPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewOutdatedPackage.swift; sourceTree = "<group>"; };
+		J20000000000000000000001 /* HomebrewPackageUpgradeEligibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageUpgradeEligibility.swift; sourceTree = "<group>"; };
+		J20000000000000000000002 /* HomebrewPackageMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageMetadata.swift; sourceTree = "<group>"; };
+		J20000000000000000000003 /* HomebrewPackageMetadataData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageMetadataData.swift; sourceTree = "<group>"; };
+		J20000000000000000000004 /* HomebrewPackageMetadataParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageMetadataParser.swift; sourceTree = "<group>"; };
+		J20000000000000000000005 /* HomebrewPackageMetadataParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageMetadataParserTests.swift; sourceTree = "<group>"; };
+		J20000000000000000000006 /* installed-metadata.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "installed-metadata.json"; sourceTree = "<group>"; };
+		K20000000000000000000001 /* HomebrewInventoryMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewInventoryMerger.swift; sourceTree = "<group>"; };
+		K20000000000000000000002 /* HomebrewInventoryMergerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewInventoryMergerTests.swift; sourceTree = "<group>"; };
+		K20000000000000000000003 /* HomebrewRefreshTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewRefreshTests.swift; sourceTree = "<group>"; };
+		L20000000000000000000001 /* PackageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageRow.swift; sourceTree = "<group>"; };
+		L20000000000000000000002 /* PackageVersionPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageVersionPresentationTests.swift; sourceTree = "<group>"; };
+		M20000000000000000000001 /* PackageStatusLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageStatusLabel.swift; sourceTree = "<group>"; };
+		M20000000000000000000002 /* PackageUpdateStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageUpdateStatusTests.swift; sourceTree = "<group>"; };
+		N20000000000000000000001 /* BrewPulseMenuBarLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewPulseMenuBarLabel.swift; sourceTree = "<group>"; };
+		N20000000000000000000002 /* HomebrewInventoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewInventoryTests.swift; sourceTree = "<group>"; };
+		N20000000000000000000003 /* BrewPulseMenuBarLabelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewPulseMenuBarLabelTests.swift; sourceTree = "<group>"; };
+		O20000000000000000000001 /* StatusMenuContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMenuContent.swift; sourceTree = "<group>"; };
+		O20000000000000000000002 /* RefreshFailureBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshFailureBanner.swift; sourceTree = "<group>"; };
+		O20000000000000000000003 /* PackageInventoryList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageInventoryList.swift; sourceTree = "<group>"; };
+		O20000000000000000000004 /* SuspendedCommandRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuspendedCommandRunner.swift; sourceTree = "<group>"; };
+		P20000000000000000000001 /* StatusMenuHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMenuHeader.swift; sourceTree = "<group>"; };
+		Q20000000000000000000001 /* PackageUpdateButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageUpdateButton.swift; sourceTree = "<group>"; };
+		R20000000000000000000001 /* HomebrewPackageOperationCommandBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageOperationCommandBuilder.swift; sourceTree = "<group>"; };
+		R20000000000000000000002 /* HomebrewPackageOperationCommandBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageOperationCommandBuilderTests.swift; sourceTree = "<group>"; };
+		S20000000000000000000001 /* CommandTextFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandTextFormatter.swift; sourceTree = "<group>"; };
+		S20000000000000000000002 /* HomebrewPackageOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageOperation.swift; sourceTree = "<group>"; };
+		S20000000000000000000003 /* PackageOperationCommandPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageOperationCommandPreview.swift; sourceTree = "<group>"; };
+		S20000000000000000000004 /* CommandTextFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandTextFormatterTests.swift; sourceTree = "<group>"; };
+		T20000000000000000000001 /* HomebrewPackageOperationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageOperationState.swift; sourceTree = "<group>"; };
+		T20000000000000000000002 /* PackageOperationProgressBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageOperationProgressBanner.swift; sourceTree = "<group>"; };
+		U20000000000000000000001 /* HomebrewPackageOperationOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageOperationOutput.swift; sourceTree = "<group>"; };
+		U20000000000000000000002 /* PackageOperationOutputBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageOperationOutputBanner.swift; sourceTree = "<group>"; };
+		U20000000000000000000003 /* PackageOperationOutputDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageOperationOutputDetails.swift; sourceTree = "<group>"; };
+		U20000000000000000000004 /* HomebrewPackageOperationOutputTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewPackageOperationOutputTests.swift; sourceTree = "<group>"; };
+		V20000000000000000000001 /* HomebrewCommandGuidance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewCommandGuidance.swift; sourceTree = "<group>"; };
+		V20000000000000000000002 /* HomebrewCommandGuidanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewCommandGuidanceTests.swift; sourceTree = "<group>"; };
+		W20000000000000000000001 /* LaunchAtLoginService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginService.swift; sourceTree = "<group>"; };
+		W20000000000000000000002 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		W20000000000000000000003 /* BrewPulseSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewPulseSettingsView.swift; sourceTree = "<group>"; };
+		W20000000000000000000004 /* GeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
+		W20000000000000000000005 /* AppSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsTests.swift; sourceTree = "<group>"; };
+		X20000000000000000000001 /* OpenSettingsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenSettingsButton.swift; sourceTree = "<group>"; };
+		Y20000000000000000000001 /* ApplicationPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationPresentationController.swift; sourceTree = "<group>"; };
+		Y20000000000000000000002 /* SettingsWindowLifecycleObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowLifecycleObserver.swift; sourceTree = "<group>"; };
+		Y20000000000000000000003 /* ApplicationPresentationControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationPresentationControllerTests.swift; sourceTree = "<group>"; };
+		Z20000000000000000000001 /* PackageInventoryCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageInventoryCategory.swift; sourceTree = "<group>"; };
+		Z20000000000000000000002 /* StatusMenuSectionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMenuSectionPicker.swift; sourceTree = "<group>"; };
+		Z20000000000000000000003 /* HomebrewStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewStatusView.swift; sourceTree = "<group>"; };
+		Z20000000000000000000004 /* PackageInventoryCategoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageInventoryCategoryTests.swift; sourceTree = "<group>"; };
+		Z20000000000000000000005 /* StatusMenuSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMenuSection.swift; sourceTree = "<group>"; };
+		Z20000000000000000000006 /* HomebrewVersionParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewVersionParser.swift; sourceTree = "<group>"; };
+		Z20000000000000000000007 /* HomebrewVersionParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewVersionParserTests.swift; sourceTree = "<group>"; };
+		Z20000000000000000000008 /* PackageOperationReviewPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageOperationReviewPresentation.swift; sourceTree = "<group>"; };
+		Z20000000000000000000009 /* PackageOperationReviewPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageOperationReviewPresentationTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A30000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B30000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A40000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				A40000000000000000000002 /* BrewPulse */,
+				B40000000000000000000001 /* BrewPulseTests */,
+				A40000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A40000000000000000000002 /* BrewPulse */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000001 /* BrewPulseApp.swift */,
+				W40000000000000000000001 /* Settings */,
+				N40000000000000000000001 /* MenuBar */,
+				O40000000000000000000001 /* StatusMenu */,
+				L40000000000000000000001 /* PackageList */,
+				C40000000000000000000001 /* Homebrew */,
+				A20000000000000000000007 /* PackageStore.swift */,
+				A20000000000000000000008 /* CommandRunner.swift */,
+				S20000000000000000000001 /* CommandTextFormatter.swift */,
+				A20000000000000000000009 /* ProcessCommandRunner.swift */,
+				A20000000000000000000010 /* SerializedCommandRunner.swift */,
+				A20000000000000000000003 /* Assets.xcassets */,
+				A20000000000000000000004 /* Info.plist */,
+			);
+			path = BrewPulse;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000005 /* BrewPulse.app */,
+				B20000000000000000000003 /* BrewPulseTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B40000000000000000000001 /* BrewPulseTests */ = {
+			isa = PBXGroup;
+			children = (
+				W40000000000000000000002 /* Settings */,
+				C40000000000000000000002 /* Homebrew */,
+				N40000000000000000000002 /* MenuBar */,
+				L40000000000000000000002 /* PackageList */,
+				F20000000000000000000002 /* PackageStoreTests.swift */,
+				Z20000000000000000000009 /* PackageOperationReviewPresentationTests.swift */,
+				S20000000000000000000004 /* CommandTextFormatterTests.swift */,
+				B20000000000000000000001 /* ProcessCommandRunnerTests.swift */,
+				B20000000000000000000002 /* SerializedCommandRunnerTests.swift */,
+				C40000000000000000000004 /* Support */,
+			);
+			path = BrewPulseTests;
+			sourceTree = "<group>";
+		};
+		C40000000000000000000001 /* Homebrew */ = {
+			isa = PBXGroup;
+			children = (
+				E20000000000000000000001 /* HomebrewExecutableLocator.swift */,
+				C20000000000000000000001 /* HomebrewPackage.swift */,
+				R20000000000000000000001 /* HomebrewPackageOperationCommandBuilder.swift */,
+				S20000000000000000000002 /* HomebrewPackageOperation.swift */,
+				T20000000000000000000001 /* HomebrewPackageOperationState.swift */,
+				U20000000000000000000001 /* HomebrewPackageOperationOutput.swift */,
+				V20000000000000000000001 /* HomebrewCommandGuidance.swift */,
+				H20000000000000000000001 /* HomebrewPackageVersions.swift */,
+				J20000000000000000000002 /* HomebrewPackageMetadata.swift */,
+				J20000000000000000000003 /* HomebrewPackageMetadataData.swift */,
+				J20000000000000000000004 /* HomebrewPackageMetadataParser.swift */,
+				J20000000000000000000001 /* HomebrewPackageUpgradeEligibility.swift */,
+				C20000000000000000000002 /* HomebrewInventory.swift */,
+				K20000000000000000000001 /* HomebrewInventoryMerger.swift */,
+				F20000000000000000000001 /* HomebrewInventoryReport.swift */,
+				Z20000000000000000000006 /* HomebrewVersionParser.swift */,
+				G20000000000000000000001 /* HomebrewOutdatedData.swift */,
+				G20000000000000000000002 /* HomebrewOutdatedDataParser.swift */,
+				I20000000000000000000001 /* HomebrewOutdatedPackage.swift */,
+				G20000000000000000000003 /* HomebrewOutdatedReport.swift */,
+				C20000000000000000000003 /* HomebrewPackageListParser.swift */,
+				A20000000000000000000006 /* HomebrewService.swift */,
+			);
+			path = Homebrew;
+			sourceTree = "<group>";
+		};
+		C40000000000000000000002 /* Homebrew */ = {
+			isa = PBXGroup;
+			children = (
+				E20000000000000000000002 /* HomebrewExecutableLocatorTests.swift */,
+				N20000000000000000000002 /* HomebrewInventoryTests.swift */,
+				K20000000000000000000002 /* HomebrewInventoryMergerTests.swift */,
+				G20000000000000000000004 /* HomebrewOutdatedDataParserTests.swift */,
+				J20000000000000000000005 /* HomebrewPackageMetadataParserTests.swift */,
+				C20000000000000000000004 /* HomebrewPackageListParserTests.swift */,
+				H20000000000000000000002 /* HomebrewPackageTests.swift */,
+				R20000000000000000000002 /* HomebrewPackageOperationCommandBuilderTests.swift */,
+				U20000000000000000000004 /* HomebrewPackageOperationOutputTests.swift */,
+				V20000000000000000000002 /* HomebrewCommandGuidanceTests.swift */,
+				Z20000000000000000000007 /* HomebrewVersionParserTests.swift */,
+				K20000000000000000000003 /* HomebrewRefreshTests.swift */,
+				D20000000000000000000001 /* HomebrewServiceTests.swift */,
+				C40000000000000000000003 /* Fixtures */,
+			);
+			path = Homebrew;
+			sourceTree = "<group>";
+		};
+		C40000000000000000000003 /* Fixtures */ = {
+			isa = PBXGroup;
+			children = (
+				C20000000000000000000006 /* casks.txt */,
+				C20000000000000000000007 /* formulae.txt */,
+				J20000000000000000000006 /* installed-metadata.json */,
+				G20000000000000000000005 /* outdated.json */,
+			);
+			path = Fixtures;
+			sourceTree = "<group>";
+		};
+		C40000000000000000000004 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				C20000000000000000000005 /* FixtureLoader.swift */,
+				D20000000000000000000002 /* RecordingCommandRunner.swift */,
+				O20000000000000000000004 /* SuspendedCommandRunner.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		L40000000000000000000001 /* PackageList */ = {
+			isa = PBXGroup;
+			children = (
+				O20000000000000000000003 /* PackageInventoryList.swift */,
+				Z20000000000000000000001 /* PackageInventoryCategory.swift */,
+				L20000000000000000000001 /* PackageRow.swift */,
+				M20000000000000000000001 /* PackageStatusLabel.swift */,
+				Q20000000000000000000001 /* PackageUpdateButton.swift */,
+			);
+			path = PackageList;
+			sourceTree = "<group>";
+		};
+		L40000000000000000000002 /* PackageList */ = {
+			isa = PBXGroup;
+			children = (
+				M20000000000000000000002 /* PackageUpdateStatusTests.swift */,
+				L20000000000000000000002 /* PackageVersionPresentationTests.swift */,
+				Z20000000000000000000004 /* PackageInventoryCategoryTests.swift */,
+			);
+			path = PackageList;
+			sourceTree = "<group>";
+		};
+		N40000000000000000000001 /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				N20000000000000000000001 /* BrewPulseMenuBarLabel.swift */,
+			);
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
+		N40000000000000000000002 /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				N20000000000000000000003 /* BrewPulseMenuBarLabelTests.swift */,
+			);
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
+		O40000000000000000000001 /* StatusMenu */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000002 /* StatusMenuView.swift */,
+				P20000000000000000000001 /* StatusMenuHeader.swift */,
+				O20000000000000000000001 /* StatusMenuContent.swift */,
+				Z20000000000000000000005 /* StatusMenuSection.swift */,
+				Z20000000000000000000002 /* StatusMenuSectionPicker.swift */,
+				Z20000000000000000000003 /* HomebrewStatusView.swift */,
+				O20000000000000000000002 /* RefreshFailureBanner.swift */,
+				S20000000000000000000003 /* PackageOperationCommandPreview.swift */,
+				Z20000000000000000000008 /* PackageOperationReviewPresentation.swift */,
+				T20000000000000000000002 /* PackageOperationProgressBanner.swift */,
+				U20000000000000000000002 /* PackageOperationOutputBanner.swift */,
+				U20000000000000000000003 /* PackageOperationOutputDetails.swift */,
+			);
+			path = StatusMenu;
+			sourceTree = "<group>";
+		};
+		W40000000000000000000001 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				W20000000000000000000001 /* LaunchAtLoginService.swift */,
+				W20000000000000000000002 /* AppSettings.swift */,
+				W20000000000000000000003 /* BrewPulseSettingsView.swift */,
+				W20000000000000000000004 /* GeneralSettingsView.swift */,
+				X20000000000000000000001 /* OpenSettingsButton.swift */,
+				Y20000000000000000000001 /* ApplicationPresentationController.swift */,
+				Y20000000000000000000002 /* SettingsWindowLifecycleObserver.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		W40000000000000000000002 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				W20000000000000000000005 /* AppSettingsTests.swift */,
+				Y20000000000000000000003 /* ApplicationPresentationControllerTests.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A50000000000000000000001 /* BrewPulse */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A90000000000000000000002 /* Build configuration list for PBXNativeTarget "BrewPulse" */;
+			buildPhases = (
+				A70000000000000000000001 /* Sources */,
+				A30000000000000000000001 /* Frameworks */,
+				A80000000000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BrewPulse;
+			productName = BrewPulse;
+			productReference = A20000000000000000000005 /* BrewPulse.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B50000000000000000000001 /* BrewPulseTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B90000000000000000000001 /* Build configuration list for PBXNativeTarget "BrewPulseTests" */;
+			buildPhases = (
+				B70000000000000000000001 /* Sources */,
+				B30000000000000000000001 /* Frameworks */,
+				B80000000000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B61000000000000000000001 /* PBXTargetDependency */,
+			);
+			name = BrewPulseTests;
+			productName = BrewPulseTests;
+			productReference = B20000000000000000000003 /* BrewPulseTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A60000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					A50000000000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					B50000000000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = A50000000000000000000001;
+					};
+				};
+			};
+			buildConfigurationList = A90000000000000000000001 /* Build configuration list for PBXProject "BrewPulse" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A40000000000000000000001;
+			productRefGroup = A40000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A50000000000000000000001 /* BrewPulse */,
+				B50000000000000000000001 /* BrewPulseTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A80000000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000003 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B80000000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C10000000000000000000006 /* casks.txt in Resources */,
+				C10000000000000000000007 /* formulae.txt in Resources */,
+				G10000000000000000000005 /* outdated.json in Resources */,
+				J10000000000000000000006 /* installed-metadata.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A70000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* BrewPulseApp.swift in Sources */,
+				W10000000000000000000001 /* LaunchAtLoginService.swift in Sources */,
+				W10000000000000000000002 /* AppSettings.swift in Sources */,
+				W10000000000000000000003 /* BrewPulseSettingsView.swift in Sources */,
+				W10000000000000000000004 /* GeneralSettingsView.swift in Sources */,
+				X10000000000000000000001 /* OpenSettingsButton.swift in Sources */,
+				Y10000000000000000000001 /* ApplicationPresentationController.swift in Sources */,
+				Y10000000000000000000002 /* SettingsWindowLifecycleObserver.swift in Sources */,
+				N10000000000000000000001 /* BrewPulseMenuBarLabel.swift in Sources */,
+				A10000000000000000000002 /* StatusMenuView.swift in Sources */,
+				P10000000000000000000001 /* StatusMenuHeader.swift in Sources */,
+				O10000000000000000000001 /* StatusMenuContent.swift in Sources */,
+				O10000000000000000000002 /* RefreshFailureBanner.swift in Sources */,
+				O10000000000000000000003 /* PackageInventoryList.swift in Sources */,
+				Z10000000000000000000001 /* PackageInventoryCategory.swift in Sources */,
+				Z10000000000000000000005 /* StatusMenuSection.swift in Sources */,
+				Z10000000000000000000002 /* StatusMenuSectionPicker.swift in Sources */,
+				Z10000000000000000000003 /* HomebrewStatusView.swift in Sources */,
+				L10000000000000000000001 /* PackageRow.swift in Sources */,
+				M10000000000000000000001 /* PackageStatusLabel.swift in Sources */,
+				Q10000000000000000000001 /* PackageUpdateButton.swift in Sources */,
+				S10000000000000000000003 /* PackageOperationCommandPreview.swift in Sources */,
+				Z10000000000000000000008 /* PackageOperationReviewPresentation.swift in Sources */,
+				T10000000000000000000002 /* PackageOperationProgressBanner.swift in Sources */,
+				U10000000000000000000002 /* PackageOperationOutputBanner.swift in Sources */,
+				U10000000000000000000003 /* PackageOperationOutputDetails.swift in Sources */,
+				A10000000000000000000004 /* HomebrewService.swift in Sources */,
+				A10000000000000000000005 /* PackageStore.swift in Sources */,
+				A10000000000000000000006 /* CommandRunner.swift in Sources */,
+				S10000000000000000000001 /* CommandTextFormatter.swift in Sources */,
+				A10000000000000000000007 /* ProcessCommandRunner.swift in Sources */,
+				A10000000000000000000008 /* SerializedCommandRunner.swift in Sources */,
+				C10000000000000000000001 /* HomebrewPackage.swift in Sources */,
+				R10000000000000000000001 /* HomebrewPackageOperationCommandBuilder.swift in Sources */,
+				S10000000000000000000002 /* HomebrewPackageOperation.swift in Sources */,
+				T10000000000000000000001 /* HomebrewPackageOperationState.swift in Sources */,
+				U10000000000000000000001 /* HomebrewPackageOperationOutput.swift in Sources */,
+				V10000000000000000000001 /* HomebrewCommandGuidance.swift in Sources */,
+				J10000000000000000000002 /* HomebrewPackageMetadata.swift in Sources */,
+				J10000000000000000000003 /* HomebrewPackageMetadataData.swift in Sources */,
+				J10000000000000000000004 /* HomebrewPackageMetadataParser.swift in Sources */,
+				J10000000000000000000001 /* HomebrewPackageUpgradeEligibility.swift in Sources */,
+				C10000000000000000000002 /* HomebrewInventory.swift in Sources */,
+				K10000000000000000000001 /* HomebrewInventoryMerger.swift in Sources */,
+				F10000000000000000000001 /* HomebrewInventoryReport.swift in Sources */,
+				Z10000000000000000000006 /* HomebrewVersionParser.swift in Sources */,
+				G10000000000000000000001 /* HomebrewOutdatedData.swift in Sources */,
+				G10000000000000000000002 /* HomebrewOutdatedDataParser.swift in Sources */,
+				I10000000000000000000001 /* HomebrewOutdatedPackage.swift in Sources */,
+				G10000000000000000000003 /* HomebrewOutdatedReport.swift in Sources */,
+				C10000000000000000000003 /* HomebrewPackageListParser.swift in Sources */,
+				H10000000000000000000001 /* HomebrewPackageVersions.swift in Sources */,
+				E10000000000000000000001 /* HomebrewExecutableLocator.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B70000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				W10000000000000000000005 /* AppSettingsTests.swift in Sources */,
+				Y10000000000000000000003 /* ApplicationPresentationControllerTests.swift in Sources */,
+				B10000000000000000000001 /* ProcessCommandRunnerTests.swift in Sources */,
+				B10000000000000000000002 /* SerializedCommandRunnerTests.swift in Sources */,
+				F10000000000000000000002 /* PackageStoreTests.swift in Sources */,
+				Z10000000000000000000009 /* PackageOperationReviewPresentationTests.swift in Sources */,
+				S10000000000000000000004 /* CommandTextFormatterTests.swift in Sources */,
+				N10000000000000000000002 /* HomebrewInventoryTests.swift in Sources */,
+				N10000000000000000000003 /* BrewPulseMenuBarLabelTests.swift in Sources */,
+				L10000000000000000000002 /* PackageVersionPresentationTests.swift in Sources */,
+				Z10000000000000000000004 /* PackageInventoryCategoryTests.swift in Sources */,
+				M10000000000000000000002 /* PackageUpdateStatusTests.swift in Sources */,
+				K10000000000000000000002 /* HomebrewInventoryMergerTests.swift in Sources */,
+				G10000000000000000000004 /* HomebrewOutdatedDataParserTests.swift in Sources */,
+				J10000000000000000000005 /* HomebrewPackageMetadataParserTests.swift in Sources */,
+				C10000000000000000000004 /* HomebrewPackageListParserTests.swift in Sources */,
+				H10000000000000000000002 /* HomebrewPackageTests.swift in Sources */,
+				R10000000000000000000002 /* HomebrewPackageOperationCommandBuilderTests.swift in Sources */,
+				U10000000000000000000004 /* HomebrewPackageOperationOutputTests.swift in Sources */,
+				V10000000000000000000002 /* HomebrewCommandGuidanceTests.swift in Sources */,
+				Z10000000000000000000007 /* HomebrewVersionParserTests.swift in Sources */,
+				K10000000000000000000003 /* HomebrewRefreshTests.swift in Sources */,
+				C10000000000000000000005 /* FixtureLoader.swift in Sources */,
+				D10000000000000000000001 /* HomebrewServiceTests.swift in Sources */,
+				D10000000000000000000002 /* RecordingCommandRunner.swift in Sources */,
+				O10000000000000000000004 /* SuspendedCommandRunner.swift in Sources */,
+				E10000000000000000000002 /* HomebrewExecutableLocatorTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B61000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A50000000000000000000001 /* BrewPulse */;
+			targetProxy = B60000000000000000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		AA0000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AA0000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		AA0000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = C9MTFET49E;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = BrewPulse/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chrisrodstar.BrewPulse;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		AA0000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = C9MTFET49E;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = BrewPulse/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chrisrodstar.BrewPulse;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		BB0000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C9MTFET49E;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chrisrodstar.BrewPulseTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BrewPulse.app/Contents/MacOS/BrewPulse";
+			};
+			name = Debug;
+		};
+		BB0000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C9MTFET49E;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chrisrodstar.BrewPulseTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BrewPulse.app/Contents/MacOS/BrewPulse";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A90000000000000000000001 /* Build configuration list for PBXProject "BrewPulse" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000000000000000000001 /* Debug */,
+				AA0000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A90000000000000000000002 /* Build configuration list for PBXNativeTarget "BrewPulse" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000000000000000000003 /* Debug */,
+				AA0000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B90000000000000000000001 /* Build configuration list for PBXNativeTarget "BrewPulseTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB0000000000000000000001 /* Debug */,
+				BB0000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A60000000000000000000001 /* Project object */;
+}

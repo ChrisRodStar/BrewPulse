@@ -1,0 +1,51 @@
+import SwiftUI
+
+@main
+struct BrewPulseApp: App {
+    @State private var store = PackageStore()
+    @State private var settings = AppSettings()
+    @State private var presentation = ApplicationPresentationController()
+    @State private var operationReviewPresentation = PackageOperationReviewPresentation()
+
+    var body: some Scene {
+        MenuBarExtra {
+            StatusMenuView()
+                .environment(store)
+                .environment(presentation)
+                .environment(operationReviewPresentation)
+        } label: {
+            BrewPulseMenuBarLabel(
+                updateCount: store.state.availableUpdateCount
+            )
+            .task {
+                if case .idle = store.state {
+                    await store.refresh()
+                }
+            }
+        }
+        .menuBarExtraStyle(.window)
+
+        packageOperationReviewWindow
+
+        Settings {
+            BrewPulseSettingsView()
+                .environment(settings)
+                .environment(presentation)
+        }
+    }
+
+    private var packageOperationReviewWindow: some Scene {
+        Window(
+            "Review Package Action",
+            id: PackageOperationReviewPresentation.windowID
+        ) {
+            PackageOperationReviewWindow()
+                .environment(store)
+                .environment(operationReviewPresentation)
+        }
+        .defaultPosition(.center)
+        .defaultSize(width: 560, height: 320)
+        .windowResizability(.contentSize)
+        .windowStyle(.hiddenTitleBar)
+    }
+}

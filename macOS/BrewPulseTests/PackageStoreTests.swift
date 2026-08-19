@@ -1,0 +1,530 @@
+import Foundation
+import Testing
+@testable import BrewPulse
+
+@Suite("Package store")
+struct PackageStoreTests {
+    private let brewURL = URL(fileURLWithPath: "/test/homebrew/bin/brew")
+
+    @Test("Retains successful Homebrew command output after refresh")
+    @MainActor
+    func retainsSuccessfulCommandOutput() async throws {
+        let refreshedAt = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let casksOutput = try FixtureLoader.text(named: "casks")
+        let formulaeOutput = try FixtureLoader.text(named: "formulae")
+        let outdatedOutput = try FixtureLoader.text(
+            named: "outdated",
+            fileExtension: "json"
+        )
+        let metadataOutput = try FixtureLoader.text(
+            named: "installed-metadata",
+            fileExtension: "json"
+        )
+        let runner = RecordingCommandRunner { request in
+            switch request.arguments {
+            case ["list", "--cask", "--versions"]:
+                return .testResult(
+                    for: request,
+                    standardOutput: casksOutput,
+                    standardError: "cask warning\n"
+                )
+            case ["list", "--formula", "--versions"]:
+                return .testResult(for: request, standardOutput: formulaeOutput)
+            case ["--version"]:
+                return .testResult(for: request, standardOutput: "Homebrew 5.0.0\n")
+            case ["outdated", "--json=v2"]:
+                return .testResult(for: request, standardOutput: outdatedOutput)
+            case ["info", "--json=v2", "--installed"]:
+                return .testResult(for: request, standardOutput: metadataOutput)
+            default:
+                throw RecordingCommandRunnerError.unexpectedRequest(request)
+            }
+        }
+        let store = PackageStore(
+            homebrewService: HomebrewService(
+                commandRunner: runner,
+                executableURL: brewURL,
+                currentDate: { refreshedAt }
+            )
+        )
+
+        await store.refresh()
+
+        guard case .loaded(let report) = store.state else {
+            Issue.record("Expected the package store to load")
+            return
+        }
+        #expect(report.inventory.count == 8)
+        #expect(report.homebrewVersion == "5.0.0")
+        #expect(report.refreshedAt == refreshedAt)
+        let git = try #require(
+            report.inventory.formulae.first { $0.name == "git" }
+        )
+        #expect(git.versions.available == "2.50.1")
+        #expect(report.commandResults.map(\.standardOutput) == [
+            casksOutput,
+            formulaeOutput,
+            "Homebrew 5.0.0\n",
+            outdatedOutput,
+            metadataOutput
+        ])
+        #expect(report.commandResults.map(\.standardError) == [
+            "cask warning\n",
+            "",
+            "",
+            "",
+            ""
+        ])
+    }
+
+    @Test("Retains failed Homebrew command output after refresh")
+    @MainActor
+    func retainsFailedCommandOutput() async {
+        let runner = RecordingCommandRunner { request in
+            .testResult(
+                for: request,
+                standardOutput: "partial output\n",
+                standardError: "  permission denied\n",
+                terminationStatus: 1
+            )
+        }
+        let store = PackageStore(
+            homebrewService: HomebrewService(
+                commandRunner: runner,
+                executableURL: brewURL
+            )
+        )
+
+        await store.refresh()
+
+        guard case .failed(let failure, previousReport: nil) = store.state else {
+            Issue.record("Expected the package store to fail")
+            return
+        }
+        #expect(failure.message == "permission denied")
+        #expect(failure.commandResults.map(\.standardOutput) == ["partial output\n"])
+        #expect(failure.commandResults.map(\.standardError) == ["  permission denied\n"])
+    }
+
+    @Test("Preserves the previous report while refreshing")
+    @MainActor
+    func preservesPreviousReportWhileRefreshing() async throws {
+        let previousReport = Self.sampleReport
+        let runner = SuspendedCommandRunner { request in
+            switch request.arguments {
+            case ["list", "--cask", "--versions"],
+                 ["list", "--formula", "--versions"],
+                 ["--version"]:
+                return .testResult(for: request)
+            case ["outdated", "--json=v2"],
+                 ["info", "--json=v2", "--installed"]:
+                return .testResult(for: request, standardOutput: "{}")
+            default:
+                throw RecordingCommandRunnerError.unexpectedRequest(request)
+            }
+        }
+        let store = PackageStore(
+            state: .loaded(previousReport),
+            homebrewService: HomebrewService(
+                commandRunner: runner,
+                executableURL: brewURL
+            )
+        )
+        let package = try #require(previousReport.inventory.formulae.first)
+        let updatePlan = try store.operationPlan(for: package.id, kind: .update)
+        try store.confirmOperation(updatePlan)
+        #expect(store.confirmedOperationPlan == updatePlan)
+
+        let refresh = Task { await store.refresh() }
+        for _ in 0..<100 where store.state != .refreshing(previousReport) {
+            await Task.yield()
+        }
+
+        #expect(store.state == .refreshing(previousReport))
+        #expect(store.state.report == previousReport)
+        #expect(store.state.availableUpdateCount == 1)
+        #expect(store.confirmedOperationPlan == nil)
+        #expect(store.isPerformingHomebrewWork)
+
+        runner.resume()
+        await refresh.value
+    }
+
+    @Test("Preserves the previous report when refresh fails")
+    @MainActor
+    func preservesPreviousReportWhenRefreshFails() async {
+        let previousReport = Self.sampleReport
+        let runner = RecordingCommandRunner { request in
+            .testResult(
+                for: request,
+                standardError: "network unavailable\n",
+                terminationStatus: 1
+            )
+        }
+        let store = PackageStore(
+            state: .loaded(previousReport),
+            homebrewService: HomebrewService(
+                commandRunner: runner,
+                executableURL: brewURL
+            )
+        )
+
+        await store.refresh()
+
+        guard case .failed(
+            let failure,
+            previousReport: .some(let retainedReport)
+        ) = store.state else {
+            Issue.record("Expected refresh failure with the previous report")
+            return
+        }
+        #expect(failure.message == "network unavailable")
+        #expect(retainedReport == previousReport)
+        #expect(store.state.availableUpdateCount == 1)
+    }
+
+    @Test("Prepares update plans only for eligible packages in the latest report")
+    @MainActor
+    func validatesUpdatePlansAgainstLatestReport() throws {
+        let store = PackageStore(
+            state: .loaded(Self.sampleReport),
+            homebrewService: HomebrewService(executableURL: brewURL)
+        )
+        let package = try #require(Self.sampleReport.inventory.formulae.first)
+
+        let plan = try store.operationPlan(for: package.id, kind: .update)
+
+        #expect(plan == HomebrewPackageOperationPlan(
+            kind: .update,
+            package: package,
+            command: CommandRequest(
+                executableURL: brewURL,
+                arguments: ["upgrade", "--formula", "--", "git"]
+            )
+        ))
+
+        let unavailableID = HomebrewPackage.ID(
+            kind: .formula,
+            name: "not-installed"
+        )
+        #expect(throws: HomebrewPackageOperationConfirmationError.planChanged(
+            unavailableID
+        )) {
+            try store.operationPlan(for: unavailableID, kind: .update)
+        }
+
+        let blockedPackage = HomebrewPackage(
+            name: "openssl@3",
+            versions: HomebrewPackageVersions(
+                installed: ["3.5.2"],
+                available: "3.5.4"
+            ),
+            kind: .formula,
+            upgradeEligibility: HomebrewPackageUpgradeEligibility(
+                blockers: [.pinned(version: "3.5.2")]
+            )
+        )
+        let blockedStore = PackageStore(
+            state: .loaded(
+                HomebrewInventoryReport(
+                    inventory: HomebrewInventory(
+                        applications: [],
+                        formulae: [blockedPackage]
+                    ),
+                    commandResults: [],
+                    refreshedAt: .now
+                )
+            ),
+            homebrewService: HomebrewService(executableURL: brewURL)
+        )
+
+        #expect(throws: HomebrewPackageOperationCommandError.upgradeUnavailable(
+            blockedPackage.id
+        )) {
+            try blockedStore.operationPlan(
+                for: blockedPackage.id,
+                kind: .update
+            )
+        }
+    }
+
+    @Test("Confirms only an unchanged plan from the latest report")
+    @MainActor
+    func validatesPlanBeforeConfirmation() throws {
+        let store = PackageStore(
+            state: .loaded(Self.sampleReport),
+            homebrewService: HomebrewService(executableURL: brewURL)
+        )
+        let package = try #require(Self.sampleReport.inventory.formulae.first)
+        let plan = try store.operationPlan(for: package.id, kind: .update)
+
+        try store.confirmOperation(plan)
+
+        #expect(store.confirmedOperationPlan == plan)
+
+        let changedPlan = HomebrewPackageOperationPlan(
+            kind: .update,
+            package: package,
+            command: CommandRequest(
+                executableURL: brewURL,
+                arguments: ["upgrade", "--formula", "--", "different-package"]
+            )
+        )
+        #expect(throws: HomebrewPackageOperationConfirmationError.planChanged(package.id)) {
+            try store.confirmOperation(changedPlan)
+        }
+        #expect(store.confirmedOperationPlan == plan)
+    }
+
+    @Test("Identifies the package while its confirmed update is running")
+    @MainActor
+    func tracksRunningUpdate() async throws {
+        let expectedOutput = "updating git\n"
+        let runner = SuspendedCommandRunner { request in
+            if request.arguments == ["upgrade", "--formula", "--", "git"] {
+                return .testResult(
+                    for: request,
+                    standardOutput: expectedOutput
+                )
+            }
+            return try Self.successfulRefreshResult(for: request)
+        }
+        let store = PackageStore(
+            state: .loaded(Self.sampleReport),
+            homebrewService: HomebrewService(
+                commandRunner: runner,
+                executableURL: brewURL
+            )
+        )
+        let package = try #require(Self.sampleReport.inventory.formulae.first)
+        let plan = try store.operationPlan(for: package.id, kind: .update)
+        try store.confirmOperation(plan)
+
+        let update = Task { await store.runConfirmedOperation() }
+        for _ in 0..<100 where store.operationState.runningPlan != plan {
+            await Task.yield()
+        }
+
+        #expect(store.operationState == .running(plan))
+        #expect(store.isPerformingHomebrewWork)
+        #expect(throws: HomebrewPackageOperationConfirmationError.operationInProgress(plan.id)) {
+            try store.operationPlan(for: plan.id, kind: .uninstall)
+        }
+        #expect(throws: HomebrewPackageOperationConfirmationError.operationInProgress(plan.id)) {
+            try store.confirmOperation(plan)
+        }
+
+        runner.resume()
+        await update.value
+
+        guard case .completed(let completedPlan, let result) = store.operationState else {
+            Issue.record("Expected the update to complete")
+            return
+        }
+        #expect(completedPlan == plan)
+        #expect(result.request == plan.command)
+        #expect(result.standardOutput == expectedOutput)
+        #expect(store.operationState.terminalOutput?.status == .succeeded)
+        #expect(store.state.report?.inventory.formulae.map(\.name) == ["git"])
+        #expect(runner.requests.map(\.arguments) == [
+            ["upgrade", "--formula", "--", "git"],
+            ["list", "--cask", "--versions"],
+            ["list", "--formula", "--versions"],
+            ["--version"],
+            ["outdated", "--json=v2"],
+            ["info", "--json=v2", "--installed"]
+        ])
+        #expect(!store.isPerformingHomebrewWork)
+    }
+
+    @Test("Preserves a failed update's original output and refreshes packages")
+    @MainActor
+    func preservesFailedUpdateOutput() async throws {
+        let runner = RecordingCommandRunner { request in
+            if request.arguments == ["upgrade", "--formula", "--", "git"] {
+                return .testResult(
+                    for: request,
+                    standardOutput: "partial update\n",
+                    standardError: "permission denied\n",
+                    terminationStatus: 1
+                )
+            }
+            return try Self.successfulRefreshResult(for: request)
+        }
+        let store = PackageStore(
+            state: .loaded(Self.sampleReport),
+            homebrewService: HomebrewService(
+                commandRunner: runner,
+                executableURL: brewURL
+            )
+        )
+        let package = try #require(Self.sampleReport.inventory.formulae.first)
+        let plan = try store.operationPlan(for: package.id, kind: .update)
+        try store.confirmOperation(plan)
+
+        await store.runConfirmedOperation()
+
+        guard case .failed(
+            let failedPlan,
+            let message,
+            let result
+        ) = store.operationState else {
+            Issue.record("Expected the update to fail")
+            return
+        }
+        #expect(failedPlan == plan)
+        #expect(message == "permission denied")
+        #expect(result?.standardOutput == "partial update\n")
+        #expect(result?.standardError == "permission denied\n")
+        #expect(store.state.report?.inventory.formulae.map(\.name) == ["git"])
+        #expect(runner.requests.count == 6)
+    }
+
+    @Test("Runs a confirmed uninstall and refreshes the removed package")
+    @MainActor
+    func runsConfirmedUninstall() async throws {
+        let runner = RecordingCommandRunner { request in
+            switch request.arguments {
+            case ["uninstall", "--formula", "--", "git"]:
+                .testResult(
+                    for: request,
+                    standardOutput: "Uninstalling /test/git...\n"
+                )
+            case ["list", "--cask", "--versions"],
+                 ["list", "--formula", "--versions"]:
+                .testResult(for: request)
+            case ["--version"]:
+                .testResult(for: request, standardOutput: "Homebrew 5.0.0\n")
+            case ["outdated", "--json=v2"],
+                 ["info", "--json=v2", "--installed"]:
+                .testResult(
+                    for: request,
+                    standardOutput: #"{"formulae":[],"casks":[]}"#
+                )
+            default:
+                throw RecordingCommandRunnerError.unexpectedRequest(request)
+            }
+        }
+        let store = PackageStore(
+            state: .loaded(Self.sampleReport),
+            homebrewService: HomebrewService(
+                commandRunner: runner,
+                executableURL: brewURL
+            )
+        )
+        let package = try #require(Self.sampleReport.inventory.formulae.first)
+        let plan = try store.operationPlan(for: package.id, kind: .uninstall)
+
+        #expect(plan.command.arguments == [
+            "uninstall", "--formula", "--", "git"
+        ])
+        try store.confirmOperation(plan)
+        await store.runConfirmedOperation()
+
+        guard case .completed(let completedPlan, let result) = store.operationState else {
+            Issue.record("Expected the uninstall to complete")
+            return
+        }
+        #expect(completedPlan == plan)
+        #expect(result.standardOutput == "Uninstalling /test/git...\n")
+        #expect(store.state.report?.inventory.count == 0)
+        #expect(store.operationState.terminalOutput?.plan.kind == .uninstall)
+        #expect(runner.requests.first?.arguments == [
+            "uninstall", "--formula", "--", "git"
+        ])
+    }
+
+    @Test("Cancels an active update safely and preserves partial output")
+    @MainActor
+    func cancelsActiveUpdate() async throws {
+        let runner = SuspendedCommandRunner { request in
+            if request.arguments == ["upgrade", "--formula", "--", "git"] {
+                return .testResult(
+                    for: request,
+                    standardOutput: "partial update before cancellation\n",
+                    standardError: "interrupted\n",
+                    terminationStatus: 130
+                )
+            }
+            return try Self.successfulRefreshResult(for: request)
+        }
+        let store = PackageStore(
+            state: .loaded(Self.sampleReport),
+            homebrewService: HomebrewService(
+                commandRunner: runner,
+                executableURL: brewURL
+            )
+        )
+        let package = try #require(Self.sampleReport.inventory.formulae.first)
+        let plan = try store.operationPlan(for: package.id, kind: .update)
+        try store.confirmOperation(plan)
+
+        let update = Task { await store.runConfirmedOperation() }
+        for _ in 0..<100 where store.operationState.runningPlan != plan {
+            await Task.yield()
+        }
+
+        store.cancelOperation()
+
+        #expect(store.operationState == .cancelling(plan))
+        #expect(store.isPerformingHomebrewWork)
+        #expect(runner.cancellationRequested)
+
+        runner.resume()
+        await update.value
+
+        guard case .cancelled(
+            let cancelledPlan,
+            let result
+        ) = store.operationState else {
+            Issue.record("Expected the update to be cancelled")
+            return
+        }
+        #expect(cancelledPlan == plan)
+        #expect(result?.standardOutput == "partial update before cancellation\n")
+        #expect(result?.standardError == "interrupted\n")
+        #expect(store.state.report?.inventory.formulae.map(\.name) == ["git"])
+        #expect(runner.requests.count == 6)
+        #expect(!store.isPerformingHomebrewWork)
+    }
+
+    nonisolated private static func successfulRefreshResult(
+        for request: CommandRequest
+    ) throws -> CommandResult {
+        switch request.arguments {
+        case ["list", "--cask", "--versions"]:
+            .testResult(for: request)
+        case ["list", "--formula", "--versions"]:
+            .testResult(for: request, standardOutput: "git 2.50.1\n")
+        case ["--version"]:
+            .testResult(for: request, standardOutput: "Homebrew 5.0.0\n")
+        case ["outdated", "--json=v2"],
+             ["info", "--json=v2", "--installed"]:
+            .testResult(
+                for: request,
+                standardOutput: #"{"formulae":[],"casks":[]}"#
+            )
+        default:
+            throw RecordingCommandRunnerError.unexpectedRequest(request)
+        }
+    }
+
+    private static let sampleReport = HomebrewInventoryReport(
+        inventory: HomebrewInventory(
+            applications: [],
+            formulae: [
+                HomebrewPackage(
+                    name: "git",
+                    versions: HomebrewPackageVersions(
+                        installed: ["2.49.0"],
+                        available: "2.50.1"
+                    ),
+                    kind: .formula,
+                    upgradeEligibility: HomebrewPackageUpgradeEligibility()
+                )
+            ]
+        ),
+        commandResults: [],
+        refreshedAt: Date(timeIntervalSinceReferenceDate: 800_000_000)
+    )
+}

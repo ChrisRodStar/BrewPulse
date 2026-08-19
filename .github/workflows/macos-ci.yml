@@ -1,0 +1,102 @@
+name: macOS CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+      - synchronize
+      - converted_to_draft
+  merge_group:
+    types:
+      - checks_requested
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.event.merge_group.head_ref || github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
+  PROJECT_PATH: macOS/BrewPulse.xcodeproj
+  SCHEME: BrewPulse
+
+jobs:
+  validate:
+    name: macOS Validation
+    if: >-
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'merge_group' ||
+        github.event.pull_request.draft == false
+      }}
+    runs-on: xcode-27
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Verify pinned toolchain
+        run: |
+          test -d "$DEVELOPER_DIR"
+          xcodebuild -version | tee "$RUNNER_TEMP/xcode-version.txt"
+          grep -Eq '^Xcode 27([.]|$)' "$RUNNER_TEMP/xcode-version.txt"
+          swift --version
+
+      - name: Validate Xcode project
+        run: plutil -lint "$PROJECT_PATH/project.pbxproj"
+
+      - name: Run tests
+        run: |
+          xcodebuild \
+            -project "$PROJECT_PATH" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination "platform=macOS" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            -resultBundlePath "$RUNNER_TEMP/BrewPulseTests.xcresult" \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            test
+
+      - name: Build Release configuration
+        run: |
+          xcodebuild \
+            -project "$PROJECT_PATH" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -destination "platform=macOS" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            build
+
+      - name: Run static analyzer
+        run: |
+          xcodebuild \
+            -project "$PROJECT_PATH" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination "platform=macOS" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            analyze
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: BrewPulse-${{ github.run_id }}-diagnostics
+          path: ${{ runner.temp }}/BrewPulseTests.xcresult
+          if-no-files-found: ignore
+          retention-days: 7

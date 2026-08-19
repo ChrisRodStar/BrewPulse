@@ -1,0 +1,31 @@
+{
+  "formulae": [
+    {
+      "name": "git",
+      "installed_versions": ["2.49.0"],
+      "current_version": "2.50.1",
+      "pinned": false,
+      "pinned_version": null,
+      "future_field": "ignored"
+    },
+    {
+      "name": "custom/tools/widget",
+      "installed_versions": ["1.0.0", "1.1.0"],
+      "current_version": "2.0.0",
+      "pinned": true,
+      "pinned_version": "1.1.0"
+    }
+  ],
+  "casks": [
+    {
+      "name": "visual-studio-code",
+      "installed_versions": ["1.104.0"],
+      "current_version": "1.105.0",
+      "pinned": false,
+      "pinned_version": null
+    }
+  ],
+  "future_top_level_field": {
+    "ignored": true
+  }
+}
