@@ -1,93 +1,71 @@
 <div align="center">
 
-# 🍺 BrewPulse
+# BrewPulse
 
-### Homebrew updates at a glance.
+**Homebrew updates at a glance.**
 
-A native macOS menu-bar companion for people who use Homebrew but do not want to live in Terminal.
+A small native macOS menu bar app for checking and updating Homebrew packages without living in Terminal.
 
 [![macOS 14+](https://img.shields.io/badge/macOS-14%2B-black?logo=apple&logoColor=white)](https://www.apple.com/macos/)
-[![Swift](https://img.shields.io/badge/Swift-SwiftUI-orange?logo=swift&logoColor=white)](https://www.swift.org/)
+[![SwiftUI](https://img.shields.io/badge/Swift-SwiftUI-orange?logo=swift&logoColor=white)](https://www.swift.org/)
 [![Homebrew](https://img.shields.io/badge/Homebrew-Apple%20Silicon%20%7C%20Intel-FBB040?logo=homebrew&logoColor=black)](https://brew.sh/)
-[![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-blue)](LICENSE)
-[![Status](https://img.shields.io/badge/Status-Beta%20Prep-purple)](TODO.md)
+[![MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-blue)](LICENSE)
 
 </div>
 
----
+## Why I made BrewPulse
 
-## What is BrewPulse?
+I use Homebrew, but I am bad at remembering to check what needs updating. I also prefer a clean Mac app over opening Terminal for routine maintenance.
 
-Homebrew is excellent, but package maintenance is easy to forget and routine checks still tend to pull you back into Terminal.
+BrewPulse started as the tool I wanted for myself: click the menu bar, see what needs attention, update it, and move on. Homebrew still does the actual package management. BrewPulse gives it a native interface and keeps the commands visible instead of hiding what is happening.
 
-BrewPulse brings that workflow into a focused native macOS interface. It shows what is installed, what is outdated, what command will run, and what Homebrew actually returned — without trying to hide or replace Homebrew itself.
+## What works right now
 
-The goal is simple: **make Homebrew maintenance easier to remember, easier to understand, and safer to perform.**
+BrewPulse can already:
 
-## ✨ What BrewPulse can do today
-
-- Detect Homebrew on both Apple Silicon and Intel Macs.
-- Show installed formulae and casks with their versions.
-- Detect outdated packages and show available versions.
-- Display the number of available updates from the menu bar.
-- Refresh Homebrew inventory manually.
-- Preview the exact Homebrew command before anything runs.
-- Require explicit confirmation before package updates or removals.
-- Update individual formulae and casks safely.
-- Uninstall individual packages with a separate destructive confirmation flow.
-- Preserve Homebrew stdout and stderr for troubleshooting and transparency.
+- Find Homebrew on Apple Silicon and Intel Macs.
+- Show installed formulae and casks with their current versions.
+- Check for outdated packages and show the available version.
+- Put the number of available updates in the menu bar.
+- Preview the exact Homebrew command before it runs.
+- Require confirmation before an update or uninstall.
+- Update or uninstall individual formulae and casks.
+- Keep Homebrew's stdout and stderr available when something goes wrong.
 - Handle running, completed, failed, interrupted, and cancelled operations.
-- Keep formulae, casks, and status information organized in a native SwiftUI experience.
 
-BrewPulse is currently in **beta-preparation / polish**, not a finished public release. See the [roadmap](TODO.md) for current progress.
+The app is still in beta prep. Some of the less exciting work, like accessibility, edge cases, testing, signing, and notarization, is still being finished. The current checklist is in [TODO.md](TODO.md).
 
-## 🧭 Product philosophy
+## Safety and transparency
 
-BrewPulse is built around five principles:
+A package manager UI should not make it harder to understand what changed on your computer.
 
-**Native** — feel like a real macOS app, not a web page wrapped in a window.  
-**Simple** — make common Homebrew maintenance obvious and approachable.  
-**Transparent** — show users exactly what BrewPulse is asking Homebrew to do.  
-**Safe** — require clear user intent before changing installed software.  
-**Lightweight** — stay out of the way when there is nothing to do.
+Before BrewPulse updates or removes a package, it shows the command and waits for confirmation. Homebrew's original output is kept for troubleshooting, and the app does not try to turn package management into an opaque one-click process.
 
-## 🆓 Free and open-source core
+The client is open source partly for this reason. You can inspect how BrewPulse finds Homebrew, builds commands, validates package names, runs approved actions, and handles failures.
 
-This repository is the open-source BrewPulse Free application and shared Homebrew core.
+## Free and Pro
 
-BrewPulse Free is intended to remain genuinely useful on its own. Paid BrewPulse Pro features are planned around convenience and automation — things such as scheduled checks, notifications, bulk updates, history, and advanced policies — rather than locking basic Homebrew information behind a paywall.
+This repository contains BrewPulse Free and the shared open-source Homebrew core.
 
-Commercial Pro modules, cloud services, and future organization-management infrastructure are intentionally maintained separately from this public repository.
+Free is meant to be useful on its own. The planned Pro version is mostly about saving time: scheduled checks, notifications, Update All, history, and more control over automation. Those commercial pieces are kept outside this public repository.
 
-## 🔐 Trust and safety
+I want someone to be able to use the free app without feeling like the useful part was intentionally removed just to force an upgrade.
 
-BrewPulse interacts with software installed on your Mac, so transparency matters.
-
-The open-source client lets anyone inspect how BrewPulse:
-
-- discovers Homebrew,
-- reads package inventory,
-- constructs commands,
-- validates package names,
-- executes approved actions,
-- handles cancellation and failures,
-- and preserves Homebrew's original output.
-
-BrewPulse does not aim to become a generic remote shell or hide package-manager behavior behind opaque actions.
-
-## 🖥️ Requirements
+## Requirements
 
 - macOS 14 Sonoma or newer
 - Homebrew installed locally
 - Apple Silicon or Intel Mac
 
-## 🛠️ Development
+## Building from source
 
-The native application lives under `macOS/` and is built with Swift and SwiftUI.
+The macOS app lives in `macOS/` and is written in Swift and SwiftUI.
+
+Open `macOS/BrewPulse.xcodeproj` in Xcode and build the `BrewPulse` scheme.
 
 ```text
 BrewPulse/
-├── macOS/       Native macOS application
+├── macOS/       Native macOS app
 ├── tests/       Test support and fixtures
 ├── docs/        Public project documentation
 ├── TODO.md      Roadmap and implementation status
@@ -95,24 +73,22 @@ BrewPulse/
 └── NOTICE       Copyright and branding notice
 ```
 
-Open `macOS/BrewPulse.xcodeproj` in Xcode and use the `BrewPulse` scheme to build the app locally.
+## Roadmap
 
-## 🤝 Contributing
+[TODO.md](TODO.md) is the working roadmap.
 
-Contributions that improve the open-source BrewPulse core are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+Right now the focus is finishing the free app properly before spending time on payments or Pro-only automation. That means polishing the UI, covering more failure cases, improving accessibility, expanding the tests, and getting the public beta signed and notarized.
 
-If you discover a security issue, please follow [SECURITY.md](SECURITY.md) instead of filing a public issue.
+## Contributing
 
-## 🗺️ Roadmap
+Contributions to the open-source core are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request so you know how the repo is organized and what checks are expected.
 
-The current roadmap is tracked in [TODO.md](TODO.md).
+Security problems should be reported through [SECURITY.md](SECURITY.md), not a public issue.
 
-The near-term focus is polishing BrewPulse Free, improving accessibility and failure states, expanding testing, and preparing a properly signed and notarized public beta before building the commercial Pro layer.
+## License
 
-## 📄 License
-
-BrewPulse's open-source source code is licensed under the [Mozilla Public License 2.0](LICENSE).
+BrewPulse source code in this repository is licensed under the [Mozilla Public License 2.0](LICENSE).
 
 Copyright © 2026 Christopher Rodriguez.
 
-The BrewPulse name, logo, branding, and other project identifiers are not granted for unrestricted use by the MPL-2.0. See [NOTICE](NOTICE) for details.
+The BrewPulse name, logo, branding, and other project identifiers are not granted for unrestricted use by the MPL 2.0. See [NOTICE](NOTICE) for details.
