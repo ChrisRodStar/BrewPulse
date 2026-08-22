@@ -1,4 +1,5 @@
 import Foundation
+import Darwin
 import Testing
 @testable import BrewPulse
 
@@ -46,12 +47,14 @@ struct ProcessCommandRunnerTests {
 
     @Test("Interrupts an active command and returns its partial output")
     func cancelsActiveCommand() async throws {
-        let runner = ProcessCommandRunner()
+        let runner = ProcessCommandRunner(
+            stopGracePeriod: .milliseconds(50)
+        )
         let request = CommandRequest(
             executableURL: URL(fileURLWithPath: "/bin/sh"),
             arguments: [
                 "-c",
-                "trap 'printf interrupted; exit 130' INT; while :; do :; done"
+                "printf started; while :; do :; done"
             ]
         )
         let command = Task.detached {
@@ -64,6 +67,70 @@ struct ProcessCommandRunnerTests {
 
         #expect(result.request == request)
         #expect(result.terminationStatus != 0)
-        #expect(result.standardOutput == "interrupted")
+        #expect(result.standardOutput == "started")
+        #expect(result.terminationReason == .cancelled)
+    }
+
+    @Test("Times out a stalled command and preserves its partial output")
+    func timesOutStalledCommand() throws {
+        let runner = ProcessCommandRunner(
+            stopGracePeriod: .milliseconds(50)
+        )
+        let request = CommandRequest(
+            executableURL: URL(fileURLWithPath: "/bin/sh"),
+            arguments: ["-c", "printf started; while :; do :; done"]
+        )
+
+        let result = try runner.run(
+            request,
+            policy: .timeout(after: .milliseconds(100))
+        )
+
+        #expect(result.terminationStatus != 0)
+        #expect(result.standardOutput == "started")
+        #expect(result.terminationReason == .timedOut)
+        #expect(result.duration < .seconds(2))
+    }
+
+    @Test("Stops child processes in the command's process group")
+    func cancelsChildProcesses() async throws {
+        let runner = ProcessCommandRunner(
+            stopGracePeriod: .milliseconds(50)
+        )
+        let childPIDURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("BrewPulse-child-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: childPIDURL) }
+        let request = CommandRequest(
+            executableURL: URL(fileURLWithPath: "/bin/sh"),
+            arguments: [
+                "-c",
+                """
+                /bin/sh -c 'while :; do /bin/sleep 1; done' &
+                child=$!
+                printf '%s' "$child" > "$1"
+                while :; do :; done
+                """,
+                "brewpulse-test",
+                childPIDURL.path
+            ]
+        )
+        let command = Task.detached {
+            try runner.run(request)
+        }
+
+        for _ in 0..<200 where !FileManager.default.fileExists(
+            atPath: childPIDURL.path
+        ) {
+            try await Task.sleep(for: .milliseconds(10))
+        }
+        let childPIDText = try String(contentsOf: childPIDURL, encoding: .utf8)
+        let childPID = try #require(pid_t(childPIDText))
+
+        runner.cancelCurrentCommand()
+        let result = try await command.value
+
+        #expect(result.terminationReason == .cancelled)
+        #expect(Darwin.kill(childPID, 0) == -1)
+        #expect(errno == ESRCH)
     }
 }

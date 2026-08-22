@@ -160,6 +160,9 @@ struct PackageStoreTests {
         let commandFailure = PackageStore.Failure(
             homebrewError: .commandFailed(results: [ordinaryFailureResult])
         )
+        let timeoutFailure = PackageStore.Failure(
+            homebrewError: .commandTimedOut(results: [ordinaryFailureResult])
+        )
         let outdatedDataFailure = PackageStore.Failure(
             homebrewError: .invalidOutdatedData(results: [ordinaryFailureResult])
         )
@@ -170,6 +173,7 @@ struct PackageStoreTests {
         #expect(connectivityFailure.kind == .connectivityFailure)
         #expect(connectivityFailure.commandResults == [connectivityResult])
         #expect(commandFailure.kind == .commandFailed)
+        #expect(timeoutFailure.kind == .commandTimedOut)
         #expect(outdatedDataFailure.kind == .unreadableOutdatedData)
         #expect(metadataFailure.kind == .unreadablePackageMetadata)
     }

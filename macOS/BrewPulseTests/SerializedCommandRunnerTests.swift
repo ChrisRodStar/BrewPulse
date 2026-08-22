@@ -54,7 +54,10 @@ private final class ConcurrencyTrackingCommandRunner: CommandRunning, @unchecked
         lock.withLock { recordedMaximumConcurrentExecutions }
     }
 
-    nonisolated func run(_ request: CommandRequest) throws -> CommandResult {
+    nonisolated func run(
+        _ request: CommandRequest,
+        policy: CommandExecutionPolicy
+    ) throws -> CommandResult {
         lock.withLock {
             activeExecutions += 1
             recordedMaximumConcurrentExecutions = max(

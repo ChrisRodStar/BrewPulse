@@ -1,15 +1,31 @@
+import Darwin
 import Foundation
 
 final class ProcessCommandRunner: CommandRunning, @unchecked Sendable {
-    private let stateLock = NSLock()
-    nonisolated(unsafe) private var activeProcess: Process?
-    nonisolated(unsafe) private var cancellationRequested = false
-    nonisolated(unsafe) private var interruptSent = false
+    private struct ActiveCommand {
+        let processIdentifier: pid_t
+        var stopReason: CommandTerminationReason?
+    }
 
-    nonisolated func run(_ request: CommandRequest) throws -> CommandResult {
+    private let stateLock = NSLock()
+    private let stopGracePeriod: Duration
+    nonisolated(unsafe) private var activeCommand: ActiveCommand?
+    nonisolated(unsafe) private var cancellationRequested = false
+
+    nonisolated init(stopGracePeriod: Duration = .seconds(5)) {
+        self.stopGracePeriod = stopGracePeriod
+    }
+
+    nonisolated func run(
+        _ request: CommandRequest,
+        policy: CommandExecutionPolicy
+    ) throws -> CommandResult {
         let fileManager = FileManager.default
         let outputDirectoryURL = fileManager.temporaryDirectory
-            .appendingPathComponent("BrewPulse-Command-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent(
+                "BrewPulse-Command-\(UUID().uuidString)",
+                isDirectory: true
+            )
 
         try fileManager.createDirectory(
             at: outputDirectoryURL,
@@ -29,44 +45,61 @@ final class ProcessCommandRunner: CommandRunning, @unchecked Sendable {
             try? standardErrorHandle.close()
         }
 
-        let process = Process()
-        process.executableURL = request.executableURL
-        process.arguments = request.arguments
-        process.standardOutput = standardOutputHandle
-        process.standardError = standardErrorHandle
+        let startedAt = Date()
+        let clock = ContinuousClock()
+        let start = clock.now
+        let processIdentifier: pid_t
+        do {
+            processIdentifier = try spawn(
+                request,
+                standardOutputDescriptor: standardOutputHandle.fileDescriptor,
+                standardErrorDescriptor: standardErrorHandle.fileDescriptor
+            )
+        } catch {
+            stateLock.withLock {
+                cancellationRequested = false
+            }
+            throw error
+        }
 
-        stateLock.withLock {
-            activeProcess = process
+        let shouldCancel = stateLock.withLock {
+            let stopReason: CommandTerminationReason? = cancellationRequested
+                ? .cancelled
+                : nil
+            activeCommand = ActiveCommand(
+                processIdentifier: processIdentifier,
+                stopReason: stopReason
+            )
+            return stopReason != nil
         }
         defer {
             stateLock.withLock {
-                if activeProcess === process {
-                    activeProcess = nil
+                if activeCommand?.processIdentifier == processIdentifier {
+                    activeCommand = nil
                     cancellationRequested = false
-                    interruptSent = false
                 }
             }
         }
 
-        let startedAt = Date()
-        let clock = ContinuousClock()
-        let start = clock.now
+        if shouldCancel {
+            signalProcessGroup(processIdentifier, signal: SIGINT)
+            scheduleEscalation(for: processIdentifier)
+        }
 
-        try process.run()
-        let shouldInterrupt = stateLock.withLock {
-            guard cancellationRequested,
-                  !interruptSent,
-                  activeProcess === process else {
-                return false
-            }
-            interruptSent = true
-            return true
-        }
-        if shouldInterrupt {
-            interrupt(process)
-        }
-        process.waitUntilExit()
+        let timeoutWorkItem = timeoutWorkItem(
+            for: processIdentifier,
+            timeout: policy.timeout
+        )
+        let terminationStatus = try waitForExit(of: processIdentifier)
+        timeoutWorkItem?.cancel()
         let duration = start.duration(to: clock.now)
+
+        let terminationReason = stateLock.withLock {
+            activeCommand?.stopReason ?? .exited
+        }
+        if terminationReason != .exited {
+            terminateRemainingProcessGroup(processIdentifier)
+        }
 
         try standardOutputHandle.close()
         try standardErrorHandle.close()
@@ -77,50 +110,233 @@ final class ProcessCommandRunner: CommandRunning, @unchecked Sendable {
             request: request,
             standardOutput: String(decoding: outputData, as: UTF8.self),
             standardError: String(decoding: errorData, as: UTF8.self),
-            terminationStatus: process.terminationStatus,
+            terminationStatus: terminationStatus,
             startedAt: startedAt,
-            duration: duration
+            duration: duration,
+            terminationReason: terminationReason
         )
     }
 
     nonisolated func cancelCurrentCommand() {
-        let process = stateLock.withLock { () -> Process? in
+        let processIdentifier = stateLock.withLock { () -> pid_t? in
             cancellationRequested = true
-            guard let activeProcess,
-                  activeProcess.isRunning,
-                  !interruptSent else {
+            guard var activeCommand,
+                  activeCommand.stopReason == nil else {
                 return nil
             }
-            interruptSent = true
-            return activeProcess
+            activeCommand.stopReason = .cancelled
+            self.activeCommand = activeCommand
+            return activeCommand.processIdentifier
         }
 
-        guard let process else { return }
-        interrupt(process)
+        guard let processIdentifier else { return }
+        signalProcessGroup(processIdentifier, signal: SIGINT)
+        scheduleEscalation(for: processIdentifier)
     }
 
-    nonisolated private func interrupt(_ process: Process) {
-        let processIdentifier = process.processIdentifier
-        process.interrupt()
+    nonisolated private func spawn(
+        _ request: CommandRequest,
+        standardOutputDescriptor: Int32,
+        standardErrorDescriptor: Int32
+    ) throws -> pid_t {
+        var fileActions: posix_spawn_file_actions_t?
+        try checkPOSIX(posix_spawn_file_actions_init(&fileActions))
+        defer { posix_spawn_file_actions_destroy(&fileActions) }
 
+        try checkPOSIX(
+            posix_spawn_file_actions_adddup2(
+                &fileActions,
+                standardOutputDescriptor,
+                STDOUT_FILENO
+            )
+        )
+        try checkPOSIX(
+            posix_spawn_file_actions_adddup2(
+                &fileActions,
+                standardErrorDescriptor,
+                STDERR_FILENO
+            )
+        )
+
+        var attributes: posix_spawnattr_t?
+        try checkPOSIX(posix_spawnattr_init(&attributes))
+        defer { posix_spawnattr_destroy(&attributes) }
+
+        var defaultSignals = sigset_t()
+        sigemptyset(&defaultSignals)
+        sigaddset(&defaultSignals, SIGINT)
+        sigaddset(&defaultSignals, SIGTERM)
+        sigaddset(&defaultSignals, SIGQUIT)
+        try checkPOSIX(
+            posix_spawnattr_setsigdefault(&attributes, &defaultSignals)
+        )
+
+        let flags = Int16(
+            POSIX_SPAWN_SETSID
+                | POSIX_SPAWN_CLOEXEC_DEFAULT
+                | POSIX_SPAWN_SETSIGDEF
+        )
+        try checkPOSIX(posix_spawnattr_setflags(&attributes, flags))
+
+        let arguments = [request.executableURL.path] + request.arguments
+        var mutableArguments: [UnsafeMutablePointer<CChar>] = []
+        do {
+            for argument in arguments {
+                guard let duplicate = strdup(argument) else {
+                    throw posixError(ENOMEM)
+                }
+                mutableArguments.append(duplicate)
+            }
+        } catch {
+            mutableArguments.forEach { free($0) }
+            throw error
+        }
+        defer { mutableArguments.forEach { free($0) } }
+
+        var argumentVector = mutableArguments.map(Optional.some) + [nil]
+        var processIdentifier: pid_t = 0
+        let spawnResult = request.executableURL.path.withCString { executablePath in
+            argumentVector.withUnsafeMutableBufferPointer { arguments in
+                posix_spawn(
+                    &processIdentifier,
+                    executablePath,
+                    &fileActions,
+                    &attributes,
+                    arguments.baseAddress,
+                    environ
+                )
+            }
+        }
+        try checkPOSIX(spawnResult)
+        return processIdentifier
+    }
+
+    nonisolated private func waitForExit(
+        of processIdentifier: pid_t
+    ) throws -> Int32 {
+        var status: Int32 = 0
+        while waitpid(processIdentifier, &status, 0) == -1 {
+            guard errno == EINTR else {
+                throw posixError(errno)
+            }
+        }
+
+        let terminatingSignal = status & 0x7f
+        if terminatingSignal == 0 {
+            return (status >> 8) & 0xff
+        }
+        return 128 + terminatingSignal
+    }
+
+    nonisolated private func timeoutWorkItem(
+        for processIdentifier: pid_t,
+        timeout: Duration?
+    ) -> DispatchWorkItem? {
+        guard let timeout else { return nil }
+
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.requestTimeout(for: processIdentifier)
+        }
         DispatchQueue.global(qos: .utility).asyncAfter(
-            deadline: .now() + 5
+            deadline: .now() + timeout.timeInterval,
+            execute: workItem
+        )
+        return workItem
+    }
+
+    nonisolated private func requestTimeout(for processIdentifier: pid_t) {
+        let shouldStop = stateLock.withLock {
+            guard var activeCommand,
+                  activeCommand.processIdentifier == processIdentifier,
+                  activeCommand.stopReason == nil else {
+                return false
+            }
+            activeCommand.stopReason = .timedOut
+            self.activeCommand = activeCommand
+            return true
+        }
+
+        guard shouldStop else { return }
+        signalProcessGroup(processIdentifier, signal: SIGINT)
+        scheduleEscalation(for: processIdentifier)
+    }
+
+    nonisolated private func scheduleEscalation(
+        for processIdentifier: pid_t
+    ) {
+        DispatchQueue.global(qos: .utility).asyncAfter(
+            deadline: .now() + stopGracePeriod.timeInterval
         ) { [weak self] in
-            self?.terminateIfStillRunning(processIdentifier)
+            self?.escalateStop(for: processIdentifier, signal: SIGTERM)
+        }
+        DispatchQueue.global(qos: .utility).asyncAfter(
+            deadline: .now() + (stopGracePeriod + stopGracePeriod).timeInterval
+        ) { [weak self] in
+            self?.escalateStop(for: processIdentifier, signal: SIGKILL)
         }
     }
 
-    nonisolated private func terminateIfStillRunning(
-        _ processIdentifier: Int32
+    nonisolated private func escalateStop(
+        for processIdentifier: pid_t,
+        signal: Int32
     ) {
-        let process = stateLock.withLock { () -> Process? in
-            guard let activeProcess,
-                  activeProcess.isRunning,
-                  activeProcess.processIdentifier == processIdentifier else {
-                return nil
-            }
-            return activeProcess
+        let isStillStopping = stateLock.withLock {
+            activeCommand?.processIdentifier == processIdentifier
+                && activeCommand?.stopReason != nil
         }
-        process?.terminate()
+        guard isStillStopping else { return }
+        signalProcessGroup(processIdentifier, signal: signal)
+    }
+
+    nonisolated private func terminateRemainingProcessGroup(
+        _ processIdentifier: pid_t
+    ) {
+        guard processGroupExists(processIdentifier) else { return }
+
+        signalProcessGroup(processIdentifier, signal: SIGTERM)
+        let clock = ContinuousClock()
+        let deadline = clock.now.advanced(by: stopGracePeriod)
+        while clock.now < deadline, processGroupExists(processIdentifier) {
+            Thread.sleep(forTimeInterval: 0.01)
+        }
+
+        if processGroupExists(processIdentifier) {
+            signalProcessGroup(processIdentifier, signal: SIGKILL)
+        }
+    }
+
+    nonisolated private func signalProcessGroup(
+        _ processIdentifier: pid_t,
+        signal: Int32
+    ) {
+        _ = Darwin.kill(-processIdentifier, signal)
+    }
+
+    nonisolated private func processGroupExists(
+        _ processIdentifier: pid_t
+    ) -> Bool {
+        if Darwin.kill(-processIdentifier, 0) == 0 {
+            return true
+        }
+        return errno == EPERM
+    }
+
+    nonisolated private func checkPOSIX(_ result: Int32) throws {
+        guard result == 0 else { throw posixError(result) }
+    }
+
+    nonisolated private func posixError(_ code: Int32) -> NSError {
+        NSError(domain: NSPOSIXErrorDomain, code: Int(code))
+    }
+}
+
+private extension Duration {
+    nonisolated var timeInterval: TimeInterval {
+        let components = self.components
+        return max(
+            0,
+            TimeInterval(components.seconds)
+                + TimeInterval(components.attoseconds) / 1_000_000_000_000_000_000
+        )
     }
 }

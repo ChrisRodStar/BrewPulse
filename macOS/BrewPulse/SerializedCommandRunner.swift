@@ -8,11 +8,14 @@ final class SerializedCommandRunner: CommandRunning {
         self.base = base
     }
 
-    nonisolated func run(_ request: CommandRequest) throws -> CommandResult {
+    nonisolated func run(
+        _ request: CommandRequest,
+        policy: CommandExecutionPolicy
+    ) throws -> CommandResult {
         lock.lock()
         defer { lock.unlock() }
 
-        return try base.run(request)
+        return try base.run(request, policy: policy)
     }
 
     nonisolated func cancelCurrentCommand() {

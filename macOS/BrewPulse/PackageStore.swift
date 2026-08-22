@@ -8,6 +8,7 @@ final class PackageStore {
         enum Kind: Equatable {
             case homebrewNotInstalled
             case commandFailed
+            case commandTimedOut
             case connectivityFailure
             case unreadableOutdatedData
             case unreadablePackageMetadata
@@ -27,6 +28,7 @@ final class PackageStore {
             case .notInstalled:
                 HomebrewExecutableLocator.candidatePaths
             case .commandFailed,
+                 .commandTimedOut,
                  .invalidOutdatedData,
                  .invalidPackageMetadata:
                 []
@@ -48,6 +50,8 @@ final class PackageStore {
                 isLikelyConnectivityFailure(results.last?.standardError ?? "")
                     ? .connectivityFailure
                     : .commandFailed
+            case .commandTimedOut:
+                .commandTimedOut
             case .invalidOutdatedData:
                 .unreadableOutdatedData
             case .invalidPackageMetadata:

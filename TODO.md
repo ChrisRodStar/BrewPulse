@@ -6,7 +6,7 @@ BrewPulse is the public macOS client and the shared Homebrew implementation used
 
 ## Current state
 
-The core workflow is implemented and locally verified. On August 21, 2026, all 76 tests passed with Xcode 27.0, the Release build passed, and static analysis passed.
+The core workflow is implemented and locally verified. On August 21, 2026, all 79 tests passed with Xcode 27.0, the Release build passed, and static analysis passed.
 
 | Area | Status |
 | --- | --- |
@@ -36,10 +36,10 @@ Work through these areas in order. Keep each code change small enough to review 
 
 ### 2. Command lifecycle and recovery
 
-- [ ] Define a safe timeout or cancellation policy for refresh commands that stall.
-- [ ] Test refresh under slow and unreliable network conditions.
-- [ ] Test cancellation with real cask installers and child processes. The current runner only signals the immediate `brew` process.
-- [ ] Decide whether BrewPulse should control a process group, remove the Cancel action for unsafe cases, or explain when child work may continue.
+- [x] Apply a five-minute timeout to each read-only refresh command. Do not time out update or uninstall automatically.
+- [x] Test stalled refresh commands and likely connectivity failures with deterministic runners.
+- [ ] Test cancellation with a real cask installer that launches child processes.
+- [x] Run each command in its own process group so Cancel and timeout stop child work before returning.
 - [ ] Show a successful package action and a failed follow-up refresh as separate outcomes so stale inventory is never mistaken for current state.
 - [ ] Verify relaunch behavior after an interrupted operation.
 - [ ] Keep very large command output usable without constructing one unbounded SwiftUI `Text` view.
