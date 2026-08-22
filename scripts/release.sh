@@ -9,9 +9,10 @@ mode="notarized"
 case "${1:-}" in
     "") ;;
     --unsigned) mode="unsigned" ;;
+    --unsigned-preview) mode="unsigned-preview" ;;
     --skip-notarization) mode="signed" ;;
     *)
-        echo "Usage: $0 [--unsigned|--skip-notarization]" >&2
+        echo "Usage: $0 [--unsigned|--unsigned-preview|--skip-notarization]" >&2
         exit 2
         ;;
 esac
@@ -36,12 +37,12 @@ if ! print -r -- "$build_number" | grep -Eq '^[1-9][0-9]*$'; then
     exit 1
 fi
 if [[ "$mode" != "unsigned" && -z "${BREWPULSE_BUILD_NUMBER:-}" ]]; then
-    echo "Set BREWPULSE_BUILD_NUMBER explicitly for signed release builds." >&2
+    echo "Set BREWPULSE_BUILD_NUMBER explicitly for published or signed release builds." >&2
     exit 1
 fi
 
 case "$mode" in
-    unsigned)
+    unsigned|unsigned-preview)
         artifact_name="BrewPulse-$version-macos-unsigned"
         signing_arguments=(
             CODE_SIGNING_ALLOWED=NO
@@ -72,17 +73,22 @@ case "$mode" in
         ;;
 esac
 
-if [[ "$mode" == "notarized" ]]; then
+if [[ "$mode" == "notarized" || "$mode" == "unsigned-preview" ]]; then
     if [[ -n "$(git -C "$repository_root" status --porcelain --untracked-files=normal)" ]]; then
-        echo "Public releases must be built from a clean checkout." >&2
+        echo "Published releases must be built from a clean checkout." >&2
         exit 1
     fi
 
-    release_tag="${BREWPULSE_RELEASE_TAG:-v$version}"
+    if [[ "$mode" == "unsigned-preview" ]]; then
+        : "${BREWPULSE_RELEASE_TAG:?Set BREWPULSE_RELEASE_TAG to the unsigned preview tag}"
+        release_tag="$BREWPULSE_RELEASE_TAG"
+    else
+        release_tag="${BREWPULSE_RELEASE_TAG:-v$version}"
+    fi
     tagged_commit="$(git -C "$repository_root" rev-list -n 1 "$release_tag" 2>/dev/null || true)"
     head_commit="$(git -C "$repository_root" rev-parse HEAD)"
     if [[ -z "$tagged_commit" || "$tagged_commit" != "$head_commit" ]]; then
-        echo "Tag $release_tag must point to the checked-out commit before creating a public release." >&2
+        echo "Tag $release_tag must point to the checked-out commit before creating a published release." >&2
         exit 1
     fi
 
@@ -183,7 +189,7 @@ verify_developer_id_signature() {
     fi
 }
 
-if [[ "$mode" != "unsigned" ]]; then
+if [[ "$mode" != "unsigned" && "$mode" != "unsigned-preview" ]]; then
     verify_developer_id_signature "$app_path"
 fi
 
@@ -230,7 +236,7 @@ if [[ "$extracted_architectures" != *arm64* || "$extracted_architectures" != *x8
     exit 1
 fi
 
-if [[ "$mode" != "unsigned" ]]; then
+if [[ "$mode" != "unsigned" && "$mode" != "unsigned-preview" ]]; then
     verify_developer_id_signature "$extracted_app"
 fi
 if [[ "$mode" == "notarized" ]]; then

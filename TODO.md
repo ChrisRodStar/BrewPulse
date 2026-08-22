@@ -2,7 +2,7 @@
 
 BrewPulse is the public macOS client and the shared Homebrew implementation used by every future BrewPulse product.
 
-> **Current priority:** finish a trustworthy signed public beta. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
+> **Current priority:** publish the explicitly unsigned 0.1.0 preview, then use early feedback and the remaining manual matrix to prepare a signed beta. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
 
 ## Current state
 
@@ -16,7 +16,7 @@ The core workflow is implemented and locally verified. On August 21, 2026, all 8
 | Store and command-runner coverage | Complete for current behavior |
 | Failure recovery and command lifecycle | In progress |
 | Accessibility and UI edge cases | In progress |
-| Signing, packaging, and public beta | In progress |
+| Unsigned preview and later signed beta | In progress |
 
 Only the **Now** section should drive the next code task. The later sections record release gates and boundaries without pretending they are active work.
 
@@ -54,7 +54,9 @@ Work through these areas in order. Keep each code change small enough to review 
 - [x] Add previews for loading, failure, empty inventory, failed operation, and cancelled operation states.
 - [ ] Review copy with someone who uses Homebrew but does not work in Terminal every day.
 
-### 4. Manual beta matrix
+### 4. Remaining quality matrix
+
+These checks improve the preview and remain required for the later signed beta. They do not block the explicitly unsigned download.
 
 - [ ] Test a complete formula update on a clean supported Mac.
 - [ ] Test a cask update, including a cask that opens an installer or requests administrator approval when practical.
@@ -69,6 +71,8 @@ Work through these areas in order. Keep each code change small enough to review 
 - [x] Add and validate a production Icon Composer app icon with light, dark, and tinted appearances.
 - [x] Enable hardened runtime in Debug and Release configurations.
 - [x] Add a repeatable credential-free universal archive and packaging dry run.
+- [x] Document an explicitly labeled unsigned preview without presenting it as the signed public beta.
+- [x] Add a release mode that requires a clean tagged commit and dated changelog for a published unsigned preview.
 - [ ] Verify the Developer ID archive and signing process with the production identity.
 - [ ] Notarize and staple a release artifact successfully.
 - [x] Choose a simple beta package format and document installation and removal.
@@ -78,9 +82,19 @@ Work through these areas in order. Keep each code change small enough to review 
 - [x] Decide how Free users learn about BrewPulse updates without requiring a paid account or service.
 - [x] Publish honest release notes, known limitations, support instructions, and a feedback path.
 
-## Public beta gate
+## Unsigned preview gate
 
-The first public beta is ready when:
+The 0.1.0 beta preview is ready when:
+
+- [ ] A version-checked universal ZIP and SHA-256 checksum are published in a GitHub prerelease.
+- [ ] The unsigned and unnotarized status appears before every download link.
+- [ ] The install guide explains Apple's Open Anyway flow without disabling Gatekeeper or removing quarantine.
+- [ ] The GitHub prerelease and website point to the exact artifact and checksum.
+- [ ] Source, license, security, support, privacy, release notes, and known limitations remain accessible.
+
+## Signed beta gate
+
+The later signed beta is ready when:
 
 - [ ] A new user can install, open, and remove the signed app using the published instructions.
 - [ ] Missing Homebrew, a healthy installation, no packages, current packages, outdated packages, and refresh failures are understandable.
