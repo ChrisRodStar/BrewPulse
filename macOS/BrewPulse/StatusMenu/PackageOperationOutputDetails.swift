@@ -6,13 +6,21 @@ struct PackageOperationOutputDetails: View {
     @State private var didCopyOutput = false
 
     let output: HomebrewPackageOperationOutput
+    let followUpRefreshFailure: PackageStore.Failure?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Label("Homebrew Output", systemImage: "terminal")
                 .font(.title2.bold())
 
-            PackageOperationOutcomeSummary(output: output)
+            PackageOperationOutcomeSummary(
+                output: output,
+                followUpRefreshFailed: followUpRefreshFailure != nil
+            )
+
+            if let followUpRefreshFailure {
+                PackageOperationRefreshWarning(failure: followUpRefreshFailure)
+            }
 
             PackageOperationCommandSummary(output: output)
 
@@ -77,6 +85,7 @@ struct PackageOperationOutputDetails: View {
 
 private struct PackageOperationOutcomeSummary: View {
     let output: HomebrewPackageOperationOutput
+    let followUpRefreshFailed: Bool
 
     var body: some View {
         Label {
@@ -113,10 +122,12 @@ private struct PackageOperationOutcomeSummary: View {
 
     private var message: String {
         switch output.status {
+        case .succeeded where followUpRefreshFailed:
+            "Homebrew completed the package action, but BrewPulse could not verify the new package list."
         case .succeeded where output.plan.kind == .update:
-            "Homebrew completed the update successfully."
+            "Homebrew completed the update successfully, and BrewPulse refreshed the package list."
         case .succeeded:
-            "Homebrew completed the uninstall successfully."
+            "Homebrew completed the uninstall successfully, and BrewPulse refreshed the package list."
         case .failed(let message):
             message
         case .cancelled:
@@ -144,6 +155,28 @@ private struct PackageOperationOutcomeSummary: View {
         case .cancelled:
             .orange
         }
+    }
+}
+
+private struct PackageOperationRefreshWarning: View {
+    let failure: PackageStore.Failure
+
+    var body: some View {
+        Label {
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Package list not refreshed")
+                    .font(.headline)
+                Text("The package action succeeded, but the inventory still shows the older snapshot. Refresh again before relying on package status.")
+                    .font(.callout)
+                Text(failure.message)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        } icon: {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+        }
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -225,20 +258,63 @@ private struct CommandOutputSection: View {
 
     var body: some View {
         GroupBox(title) {
-            ScrollView([.horizontal, .vertical]) {
-                Text(content.isEmpty ? emptyMessage : content)
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundStyle(content.isEmpty ? .secondary : .primary)
-                    .textSelection(.enabled)
-                    .fixedSize(horizontal: true, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .topLeading)
-                    .padding(8)
-            }
+            CommandOutputTextView(
+                text: content.isEmpty ? emptyMessage : content,
+                usesSecondaryColor: content.isEmpty,
+                accessibilityLabel: title
+            )
             .frame(maxWidth: .infinity, minHeight: 110, idealHeight: 140)
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(title)
-            .accessibilityValue(content.isEmpty ? emptyMessage : content)
         }
+    }
+}
+
+private struct CommandOutputTextView: NSViewRepresentable {
+    let text: String
+    let usesSecondaryColor: Bool
+    let accessibilityLabel: String
+
+    func makeNSView(context: Context) -> NSScrollView {
+        let scrollView = NSTextView.scrollableTextView()
+        scrollView.hasHorizontalScroller = true
+        scrollView.hasVerticalScroller = true
+        scrollView.autohidesScrollers = true
+        scrollView.borderType = .noBorder
+        scrollView.drawsBackground = false
+
+        guard let textView = scrollView.documentView as? NSTextView else {
+            return scrollView
+        }
+        textView.isEditable = false
+        textView.isSelectable = true
+        textView.drawsBackground = false
+        textView.font = .monospacedSystemFont(
+            ofSize: NSFont.systemFontSize,
+            weight: .regular
+        )
+        textView.textContainerInset = NSSize(width: 8, height: 8)
+        textView.isHorizontallyResizable = true
+        textView.isVerticallyResizable = true
+        textView.maxSize = NSSize(
+            width: CGFloat.greatestFiniteMagnitude,
+            height: CGFloat.greatestFiniteMagnitude
+        )
+        textView.textContainer?.widthTracksTextView = false
+        textView.setAccessibilityLabel(accessibilityLabel)
+        return scrollView
+    }
+
+    func updateNSView(_ scrollView: NSScrollView, context: Context) {
+        guard let textView = scrollView.documentView as? NSTextView else {
+            return
+        }
+        if textView.string != text {
+            textView.string = text
+            textView.scrollToBeginningOfDocument(nil)
+        }
+        textView.textColor = usesSecondaryColor
+            ? .secondaryLabelColor
+            : .labelColor
+        textView.setAccessibilityLabel(accessibilityLabel)
     }
 }
 
@@ -278,6 +354,9 @@ extension HomebrewPackageOperationOutput {
 }
 
 #Preview("Homebrew output details") {
-    PackageOperationOutputDetails(output: .preview)
+    PackageOperationOutputDetails(
+        output: .preview,
+        followUpRefreshFailure: nil
+    )
 }
 #endif

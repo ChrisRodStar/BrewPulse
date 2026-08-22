@@ -110,6 +110,7 @@ final class PackageStore {
 
     private(set) var state: State
     private(set) var operationState: HomebrewPackageOperationState
+    private(set) var operationFollowUpRefreshFailure: Failure?
     private let homebrewService: HomebrewService
 
     var confirmedOperationPlan: HomebrewPackageOperationPlan? {
@@ -126,6 +127,7 @@ final class PackageStore {
     ) {
         self.state = state
         operationState = .idle
+        operationFollowUpRefreshFailure = nil
         self.homebrewService = homebrewService
     }
 
@@ -165,6 +167,7 @@ final class PackageStore {
     func runConfirmedOperation() async {
         guard case .confirmed(let plan) = operationState else { return }
 
+        operationFollowUpRefreshFailure = nil
         operationState = .running(plan)
         let homebrewService = homebrewService
         do {
@@ -199,7 +202,17 @@ final class PackageStore {
             }
         }
 
+        let operationSucceeded = if case .completed = operationState {
+            true
+        } else {
+            false
+        }
+
         await refresh()
+        if operationSucceeded,
+           case .failed(let failure, previousReport: _) = state {
+            operationFollowUpRefreshFailure = failure
+        }
     }
 
     func cancelOperation() {
@@ -223,6 +236,7 @@ final class PackageStore {
                 try homebrewService.inventoryWithUpdateAvailability()
             }.value
             state = .loaded(report)
+            operationFollowUpRefreshFailure = nil
         } catch let error as HomebrewError {
             state = .failed(
                 Failure(homebrewError: error),

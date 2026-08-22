@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PackageOperationOutputBanner: View {
     let output: HomebrewPackageOperationOutput
+    let followUpRefreshFailure: PackageStore.Failure?
     let onViewDetails: () -> Void
 
     var body: some View {
@@ -18,6 +19,12 @@ struct PackageOperationOutputBanner: View {
                     .font(.headline)
                     .lineLimit(1)
                     .truncationMode(.middle)
+                if followUpRefreshFailure != nil {
+                    Text("Package list refresh failed; older results remain visible")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                        .lineLimit(2)
+                }
             }
 
             Spacer(minLength: 0)
@@ -29,7 +36,7 @@ struct PackageOperationOutputBanner: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("\(title): \(output.plan.package.name)")
+        .accessibilityLabel(accessibilityLabel)
     }
 
     private var title: String {
@@ -57,5 +64,12 @@ struct PackageOperationOutputBanner: View {
         case .failed: .red
         case .cancelled: .orange
         }
+    }
+
+    private var accessibilityLabel: String {
+        let operationLabel = "\(title): \(output.plan.package.name)"
+        guard followUpRefreshFailure != nil else { return operationLabel }
+        return operationLabel
+            + ". Package list refresh failed; older results remain visible."
     }
 }

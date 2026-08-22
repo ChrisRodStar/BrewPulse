@@ -431,6 +431,61 @@ struct PackageStoreTests {
         #expect(!store.isPerformingHomebrewWork)
     }
 
+    @Test("Separates a successful package action from a failed inventory refresh")
+    @MainActor
+    func preservesSuccessfulOperationWhenFollowUpRefreshFails() async throws {
+        let runner = RecordingCommandRunner { request in
+            switch request.arguments {
+            case ["upgrade", "--formula", "--", "git"]:
+                .testResult(
+                    for: request,
+                    standardOutput: "git was upgraded\n"
+                )
+            case ["list", "--cask", "--versions"]:
+                .testResult(
+                    for: request,
+                    standardError: "Could not resolve host: formulae.brew.sh\n",
+                    terminationStatus: 1
+                )
+            default:
+                throw RecordingCommandRunnerError.unexpectedRequest(request)
+            }
+        }
+        let store = PackageStore(
+            state: .loaded(Self.sampleReport),
+            homebrewService: HomebrewService(
+                commandRunner: runner,
+                executableURL: brewURL
+            )
+        )
+        let package = try #require(Self.sampleReport.inventory.formulae.first)
+        let plan = try store.operationPlan(for: package.id, kind: .update)
+        try store.confirmOperation(plan)
+
+        await store.runConfirmedOperation()
+
+        guard case .completed(let completedPlan, let operationResult) =
+            store.operationState else {
+            Issue.record("Expected the package action to remain successful")
+            return
+        }
+        #expect(completedPlan == plan)
+        #expect(operationResult.standardOutput == "git was upgraded\n")
+        #expect(store.operationFollowUpRefreshFailure?.kind == .connectivityFailure)
+
+        guard case .failed(let refreshFailure, let previousReport) = store.state else {
+            Issue.record("Expected the follow-up refresh to fail separately")
+            return
+        }
+        #expect(refreshFailure.kind == .connectivityFailure)
+        #expect(previousReport == Self.sampleReport)
+        #expect(store.state.report == Self.sampleReport)
+        #expect(runner.requests.map(\.arguments) == [
+            ["upgrade", "--formula", "--", "git"],
+            ["list", "--cask", "--versions"]
+        ])
+    }
+
     @Test("Preserves a failed update's original output and refreshes packages")
     @MainActor
     func preservesFailedUpdateOutput() async throws {
