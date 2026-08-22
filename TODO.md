@@ -46,12 +46,12 @@ Work through these areas in order. Keep each code change small enough to review 
 
 ### 3. UI and accessibility finish work
 
-- [ ] Make long and multi-line installed or available versions readable without breaking row actions.
-- [ ] Add `Command-R` for refresh. Keep the existing default, cancel, and Settings shortcuts working.
+- [x] Make long and multi-line installed or available versions readable without breaking row actions.
+- [x] Add `Command-R` for refresh. Keep the existing default, cancel, and Settings shortcuts working.
 - [ ] Verify keyboard-only navigation through section selection, package actions, command review, cancellation, output details, and Settings.
 - [ ] Verify VoiceOver labels, values, focus order, grouping, and disabled states for the same workflow.
 - [ ] Verify larger accessibility text sizes do not hide commands, versions, warnings, or destructive confirmations.
-- [ ] Add previews for loading, failure, empty inventory, failed operation, and cancelled operation states.
+- [x] Add previews for loading, failure, empty inventory, failed operation, and cancelled operation states.
 - [ ] Review copy with someone who uses Homebrew but does not work in Terminal every day.
 
 ### 4. Manual beta matrix

@@ -106,17 +106,40 @@ private struct PackageVersionSummary: View {
     let showsAvailableVersion: Bool
 
     var body: some View {
-        HStack(spacing: 20) {
-            LabeledContent(
-                "Installed",
-                value: package.versions.installed.joined(separator: ", ")
+        VStack(alignment: .leading, spacing: 6) {
+            ReviewVersionValue(
+                title: "Installed",
+                value: package.versions.installed.isEmpty
+                    ? "Unknown"
+                    : package.versions.installed.joined(separator: ", ")
             )
             if showsAvailableVersion,
                let availableVersion = package.versions.available {
-                LabeledContent("Available", value: availableVersion)
+                ReviewVersionValue(
+                    title: "Available",
+                    value: availableVersion
+                )
             }
         }
         .monospacedDigit()
+    }
+}
+
+private struct ReviewVersionValue: View {
+    let title: LocalizedStringKey
+    let value: String
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            Text(title)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: true, vertical: false)
+            Text(value)
+                .lineLimit(3)
+                .truncationMode(.middle)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .accessibilityElement(children: .combine)
     }
 }
 
