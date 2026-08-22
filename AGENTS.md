@@ -62,13 +62,20 @@ files may add instructions for their own directories.
 
 ## Git and Pull Requests
 
-- All changes to `main`, including documentation-only changes, must use a
-  feature branch and pull request. Documentation changes may use checks suited
-  to their scope, but they do not bypass review.
+- Maintainer-owned work may go directly to `main` when the user explicitly
+  authorizes the push. Do not create a pull request by default for routine
+  documentation, release administration, or a coherent change the maintainer
+  has already reviewed in this workspace.
+- Use a feature branch and pull request for outside contributions, changes that
+  need a separate review checkpoint, or when the user explicitly requests one.
+  Batch related work into one reviewable pull request instead of opening a pull
+  request for each TODO item.
 - The versioned `.githooks/pre-push` safeguard through
-  `core.hooksPath=.githooks` must block every direct push to `main`.
-- For changes that require a pull request, make changes on a `codex/` feature
-  branch and keep commits scoped to one coherent piece of work.
+  `core.hooksPath=.githooks` must check direct pushes to `main`. It runs a diff
+  check for documentation-only pushes and the full local validation for all
+  other changes.
+- For changes that need a pull request, use a `codex/` feature branch and keep
+  commits scoped to one coherent piece of work.
 - Create a concise Conventional Commit at a meaningful, verified checkpoint.
   Do not combine unrelated work merely to reduce the number of commits.
 - Explain when a code/configuration checkpoint is substantial enough for a pull
@@ -76,6 +83,8 @@ files may add instructions for their own directories.
 - Before merging a pull request that affects code, tests, scripts, build files,
   workflows, dependencies, or runtime behavior, confirm that `macOS Validation`
   passed for the pull request's current head commit. A pass from an older
-  revision does not count.
-- Treat hosted branch protection, the local hook, and these rules as mandatory.
-  Do not bypass them merely to save time.
+  revision does not count. For a direct maintainer push, the local hook must
+  pass before GitHub runs the same validation on `main`.
+- Keep force-push and branch-deletion protection enabled for `main`. Hosted
+  rules should let the maintainer bypass the pull-request requirement while
+  preserving it for other contributors.

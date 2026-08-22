@@ -77,7 +77,7 @@ These checks improve the preview and remain required for the later signed beta. 
 - [ ] Notarize and staple a release artifact successfully.
 - [x] Choose a simple beta package format and document installation and removal.
 - [x] Make contributor builds work without requiring the maintainer's signing identity.
-- [x] Protect `main` with pull requests, current `macOS Validation`, conversation resolution, and force-push and deletion blocking.
+- [x] Protect `main` against force pushes and deletion, keep pull-request validation for outside contributions, and validate maintainer pushes locally and on GitHub.
 - [x] Document the supported macOS, Homebrew, and BrewPulse versions for the release.
 - [x] Decide how Free users learn about BrewPulse updates without requiring a paid account or service.
 - [x] Publish honest release notes, known limitations, support instructions, and a feedback path.

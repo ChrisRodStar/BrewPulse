@@ -106,7 +106,7 @@ shasum -a 256 -c BrewPulse-VERSION-macos.zip.sha256
 
 ## Release checklist
 
-1. Confirm the release-candidate pull request head passed `macOS Validation`.
+1. Confirm the release candidate passed `./scripts/validate.sh`. If it uses a pull request, confirm that its current head also passed `macOS Validation`.
 2. Run the full manual beta matrix in [TODO.md](../TODO.md) against its archived app.
 3. Update [CHANGELOG.md](../CHANGELOG.md) with the final date and known limitations, then merge the release commit.
 4. Create and push the matching `vVERSION` tag on that clean commit.
