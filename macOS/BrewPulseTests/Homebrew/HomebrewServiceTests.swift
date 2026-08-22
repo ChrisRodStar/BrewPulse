@@ -48,6 +48,13 @@ struct HomebrewServiceTests {
                 arguments: ["--version"]
             )
         ])
+        #expect(
+            runner.policies
+                == Array(
+                    repeating: .timeout(after: .seconds(300)),
+                    count: 3
+                )
+        )
         #expect(inventory.applications.map(\.name) == [
             "1password",
             "font-fira-code",
@@ -136,7 +143,39 @@ struct HomebrewServiceTests {
         let result = try service.runOperation(plan)
 
         #expect(runner.requests == [command])
+        #expect(runner.policies == [.unbounded])
         #expect(result == expectedResult)
+    }
+
+    @Test("Reports a timed-out refresh without losing partial output")
+    func reportsTimedOutRefresh() {
+        let runner = RecordingCommandRunner { request in
+            .testResult(
+                for: request,
+                standardOutput: "partial inventory\n",
+                terminationStatus: 130,
+                terminationReason: .timedOut
+            )
+        }
+        let service = HomebrewService(
+            commandRunner: runner,
+            executableURL: brewURL,
+            refreshCommandTimeout: .milliseconds(100)
+        )
+
+        do {
+            _ = try service.installedInventory()
+            Issue.record("Expected the refresh command to time out")
+        } catch HomebrewError.commandTimedOut(let results) {
+            #expect(results.map(\.standardOutput) == ["partial inventory\n"])
+            #expect(results.last?.terminationReason == .timedOut)
+        } catch {
+            Issue.record("Unexpected error: \(error)")
+        }
+
+        #expect(runner.policies == [
+            .timeout(after: .milliseconds(100))
+        ])
     }
 
     @Test("Treats a nonzero update exit as a failure without losing output")

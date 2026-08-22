@@ -15,7 +15,10 @@ final class SuspendedCommandRunner: CommandRunning, @unchecked Sendable {
         self.handler = handler
     }
 
-    nonisolated func run(_ request: CommandRequest) throws -> CommandResult {
+    nonisolated func run(
+        _ request: CommandRequest,
+        policy: CommandExecutionPolicy
+    ) throws -> CommandResult {
         lock.lock()
         recordedRequests.append(request)
         let suspendsThisRequest = shouldSuspend

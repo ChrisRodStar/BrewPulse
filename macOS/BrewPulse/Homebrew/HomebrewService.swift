@@ -3,6 +3,7 @@ import Foundation
 enum HomebrewError: LocalizedError, Sendable {
     case notInstalled
     case commandFailed(results: [CommandResult])
+    case commandTimedOut(results: [CommandResult])
     case invalidOutdatedData(results: [CommandResult])
     case invalidPackageMetadata(results: [CommandResult])
 
@@ -11,6 +12,7 @@ enum HomebrewError: LocalizedError, Sendable {
         case .notInstalled:
             return []
         case .commandFailed(let results),
+             .commandTimedOut(let results),
              .invalidOutdatedData(let results),
              .invalidPackageMetadata(let results):
             return results
@@ -25,6 +27,8 @@ enum HomebrewError: LocalizedError, Sendable {
             let message = results.last?.standardError
                 .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             return message.isEmpty ? "Homebrew command failed." : message
+        case .commandTimedOut:
+            return "Homebrew did not finish the refresh command within five minutes."
         case .invalidOutdatedData:
             return "Homebrew returned outdated-package data BrewPulse could not read."
         case .invalidPackageMetadata:
@@ -43,6 +47,7 @@ struct HomebrewService: Sendable {
     private let inventoryMerger: HomebrewInventoryMerger
     private let providedExecutableURL: URL?
     private let currentDate: @Sendable () -> Date
+    private let refreshCommandPolicy: CommandExecutionPolicy
 
     nonisolated init(
         commandRunner: any CommandRunning = SerializedCommandRunner(
@@ -55,6 +60,7 @@ struct HomebrewService: Sendable {
         versionParser: HomebrewVersionParser = HomebrewVersionParser(),
         inventoryMerger: HomebrewInventoryMerger = HomebrewInventoryMerger(),
         executableURL: URL? = nil,
+        refreshCommandTimeout: Duration = .seconds(300),
         currentDate: @escaping @Sendable () -> Date = { Date() }
     ) {
         self.commandRunner = commandRunner
@@ -65,6 +71,7 @@ struct HomebrewService: Sendable {
         self.versionParser = versionParser
         self.inventoryMerger = inventoryMerger
         self.providedExecutableURL = executableURL
+        refreshCommandPolicy = .timeout(after: refreshCommandTimeout)
         self.currentDate = currentDate
     }
 
@@ -158,8 +165,9 @@ struct HomebrewService: Sendable {
         at brewURL: URL,
         previousResults: [CommandResult]
     ) throws -> (value: String?, commandResult: CommandResult) {
-        let result = try commandRunner.run(
-            CommandRequest(executableURL: brewURL, arguments: ["--version"])
+        let result = try runRefreshCommand(
+            CommandRequest(executableURL: brewURL, arguments: ["--version"]),
+            previousResults: previousResults
         )
 
         guard result.terminationStatus == 0 else {
@@ -178,11 +186,12 @@ struct HomebrewService: Sendable {
         at brewURL: URL,
         previousResults: [CommandResult]
     ) throws -> HomebrewOutdatedReport {
-        let result = try commandRunner.run(
+        let result = try runRefreshCommand(
             CommandRequest(
                 executableURL: brewURL,
                 arguments: ["outdated", "--json=v2"]
-            )
+            ),
+            previousResults: previousResults
         )
 
         guard result.terminationStatus == 0 else {
@@ -196,11 +205,12 @@ struct HomebrewService: Sendable {
             throw HomebrewError.invalidOutdatedData(results: previousResults + [result])
         }
 
-        let metadataResult = try commandRunner.run(
+        let metadataResult = try runRefreshCommand(
             CommandRequest(
                 executableURL: brewURL,
                 arguments: ["info", "--json=v2", "--installed"]
-            )
+            ),
+            previousResults: previousResults + [result]
         )
 
         guard metadataResult.terminationStatus == 0 else {
@@ -246,11 +256,12 @@ struct HomebrewService: Sendable {
             "--versions"
         ]
 
-        let result = try commandRunner.run(
+        let result = try runRefreshCommand(
             CommandRequest(
                 executableURL: brewURL,
                 arguments: arguments
-            )
+            ),
+            previousResults: previousResults
         )
 
         guard result.terminationStatus == 0 else {
@@ -261,5 +272,21 @@ struct HomebrewService: Sendable {
             packageListParser.parse(result.standardOutput, kind: kind),
             result
         )
+    }
+
+    nonisolated private func runRefreshCommand(
+        _ request: CommandRequest,
+        previousResults: [CommandResult]
+    ) throws -> CommandResult {
+        let result = try commandRunner.run(
+            request,
+            policy: refreshCommandPolicy
+        )
+        if result.terminationReason == .timedOut {
+            throw HomebrewError.commandTimedOut(
+                results: previousResults + [result]
+            )
+        }
+        return result
     }
 }

@@ -274,6 +274,8 @@ private extension PackageStore.Failure {
             "Homebrew Not Found"
         case .connectivityFailure:
             "Homebrew Couldn’t Connect"
+        case .commandTimedOut:
+            "Homebrew Refresh Timed Out"
         case .commandFailed:
             "Homebrew Command Failed"
         case .unreadableOutdatedData,
@@ -290,6 +292,8 @@ private extension PackageStore.Failure {
             "Install or repair Homebrew, then try again. BrewPulse will only open the official guide; it will not run an installer."
         case .connectivityFailure:
             "Homebrew could not reach a required service. Check your connection, then try again."
+        case .commandTimedOut:
+            "Homebrew did not finish within five minutes. BrewPulse stopped the refresh safely."
         case .commandFailed:
             message
         case .unreadableOutdatedData:
@@ -307,6 +311,8 @@ private extension PackageStore.Failure {
             "mug"
         case .connectivityFailure:
             "network.slash"
+        case .commandTimedOut:
+            "clock.badge.exclamationmark"
         case .commandFailed,
              .unreadableOutdatedData,
              .unreadablePackageMetadata,

@@ -11,6 +11,7 @@ final class RecordingCommandRunner: CommandRunning, @unchecked Sendable {
     private let handler: Handler
     private let lock = NSLock()
     nonisolated(unsafe) private var recordedRequests: [CommandRequest] = []
+    nonisolated(unsafe) private var recordedPolicies: [CommandExecutionPolicy] = []
     nonisolated(unsafe) private var recordedCancellationRequested = false
 
     nonisolated init(handler: @escaping Handler) {
@@ -27,9 +28,17 @@ final class RecordingCommandRunner: CommandRunning, @unchecked Sendable {
         lock.withLock { recordedCancellationRequested }
     }
 
-    nonisolated func run(_ request: CommandRequest) throws -> CommandResult {
+    nonisolated var policies: [CommandExecutionPolicy] {
+        lock.withLock { recordedPolicies }
+    }
+
+    nonisolated func run(
+        _ request: CommandRequest,
+        policy: CommandExecutionPolicy
+    ) throws -> CommandResult {
         lock.lock()
         recordedRequests.append(request)
+        recordedPolicies.append(policy)
         lock.unlock()
 
         return try handler(request)
@@ -47,7 +56,8 @@ extension CommandResult {
         for request: CommandRequest,
         standardOutput: String = "",
         standardError: String = "",
-        terminationStatus: Int32 = 0
+        terminationStatus: Int32 = 0,
+        terminationReason: CommandTerminationReason = .exited
     ) -> CommandResult {
         CommandResult(
             request: request,
@@ -55,7 +65,8 @@ extension CommandResult {
             standardError: standardError,
             terminationStatus: terminationStatus,
             startedAt: .distantPast,
-            duration: .zero
+            duration: .zero,
+            terminationReason: terminationReason
         )
     }
 }
