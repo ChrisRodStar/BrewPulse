@@ -18,6 +18,8 @@ esac
 
 project_path="$repository_root/macOS/BrewPulse.xcodeproj"
 version="${BREWPULSE_VERSION:-$(awk -F ' = ' '/MARKETING_VERSION =/ { gsub(/;/, "", $2); print $2; exit }' "$project_path/project.pbxproj")}"
+project_build_number="$(awk -F ' = ' '/CURRENT_PROJECT_VERSION =/ { gsub(/;/, "", $2); print $2; exit }' "$project_path/project.pbxproj")"
+build_number="${BREWPULSE_BUILD_NUMBER:-$project_build_number}"
 artifact_directory="${BREWPULSE_ARTIFACT_DIRECTORY:-$repository_root/artifacts}"
 
 if ! xcodebuild -version >/dev/null 2>&1; then
@@ -27,6 +29,14 @@ fi
 
 if [[ -z "$version" ]]; then
     echo "Could not determine the BrewPulse version." >&2
+    exit 1
+fi
+if ! print -r -- "$build_number" | grep -Eq '^[1-9][0-9]*$'; then
+    echo "BREWPULSE_BUILD_NUMBER must be a positive integer." >&2
+    exit 1
+fi
+if [[ "$mode" != "unsigned" && -z "${BREWPULSE_BUILD_NUMBER:-}" ]]; then
+    echo "Set BREWPULSE_BUILD_NUMBER explicitly for signed release builds." >&2
     exit 1
 fi
 
@@ -77,8 +87,8 @@ if [[ "$mode" == "notarized" ]]; then
     fi
 
     changelog_heading="$(grep -E "^## ${version//./\\.}([[:space:]]|$)" "$repository_root/CHANGELOG.md" | head -n 1 || true)"
-    if [[ -z "$changelog_heading" || "$changelog_heading" == *unreleased* ]]; then
-        echo "CHANGELOG.md must contain a dated $version heading before creating a public release." >&2
+    if [[ -z "$changelog_heading" ]] || ! print -r -- "$changelog_heading" | grep -Eq '[[:space:]]-[[:space:]][0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
+        echo "CHANGELOG.md must end the $version heading with a YYYY-MM-DD release date." >&2
         exit 1
     fi
 fi
@@ -117,6 +127,7 @@ xcodebuild \
     -archivePath "$archive_path" \
     -derivedDataPath "$derived_data_path" \
     "MARKETING_VERSION=$version" \
+    "CURRENT_PROJECT_VERSION=$build_number" \
     ARCHS="arm64 x86_64" \
     ONLY_ACTIVE_ARCH=NO \
     COMPILER_INDEX_STORE_ENABLE=NO \
@@ -131,6 +142,11 @@ fi
 bundle_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app_path/Contents/Info.plist")"
 if [[ "$bundle_version" != "$version" ]]; then
     echo "Artifact version $bundle_version does not match requested version $version." >&2
+    exit 1
+fi
+bundle_build_number="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$app_path/Contents/Info.plist")"
+if [[ "$bundle_build_number" != "$build_number" ]]; then
+    echo "Artifact build $bundle_build_number does not match requested build $build_number." >&2
     exit 1
 fi
 
@@ -202,6 +218,11 @@ if [[ "$extracted_version" != "$version" ]]; then
     echo "Packaged app version $extracted_version does not match requested version $version." >&2
     exit 1
 fi
+extracted_build_number="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$extracted_app/Contents/Info.plist")"
+if [[ "$extracted_build_number" != "$build_number" ]]; then
+    echo "Packaged app build $extracted_build_number does not match requested build $build_number." >&2
+    exit 1
+fi
 
 extracted_architectures="$(lipo -archs "$extracted_binary")"
 if [[ "$extracted_architectures" != *arm64* || "$extracted_architectures" != *x86_64* ]]; then
@@ -228,4 +249,5 @@ echo "Created $output_archive"
 echo "Created $output_zip"
 echo "Created $output_checksum"
 echo "Version: $version"
+echo "Build: $build_number"
 echo "Architectures: $architectures"

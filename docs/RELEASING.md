@@ -40,8 +40,11 @@ The output filename contains `unsigned` so it cannot be confused with the public
 export BREWPULSE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAM_ID)"
 export BREWPULSE_DEVELOPMENT_TEAM="TEAM_ID"
 export BREWPULSE_NOTARY_PROFILE="BrewPulse"
+export BREWPULSE_BUILD_NUMBER="1"
 ./scripts/release.sh
 ```
+
+Use a positive integer for `BREWPULSE_BUILD_NUMBER` and increase it for every release build. The script writes it to `CFBundleVersion` and checks the archived and packaged copies.
 
 The script:
 
@@ -81,5 +84,6 @@ shasum -a 256 -c BrewPulse-VERSION-macos.zip.sha256
 4. Create and push the matching `vVERSION` tag on that clean commit.
 5. Run the notarized release command from the tag.
 6. Confirm the packaged-copy signature, stapler validation, Gatekeeper assessment, and checksum all pass.
-7. Create the GitHub release and attach the ZIP and its `.sha256` file. Keep the `.xcarchive` private.
-8. Update the website download link to that release.
+7. Repeat the install, open, launch-at-login, package update, package uninstall, quit, and app removal smoke tests using the exact notarized ZIP.
+8. Create the GitHub release and attach the ZIP and its `.sha256` file. Keep the `.xcarchive` private.
+9. Update the website download link to that release.
