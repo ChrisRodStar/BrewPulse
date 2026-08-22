@@ -1,0 +1,125 @@
+{
+  "color-space-for-untagged-svg-colors": "display-p3",
+  "fill-specializations": [
+    {
+      "appearance": "light",
+      "value": {
+        "linear-gradient": [
+          "display-p3:1.000,0.650,0.080,1.000",
+          "display-p3:0.920,0.300,0.010,1.000"
+        ],
+        "orientation": {
+          "start": {
+            "x": 0.38,
+            "y": 0.08
+          },
+          "stop": {
+            "x": 0.62,
+            "y": 0.94
+          }
+        }
+      }
+    },
+    {
+      "appearance": "dark",
+      "value": {
+        "linear-gradient": [
+          "display-p3:0.520,0.150,0.010,1.000",
+          "display-p3:0.120,0.035,0.010,1.000"
+        ],
+        "orientation": {
+          "start": {
+            "x": 0.4,
+            "y": 0.06
+          },
+          "stop": {
+            "x": 0.6,
+            "y": 0.96
+          }
+        }
+      }
+    },
+    {
+      "appearance": "tinted",
+      "value": "automatic"
+    }
+  ],
+  "groups": [
+    {
+      "blur": 0.08,
+      "layers": [
+        {
+          "glass-specializations": [
+            {
+              "appearance": "light",
+              "value": false
+            },
+            {
+              "appearance": "dark",
+              "value": false
+            },
+            {
+              "appearance": "tinted",
+              "value": true
+            }
+          ],
+          "image-name": "brewpulse-foreground.png",
+          "name": "BrewPulse mug and pulse"
+        }
+      ],
+      "lighting": "combined",
+      "shadow": {
+        "kind": "layer-color",
+        "kind-specializations": [
+          {
+            "appearance": "dark",
+            "value": "neutral"
+          },
+          {
+            "appearance": "tinted",
+            "value": "neutral"
+          }
+        ],
+        "opacity": 0.42,
+        "opacity-specializations": [
+          {
+            "appearance": "dark",
+            "value": 0.68
+          },
+          {
+            "appearance": "tinted",
+            "value": 0.48
+          }
+        ]
+      },
+      "specular": true,
+      "translucency": {
+        "enabled": false,
+        "enabled-specializations": [
+          {
+            "appearance": "dark",
+            "value": false
+          },
+          {
+            "appearance": "tinted",
+            "value": true
+          }
+        ],
+        "value": 0.0,
+        "value-specializations": [
+          {
+            "appearance": "dark",
+            "value": 0.0
+          },
+          {
+            "appearance": "tinted",
+            "value": 0.35
+          }
+        ]
+      }
+    }
+  ],
+  "supported-platforms": {
+    "squares": "shared"
+  }
+}

@@ -16,7 +16,7 @@ The core workflow is implemented and locally verified. On August 21, 2026, all 8
 | Store and command-runner coverage | Complete for current behavior |
 | Failure recovery and command lifecycle | In progress |
 | Accessibility and UI edge cases | In progress |
-| Signing, packaging, and public beta | Not started |
+| Signing, packaging, and public beta | In progress |
 
 Only the **Now** section should drive the next code task. The later sections record release gates and boundaries without pretending they are active work.
 
@@ -66,16 +66,17 @@ Work through these areas in order. Keep each code change small enough to review 
 
 ### 5. Distribution and public beta
 
-- [ ] Add a complete production app icon set. The asset catalog currently contains empty app-icon slots.
+- [x] Add and validate a production Icon Composer app icon with light, dark, and tinted appearances.
 - [x] Enable hardened runtime in Debug and Release configurations.
-- [ ] Create a repeatable Developer ID archive and signing process.
+- [x] Add a repeatable credential-free universal archive and packaging dry run.
+- [ ] Verify the Developer ID archive and signing process with the production identity.
 - [ ] Notarize and staple a release artifact successfully.
-- [ ] Choose a simple beta package format and document installation and removal.
-- [ ] Make contributor builds work without requiring the maintainer's signing identity.
-- [ ] Enable GitHub branch protection for `main`. The local pre-push hook is active, but the public repository has no hosted protection yet.
-- [ ] Document the supported macOS, Homebrew, and BrewPulse versions for the release.
-- [ ] Decide how Free users learn about BrewPulse updates without requiring a paid account or service.
-- [ ] Publish honest release notes, known limitations, support instructions, and a feedback path.
+- [x] Choose a simple beta package format and document installation and removal.
+- [x] Make contributor builds work without requiring the maintainer's signing identity.
+- [x] Protect `main` with pull requests, current `macOS Validation`, conversation resolution, and force-push and deletion blocking.
+- [x] Document the supported macOS, Homebrew, and BrewPulse versions for the release.
+- [x] Decide how Free users learn about BrewPulse updates without requiring a paid account or service.
+- [x] Publish honest release notes, known limitations, support instructions, and a feedback path.
 
 ## Public beta gate
 

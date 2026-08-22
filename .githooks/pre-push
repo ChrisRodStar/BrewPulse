@@ -1,60 +1,19 @@
 #!/bin/sh
 
 protected_ref="refs/heads/main"
-zero_oid="0000000000000000000000000000000000000000"
-
-is_docs_safe_path() {
-  case "$1" in
-    docs/*|*.md|LICENSE|LICENSE.*|NOTICE|NOTICE.*)
-      return 0
-      ;;
-    *)
-      return 1
-      ;;
-  esac
-}
 
 while read -r local_ref local_oid remote_ref remote_oid; do
   if [ "$remote_ref" != "$protected_ref" ]; then
     continue
   fi
 
-  if [ "$local_oid" = "$zero_oid" ] || [ "$remote_oid" = "$zero_oid" ]; then
-    cat >&2 <<'MESSAGE'
-BrewPulse safeguard: creating or deleting main through a direct push is blocked.
+  cat >&2 <<'MESSAGE'
+BrewPulse safeguard: direct pushes to main are blocked.
 
-Use the normal reviewed workflow for branch-level changes.
+Push a feature branch and open a pull request. Merge only after the latest required
+validation passes.
 MESSAGE
-    exit 1
-  fi
-
-  changed_files=$(git diff --name-only "$remote_oid" "$local_oid") || {
-    echo "BrewPulse safeguard: could not determine files changed in direct push to main." >&2
-    exit 1
-  }
-
-  unsafe_files=""
-  for path in $changed_files; do
-    if ! is_docs_safe_path "$path"; then
-      unsafe_files="${unsafe_files}${path}\n"
-    fi
-  done
-
-  if [ -n "$unsafe_files" ]; then
-    cat >&2 <<'MESSAGE'
-BrewPulse safeguard: direct pushes to main are allowed only for documentation-safe changes.
-
-This push includes code, configuration, workflow, test, script, dependency, build,
-or other non-documentation files. Push a feature branch, open a pull request, and
-merge only after the latest required validation passes.
-
-Blocked paths:
-MESSAGE
-    printf "%b" "$unsafe_files" >&2
-    exit 1
-  fi
-
-  echo "BrewPulse safeguard: docs-only push to main allowed." >&2
+  exit 1
 done
 
 exit 0

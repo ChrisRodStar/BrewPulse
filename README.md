@@ -33,7 +33,7 @@ BrewPulse can already:
 - Keep Homebrew's stdout and stderr available when something goes wrong.
 - Handle running, completed, failed, interrupted, and cancelled operations.
 
-The app is still in beta prep. Some of the less exciting work, like accessibility, edge cases, testing, signing, and notarization, is still being finished. The current checklist is in [TODO.md](TODO.md).
+The app is in beta prep. The core workflow and automated checks are in place; signing credentials, notarization, and the hands-on beta matrix still gate publication. The current checklist is in [TODO.md](TODO.md).
 
 ## Safety and transparency
 
@@ -63,6 +63,12 @@ The macOS app lives in `macOS/` and is written in Swift and SwiftUI.
 
 Open `macOS/BrewPulse.xcodeproj` in Xcode and build the `BrewPulse` scheme.
 
+For a command-line build that does not require the maintainer's signing identity:
+
+```text
+./scripts/build-local.sh
+```
+
 ```text
 BrewPulse/
 ├── macOS/
@@ -79,6 +85,14 @@ BrewPulse/
 [TODO.md](TODO.md) is the working roadmap.
 
 Right now the focus is finishing the free app properly before spending time on payments or Pro-only automation. That means polishing the UI, covering more failure cases, improving accessibility, expanding the tests, and getting the public beta signed and notarized.
+
+Beta installation, privacy, support, and release details live in [`docs/`](docs/):
+
+- [Beta guide](docs/BETA.md)
+- [Privacy](docs/PRIVACY.md)
+- [Support](docs/SUPPORT.md)
+- [Release process](docs/RELEASING.md)
+- [Release notes](CHANGELOG.md)
 
 ## Contributing
 

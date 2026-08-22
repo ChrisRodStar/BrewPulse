@@ -62,21 +62,11 @@ files may add instructions for their own directories.
 
 ## Git and Pull Requests
 
-- Documentation-only and other clearly non-code documentation changes may be
-  committed and pushed directly to `main` without creating a pull request.
-  This fast path includes Markdown documentation, files under `docs/`,
-  `AGENTS.md` instruction files, `TODO.md`, and repository legal/community text
-  such as `LICENSE`, `NOTICE`, `README.md`, `CONTRIBUTING.md`, `SECURITY.md`,
-  `CODE_OF_CONDUCT.md`, and `CHANGELOG.md`.
-- A direct-to-`main` documentation push must contain only documentation-safe
-  files. If the same change also touches application/source code, tests,
-  scripts, GitHub Actions/workflows, build or Xcode project files, dependency
-  manifests/lockfiles, runtime configuration, or other executable/behavioral
-  configuration, use the normal feature-branch and pull-request workflow for
-  the entire change.
+- All changes to `main`, including documentation-only changes, must use a
+  feature branch and pull request. Documentation changes may use checks suited
+  to their scope, but they do not bypass review.
 - The versioned `.githooks/pre-push` safeguard through
-  `core.hooksPath=.githooks` must enforce this distinction: allow docs-only
-  pushes to `main`, but block mixed or code/configuration pushes to `main`.
+  `core.hooksPath=.githooks` must block every direct push to `main`.
 - For changes that require a pull request, make changes on a `codex/` feature
   branch and keep commits scoped to one coherent piece of work.
 - Create a concise Conventional Commit at a meaningful, verified checkpoint.
@@ -87,6 +77,5 @@ files may add instructions for their own directories.
   workflows, dependencies, or runtime behavior, confirm that `macOS Validation`
   passed for the pull request's current head commit. A pass from an older
   revision does not count.
-- Until hosted branch protection is enabled for `main`, treat the local hook
-  and these rules as mandatory. Do not bypass the safeguard for
-  code/configuration changes merely to save time.
+- Treat hosted branch protection, the local hook, and these rules as mandatory.
+  Do not bypass them merely to save time.
