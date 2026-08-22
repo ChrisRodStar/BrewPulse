@@ -2,7 +2,7 @@
 
 BrewPulse is the public macOS client and the shared Homebrew implementation used by every future BrewPulse product.
 
-> **Current priority:** publish the explicitly unsigned 0.1.0 preview, then use early feedback and the remaining manual matrix to prepare a signed beta. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
+> **Current priority:** collect feedback on the published unsigned 0.1.0 preview, then use that feedback and the remaining manual matrix to prepare a signed beta. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
 
 ## Current state
 
@@ -86,11 +86,11 @@ These checks improve the preview and remain required for the later signed beta. 
 
 The 0.1.0 beta preview is ready when:
 
-- [ ] A version-checked universal ZIP and SHA-256 checksum are published in a GitHub prerelease.
-- [ ] The unsigned and unnotarized status appears before every download link.
-- [ ] The install guide explains Apple's Open Anyway flow without disabling Gatekeeper or removing quarantine.
-- [ ] The GitHub prerelease and website point to the exact artifact and checksum.
-- [ ] Source, license, security, support, privacy, release notes, and known limitations remain accessible.
+- [x] A version-checked universal ZIP and SHA-256 checksum are published in a GitHub prerelease.
+- [x] The unsigned and unnotarized status appears before every download link.
+- [x] The install guide explains Apple's Open Anyway flow without disabling Gatekeeper or removing quarantine.
+- [x] The GitHub prerelease and website point to the exact artifact and checksum.
+- [x] Source, license, security, support, privacy, release notes, and known limitations remain accessible.
 
 ## Signed beta gate
 
