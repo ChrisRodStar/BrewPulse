@@ -49,7 +49,7 @@ private struct PackageSummary: View {
                     .lineLimit(1)
                     .truncationMode(.middle)
 
-                HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
                     PackageVersionValue(
                         title: "Installed",
                         value: versions.installedValue
@@ -63,7 +63,6 @@ private struct PackageSummary: View {
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
-                .lineLimit(1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityElement(children: .ignore)
@@ -121,10 +120,14 @@ private struct PackageVersionValue: View {
     let value: String
 
     var body: some View {
-        HStack(spacing: 3) {
+        HStack(alignment: .firstTextBaseline, spacing: 4) {
             Text(title)
+                .fixedSize(horizontal: true, vertical: false)
             Text(value)
                 .monospacedDigit()
+                .lineLimit(2)
+                .truncationMode(.middle)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 }
@@ -190,5 +193,47 @@ nonisolated struct PackageVersionPresentation: Equatable, Sendable {
     }
     .padding()
     .frame(width: 340)
+}
+
+#Preview("Long and multi-line versions") {
+    PackageRow(
+        package: HomebrewPackage(
+            name: "package-with-a-long-name-that-keeps-row-actions-visible",
+            versions: HomebrewPackageVersions(
+                installed: [
+                    "2026.08.21-build.1234567890",
+                    "2026.08.22-release-candidate.2"
+                ],
+                available: "2026.09.01-release-candidate-with-a-long-suffix"
+            ),
+            kind: .formula,
+            upgradeEligibility: HomebrewPackageUpgradeEligibility()
+        ),
+        actionsDisabled: false,
+        onUpdate: {},
+        onUninstall: {}
+    )
+    .padding()
+    .frame(width: 340)
+}
+
+#Preview("Accessibility text size") {
+    PackageRow(
+        package: HomebrewPackage(
+            name: "visual-studio-code",
+            versions: HomebrewPackageVersions(
+                installed: ["1.104.0", "1.104.1"],
+                available: "1.105.0"
+            ),
+            kind: .cask,
+            upgradeEligibility: HomebrewPackageUpgradeEligibility()
+        ),
+        actionsDisabled: false,
+        onUpdate: {},
+        onUninstall: {}
+    )
+    .environment(\.dynamicTypeSize, .accessibility3)
+    .padding()
+    .frame(width: 400)
 }
 #endif

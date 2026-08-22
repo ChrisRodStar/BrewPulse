@@ -59,6 +59,7 @@ struct StatusMenuView: View {
                         systemImage: "arrow.clockwise"
                     )
                 }
+                .keyboardShortcut("r", modifiers: .command)
                 .disabled(store.isPerformingHomebrewWork)
                 .help(
                     store.isPerformingHomebrewWork

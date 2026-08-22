@@ -320,7 +320,15 @@ private struct CommandOutputTextView: NSViewRepresentable {
 
 #if DEBUG
 extension HomebrewPackageOperationOutput {
-    static let preview: HomebrewPackageOperationOutput = {
+    static let preview = preview(status: .succeeded)
+    static let failedPreview = preview(
+        status: .failed(message: "Homebrew could not replace the installed app.")
+    )
+    static let cancelledPreview = preview(status: .cancelled)
+
+    private static func preview(
+        status: HomebrewPackageOperationOutput.Status
+    ) -> HomebrewPackageOperationOutput {
         let package = HomebrewPackage(
             name: "visual-studio-code",
             versions: HomebrewPackageVersions(
@@ -334,28 +342,54 @@ extension HomebrewPackageOperationOutput {
             executableURL: URL(fileURLWithPath: "/opt/homebrew/bin/brew"),
             arguments: ["upgrade", "--cask", "--", package.name]
         )
+        let standardError: String
+        let terminationStatus: Int32
+        switch status {
+        case .succeeded:
+            standardError = ""
+            terminationStatus = 0
+        case .failed:
+            standardError = "Error: installer returned a failure.\n"
+            terminationStatus = 1
+        case .cancelled:
+            standardError = "Interrupted by user.\n"
+            terminationStatus = 130
+        }
         return HomebrewPackageOperationOutput(
             plan: HomebrewPackageOperationPlan(
                 kind: .update,
                 package: package,
                 command: request
             ),
-            status: .succeeded,
+            status: status,
             result: CommandResult(
                 request: request,
-                standardOutput: "==> Upgrading visual-studio-code\nUpgrade complete.\n",
-                standardError: "",
-                terminationStatus: 0,
+                standardOutput: "==> Upgrading visual-studio-code\n",
+                standardError: standardError,
+                terminationStatus: terminationStatus,
                 startedAt: .now,
                 duration: .seconds(4)
             )
         )
-    }()
+    }
 }
 
 #Preview("Homebrew output details") {
     PackageOperationOutputDetails(
         output: .preview,
+        followUpRefreshFailure: nil
+    )
+}
+#Preview("Failed operation output") {
+    PackageOperationOutputDetails(
+        output: .failedPreview,
+        followUpRefreshFailure: nil
+    )
+}
+
+#Preview("Cancelled operation output") {
+    PackageOperationOutputDetails(
+        output: .cancelledPreview,
         followUpRefreshFailure: nil
     )
 }

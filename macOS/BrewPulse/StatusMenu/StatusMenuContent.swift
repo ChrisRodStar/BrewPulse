@@ -187,6 +187,11 @@ private extension StatusMenuContent {
     .frame(width: 400, height: 460)
 }
 
+#Preview("Loading") {
+    StatusMenuContent.preview(state: .loading)
+        .frame(width: 400, height: 460)
+}
+
 #Preview("Initial refresh failure") {
     StatusMenuContent.preview(
         state: .failed(

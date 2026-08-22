@@ -73,3 +73,23 @@ struct PackageOperationOutputBanner: View {
             + ". Package list refresh failed; older results remain visible."
     }
 }
+
+#if DEBUG
+#Preview("Failed package action") {
+    PackageOperationOutputBanner(
+        output: .failedPreview,
+        followUpRefreshFailure: nil,
+        onViewDetails: {}
+    )
+    .frame(width: 400)
+}
+
+#Preview("Cancelled package action") {
+    PackageOperationOutputBanner(
+        output: .cancelledPreview,
+        followUpRefreshFailure: nil,
+        onViewDetails: {}
+    )
+    .frame(width: 400)
+}
+#endif

@@ -35,6 +35,8 @@ struct PackageOperationProgressBanner: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("\(progressTitle): \(plan.package.name)")
     }
 
     private var progressTitle: String {
