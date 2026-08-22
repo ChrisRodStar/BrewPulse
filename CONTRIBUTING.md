@@ -26,7 +26,7 @@ Changes should keep BrewPulse:
 
 ## Pull Requests
 
-Code, tests, workflows, build configuration, dependencies, and runtime behavior changes should use a feature branch and pull request.
+Outside contributions should use a feature branch and pull request. The maintainer may use the repository's direct-push path after the same checks pass locally.
 
 Keep pull requests focused on one coherent change. Include tests for behavior changes where practical, and describe what you verified.
 
@@ -43,7 +43,13 @@ For macOS changes, the current GitHub workflow validates:
 - a Release build,
 - and the static analyzer.
 
-A code pull request should not be considered ready to merge until the current revision passes the required validation.
+A code pull request should not be considered ready to merge until the current revision passes the required validation. Maintainer pushes to `main` run the same validation locally before the push and again on GitHub after the push.
+
+Run the complete validation locally with:
+
+```text
+./scripts/validate.sh
+```
 
 To build from the command line without an Apple Developer account or the maintainer's signing identity:
 

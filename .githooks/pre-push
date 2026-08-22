@@ -1,19 +1,42 @@
 #!/bin/sh
 
+set -eu
+
 protected_ref="refs/heads/main"
+zero_oid="0000000000000000000000000000000000000000"
+hook_directory="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+repository_root="$(dirname "$hook_directory")"
 
 while read -r local_ref local_oid remote_ref remote_oid; do
   if [ "$remote_ref" != "$protected_ref" ]; then
     continue
   fi
 
-  cat >&2 <<'MESSAGE'
-BrewPulse safeguard: direct pushes to main are blocked.
+  if [ "$local_oid" = "$zero_oid" ]; then
+    echo "BrewPulse safeguard: deleting main is blocked." >&2
+    exit 1
+  fi
 
-Push a feature branch and open a pull request. Merge only after the latest required
-validation passes.
-MESSAGE
-  exit 1
+  git diff --check "$remote_oid" "$local_oid"
+
+  documentation_only=true
+  changed_files="$(git diff --name-only "$remote_oid" "$local_oid")"
+  while IFS= read -r changed_file; do
+    case "$changed_file" in
+      *.md|LICENSE) ;;
+      *) documentation_only=false ;;
+    esac
+  done <<EOF
+$changed_files
+EOF
+
+  if [ "$documentation_only" = true ]; then
+    echo "BrewPulse safeguard: documentation-only main push checked."
+    continue
+  fi
+
+  echo "BrewPulse safeguard: validating the main push locally."
+  "$repository_root/scripts/validate.sh"
 done
 
 exit 0
