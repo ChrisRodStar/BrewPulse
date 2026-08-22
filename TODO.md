@@ -1,176 +1,135 @@
 # BrewPulse Free roadmap
 
-BrewPulse is the public, open-source macOS client and the shared local Homebrew engine.
+BrewPulse is the public macOS client and the shared Homebrew implementation used by every future BrewPulse product.
 
-This roadmap only tracks work that belongs in the public Free product. Paid Pro implementation, licensing, the website, cloud services, and company fleet management belong in their own repositories.
+> **Current priority:** finish a trustworthy signed public beta. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
 
-> **Current priority:** finish BrewPulse Free as a trustworthy public beta before building the commercial product around it.
+## Current state
 
-## Product sequence
+The core workflow is implemented and locally verified. On August 21, 2026, all 76 tests passed with Xcode 27.0, the Release build passed, and static analysis passed.
 
-The broader BrewPulse plan should move in this order:
+| Area | Status |
+| --- | --- |
+| Homebrew discovery and inventory | Complete |
+| Update detection | Complete |
+| Individual update and uninstall | Complete |
+| Store and command-runner coverage | Complete for current behavior |
+| Failure recovery and command lifecycle | In progress |
+| Accessibility and UI edge cases | In progress |
+| Signing, packaging, and public beta | Not started |
 
-1. Finish and harden BrewPulse Free.
-2. Ship a signed and notarized public beta.
-3. Use the website and real users to validate demand for Pro.
-4. Build Pro in `BrewPulse-Commercial` without moving core Homebrew logic out of this repository.
-5. Add only the minimum cloud services needed for paid licensing.
-6. Explore Teams and Enterprise after BrewPulse has real adoption and direct feedback from IT administrators.
+Only the **Now** section should drive the next code task. The later sections record release gates and boundaries without pretending they are active work.
 
-Enterprise is intentionally later. When it is eventually built, the local managed-Mac client belongs in `BrewPulse-Commercial`, the admin dashboard belongs in `BrewPulse-Web`, and the server-side fleet system belongs in `BrewPulse-Cloud`.
+## Now
 
-## Status
+Work through these areas in order. Keep each code change small enough to review and verify on its own.
 
-| Milestone | Focus | Status |
-| --- | --- | --- |
-| F1 | Homebrew foundation | Complete |
-| F2 | Update detection | Complete |
-| F3 | Safe package actions | Complete |
-| F4 | Free app polish | In progress |
-| F5 | Beta hardening | In progress |
-| F6 | Open-core integration boundary | Planned |
-| F7 | Public beta and Free 1.0 | Planned |
+### 1. Missing Homebrew and refresh failures
 
-## F1. Homebrew foundation
+- [x] Give a missing Homebrew installation its own state instead of presenting it as a generic load failure.
+- [x] Explain where BrewPulse looked for Homebrew and provide a safe link to installation information without running an install command.
+- [x] Keep Refresh available as the retry action after Homebrew is installed or repaired.
+- [x] Distinguish command failure, unreadable Homebrew output, and likely connectivity failure in user-facing copy.
+- [x] Let users inspect and copy preserved stdout, stderr, exit status, and the exact command from a failed refresh.
+- [x] Keep the last complete snapshot after a later refresh fails rather than applying partial inventory, and label the retained snapshot with its timestamp.
+- [x] Add focused tests and self-contained previews for missing Homebrew, initial failure, retained-data failure, and empty inventory.
 
-- [x] Introduce a testable Homebrew command-running abstraction.
-- [x] Return structured command results with executable, arguments, stdout, stderr, exit status, start time, and duration.
-- [x] Read stdout and stderr without pipe deadlocks.
-- [x] Prevent conflicting Homebrew commands from running at the same time.
-- [x] Support Apple Silicon and Intel Homebrew paths.
-- [x] Preserve Homebrew output for troubleshooting.
-- [x] Keep package and command models independently testable.
-- [x] Add parsing fixtures and command-runner tests.
-- [x] Test installed-inventory orchestration and command failures.
+### 2. Command lifecycle and recovery
 
-## F2. Update detection
+- [ ] Define a safe timeout or cancellation policy for refresh commands that stall.
+- [ ] Test refresh under slow and unreliable network conditions.
+- [ ] Test cancellation with real cask installers and child processes. The current runner only signals the immediate `brew` process.
+- [ ] Decide whether BrewPulse should control a process group, remove the Cancel action for unsafe cases, or explain when child work may continue.
+- [ ] Show a successful package action and a failed follow-up refresh as separate outcomes so stale inventory is never mistaken for current state.
+- [ ] Verify relaunch behavior after an interrupted operation.
+- [ ] Keep very large command output usable without constructing one unbounded SwiftUI `Text` view.
 
-- [x] Read Homebrew's structured outdated-package data.
-- [x] Model installed and available versions separately.
-- [x] Distinguish formulae from casks through the full data path.
-- [x] Recognize pinned and otherwise non-upgradable packages.
-- [x] Merge installed inventory with update availability.
-- [x] Display installed and available versions.
-- [x] Visually distinguish current and outdated packages.
-- [x] Show the available-update count in the menu bar.
-- [x] Preserve manual refresh with loading and failure states.
-- [x] Show when package information was last refreshed.
+### 3. UI and accessibility finish work
 
-## F3. Safe package actions
+- [ ] Make long and multi-line installed or available versions readable without breaking row actions.
+- [ ] Add `Command-R` for refresh. Keep the existing default, cancel, and Settings shortcuts working.
+- [ ] Verify keyboard-only navigation through section selection, package actions, command review, cancellation, output details, and Settings.
+- [ ] Verify VoiceOver labels, values, focus order, grouping, and disabled states for the same workflow.
+- [ ] Verify larger accessibility text sizes do not hide commands, versions, warnings, or destructive confirmations.
+- [ ] Add previews for loading, failure, empty inventory, failed operation, and cancelled operation states.
+- [ ] Review copy with someone who uses Homebrew but does not work in Terminal every day.
 
-- [x] Add an Update action for outdated packages.
-- [x] Build formula and cask update commands from structured arguments.
-- [x] Show the exact command before it runs.
-- [x] Require explicit confirmation before an update.
-- [x] Show which package is currently updating.
-- [x] Disable conflicting actions while Homebrew work is active.
-- [x] Display completed Homebrew output in a readable details view.
-- [x] Let users copy command output.
-- [x] Preserve failures without hiding Homebrew's original output.
-- [x] Handle cancellation and interrupted commands.
-- [x] Explain when administrator access or external interaction may be required.
-- [x] Refresh inventory after an update finishes.
-- [x] Add individual package uninstall with exact-command review.
-- [x] Require a separate destructive confirmation before removal.
-- [x] Avoid implicit `--zap`, force, and dependency overrides.
+### 4. Manual beta matrix
 
-## F4. Free app polish
+- [ ] Test a complete formula update on a clean supported Mac.
+- [ ] Test a cask update, including a cask that opens an installer or requests administrator approval when practical.
+- [ ] Test formula and cask uninstall without `--zap`, force, or dependency overrides.
+- [ ] Test Apple Silicon and Intel Homebrew installations on supported macOS versions.
+- [ ] Verify launch at login and ordinary relaunch after a macOS restart.
+- [ ] Measure idle and refresh CPU, memory, wakeups, and battery impact with the menu closed and open.
+- [ ] Repeat the keyboard, VoiceOver, and larger-text checks on the archived Release build.
 
-This milestone is about making BrewPulse feel dependable on a normal Mac, not adding more power-user features.
+### 5. Distribution and public beta
 
-- [x] Add a native macOS Settings scene.
-- [x] Add a launch-at-login preference with `SMAppService`.
-- [x] Separate Status, Casks, and Formulae into focused views.
-- [x] Show the active Homebrew version and inventory summary.
-- [ ] Refine the missing-Homebrew onboarding experience.
-- [ ] Refine empty, loading, offline, and partial-failure states.
-- [ ] Handle long package names and multi-line version strings gracefully.
-- [ ] Add useful native shortcuts such as `⌘R`, `⌘,`, and `Esc` where appropriate.
-- [ ] Verify keyboard-only navigation across the full app.
-- [ ] Verify VoiceOver labels, values, focus order, and disabled states.
-- [ ] Verify larger accessibility text sizes do not break important controls.
-- [ ] Add self-contained SwiftUI previews for critical states.
-- [ ] Confirm background work remains lightweight while the menu is closed.
-- [ ] Review wording throughout the app so command, failure, and confirmation messages are clear to people who are not Terminal experts.
+- [ ] Add a complete production app icon set. The asset catalog currently contains empty app-icon slots.
+- [x] Enable hardened runtime in Debug and Release configurations.
+- [ ] Create a repeatable Developer ID archive and signing process.
+- [ ] Notarize and staple a release artifact successfully.
+- [ ] Choose a simple beta package format and document installation and removal.
+- [ ] Make contributor builds work without requiring the maintainer's signing identity.
+- [ ] Enable GitHub branch protection for `main`. The local pre-push hook is active, but the public repository has no hosted protection yet.
+- [ ] Document the supported macOS, Homebrew, and BrewPulse versions for the release.
+- [ ] Decide how Free users learn about BrewPulse updates without requiring a paid account or service.
+- [ ] Publish honest release notes, known limitations, support instructions, and a feedback path.
 
-## F5. Beta hardening
+## Public beta gate
 
-The beta should be boring in the best way. Package actions need to be predictable, failures need to be recoverable, and BrewPulse should not leave Homebrew in a confusing state.
+The first public beta is ready when:
 
-### Automated coverage
+- [ ] A new user can install, open, and remove the signed app using the published instructions.
+- [ ] Missing Homebrew, a healthy installation, no packages, current packages, outdated packages, and refresh failures are understandable.
+- [ ] An individual formula or cask can be reviewed, updated, or uninstalled without hidden commands.
+- [ ] Failures and cancellations preserve enough original Homebrew output to troubleshoot them.
+- [ ] The archived build passes automated checks and the manual beta matrix.
+- [ ] The website has an accurate download, source, license, security, support, and privacy path.
 
-- [x] Add macOS CI for code pull requests.
-- [x] Require the current code revision to pass macOS Validation before merge.
-- [x] Test command construction for installed inventory and typed formula/cask updates.
-- [x] Test installed-package and outdated-data parsing.
-- [x] Test missing and broken Homebrew installations.
-- [x] Test Apple Silicon and Intel paths.
-- [x] Test pinned packages and multiple installed versions.
-- [ ] Add focused tests for store state transitions.
-- [ ] Expand tests around failed, interrupted, and long-running commands.
-- [ ] Test package names and output containing Unicode and unexpected characters.
-- [ ] Test refresh and package actions under slow or unreliable network conditions.
-- [ ] Add real-world cancellation tests for cask installers and child processes, not only the parent `brew` process.
+## After the first beta
 
-### Manual quality checks
+- [ ] Triage crash, command-safety, data-loss, cancellation, and major accessibility reports before cosmetic requests.
+- [ ] Add regression fixtures for Homebrew output that the beta encounters in the wild.
+- [ ] Decide which beta findings block 1.0 and record them here.
+- [ ] Tag Free 1.0 only when the individual package-maintenance workflow is stable enough to recommend outside the project.
 
-- [ ] Run a complete formula update test on a clean supported macOS setup.
-- [ ] Run a complete cask update test, including a cask that requires user interaction when practical.
-- [ ] Run a complete formula and cask uninstall test.
-- [ ] Run VoiceOver and keyboard-only QA.
-- [ ] Verify idle memory, CPU, wakeups, and battery impact.
-- [ ] Verify relaunch and launch-at-login behavior after macOS restart.
-- [ ] Confirm failures never leave the UI showing stale success state.
+## Completed foundation
 
-### Release safety
+- [x] Discover Apple Silicon and Intel Homebrew installations.
+- [x] Run shell-free structured commands and serialize Homebrew work.
+- [x] Capture executable, arguments, stdout, stderr, exit status, start time, and duration without pipe deadlocks.
+- [x] Parse installed casks, formulae, versions, metadata, and structured outdated data.
+- [x] Model pinned and otherwise non-upgradable packages.
+- [x] Show installed and available versions, update counts, refresh progress, retained data, and last refresh time.
+- [x] Review the exact typed formula or cask command before an update or uninstall.
+- [x] Require explicit confirmation and keep destructive uninstall separate.
+- [x] Preserve operation output across success, failure, interruption, and cancellation.
+- [x] Refresh inventory after package actions.
+- [x] Add Settings and launch-at-login support.
+- [x] Add CI, a Release build check, static analysis, fixtures, command tests, and thirteen focused `PackageStore` state tests.
+- [x] Build and test the Free app without any private repository or dependency.
 
-- [ ] Enable appropriate GitHub protection for `main` now that the public repository can support it.
-- [ ] Configure Developer ID signing and hardened runtime requirements.
-- [ ] Notarize the app successfully in a repeatable release process.
-- [ ] Package the beta so installation and removal are straightforward.
-- [ ] Document the supported macOS and Homebrew baseline for each release.
-- [ ] Decide how BrewPulse itself will notify users about new app versions without tying Free to a paid service.
+## Open-core boundary
 
-## F6. Open-core integration boundary
+These are product rules, not unchecked beta tasks:
 
-This work prepares the public project to be reused by the private commercial app without weakening the open-source client.
+- Homebrew discovery, parsing, command construction, execution safety, and individual Free actions remain public.
+- BrewPulse Free must keep building without Commercial, Web, or Cloud.
+- Private modules extend the public core; they do not copy it or replace its safety rules.
+- Add commercial interfaces only when a real private implementation needs them.
+- Keep signing secrets, payment credentials, entitlement-signing keys, and production service configuration out of this repository.
 
-- [ ] Make sure the public repository builds and runs completely without access to any private repository.
-- [ ] Keep Homebrew discovery, parsing, command construction, safety rules, and Free package actions in the public core.
-- [ ] Define narrow interfaces for commercial capabilities instead of importing private implementation into public code.
-- [ ] Define an entitlement-facing seam that Free can ignore cleanly.
-- [ ] Define extension points for bulk actions, scheduling, notifications, history, and managed-device behavior only where the commercial product actually needs them.
-- [ ] Avoid speculative abstractions that have no real Pro implementation yet.
-- [ ] Add tests proving Free behavior does not change when commercial modules are absent.
-- [ ] Document compatibility expectations between BrewPulse Free/core and `BrewPulse-Commercial`.
-- [ ] Keep all signing secrets, licensing secrets, payment credentials, and private service configuration out of this repository.
+Extract the shared engine into a Swift package or framework when `BrewPulse-Commercial` has its first real consumer. That work is not a Free beta blocker.
 
-## F7. Public beta and Free 1.0
+## Other repositories
 
-- [ ] Publish the first signed and notarized public beta.
-- [ ] Provide clear installation instructions and system requirements.
-- [ ] Publish release notes that call out known limitations honestly.
-- [ ] Give users an obvious place to report bugs and provide feedback.
-- [ ] Watch early reports for Homebrew parsing edge cases and installer behavior that tests missed.
-- [ ] Fix beta-blocking crashes, data-loss risks, confusing command behavior, and major accessibility issues before 1.0.
-- [ ] Tag BrewPulse Free 1.0 only when the basic package-maintenance workflow is stable enough to recommend to people outside the project.
-
-## What does not belong in this repository
-
-Do not add these implementations here simply because BrewPulse Free needs to integrate with them later:
-
-- Pro automation and paid local features
-- License activation implementation
-- Payment-provider integration
-- Official commercial app composition
-- Enterprise device enrollment and managed-device logic
-- Marketing website and pricing pages
-- Account or organization dashboard
-- Cloud APIs, databases, billing services, or fleet state
-- Company policies, audit logs, SSO, or MDM server integrations
-
-Those responsibilities belong in `BrewPulse-Commercial`, `BrewPulse-Web`, and `BrewPulse-Cloud`.
+- `BrewPulse-Web` owns the public beta website. Its immediate job is accurate product, download, source, support, security, and privacy pages.
+- `BrewPulse-Commercial` stays parked until the Free beta and Pro demand test produce evidence for a paid feature set.
+- `BrewPulse-Cloud` stays parked until a validated paid feature has a server-side requirement.
+- Teams and Enterprise stay parked until direct conversations with organizations justify them.
 
 ## Definition of done for BrewPulse Free
 
-The public Free product is ready when a normal Homebrew user can install BrewPulse, understand what is outdated, safely update or remove an individual package, recover from common failures, and trust that the app is not doing hidden package-manager work behind their back.
+A normal Homebrew user can install BrewPulse, understand what is outdated, safely update or remove one package at a time, recover from common failures, and verify that the app never performs hidden package-manager work.

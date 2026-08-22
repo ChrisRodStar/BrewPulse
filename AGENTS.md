@@ -5,8 +5,11 @@ files may add instructions for their own directories.
 
 ## Product Direction
 
-- Treat `notes/ideas/Product.md`, `notes/business/Monetization.md`, and
-  `TODO.md` as the product and implementation sources of truth.
+- Treat `README.md` and `TODO.md` as this public repository's product and
+  implementation sources of truth.
+- Workspace-level notes outside this repository are planning context. Promote
+  an approved decision into this repository before relying on it for public
+  implementation or contributor guidance.
 - Preserve BrewPulse's core principles: native, simple, transparent, safe, and
   lightweight.
 - Complete and validate the free workflow before building accounts, payments,
@@ -41,9 +44,8 @@ files may add instructions for their own directories.
   speculative layers that have no current use.
 - Add tests beside the corresponding target and mirror the production feature
   structure where practical.
-- Follow the more specific instructions in `dashboard/AGENTS.md` and
-  `website/AGENTS.md` when working in those projects.
-- Use Bun exclusively for JavaScript and TypeScript dependencies and scripts.
+- Keep Commercial, Web, and Cloud implementation in their own repositories and
+  follow each repository's instructions when working there.
 
 ## Verification
 
@@ -85,6 +87,6 @@ files may add instructions for their own directories.
   workflows, dependencies, or runtime behavior, confirm that `macOS Validation`
   passed for the pull request's current head commit. A pass from an older
   revision does not count.
-- Because GitHub cannot enforce branch protection for this private repository
-  on the current plan, treat the local hook and these rules as mandatory. Do
-  not bypass the safeguard for code/configuration changes merely to save time.
+- Until hosted branch protection is enabled for `main`, treat the local hook
+  and these rules as mandatory. Do not bypass the safeguard for
+  code/configuration changes merely to save time.

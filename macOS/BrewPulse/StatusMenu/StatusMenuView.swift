@@ -8,7 +8,7 @@ struct StatusMenuView: View {
     @Environment(PackageOperationReviewPresentation.self)
     private var operationReviewPresentation
     @Environment(\.openWindow) private var openWindow
-    @State private var presentedOutput: HomebrewPackageOperationOutput?
+    @State private var presentedSheet: PresentedStatusMenuSheet?
     @State private var operationPreparationErrorMessage = ""
     @State private var isShowingOperationPreparationError = false
 
@@ -25,20 +25,28 @@ struct StatusMenuView: View {
                 Divider()
             } else if let output = store.operationState.terminalOutput {
                 PackageOperationOutputBanner(output: output) {
-                    presentedOutput = output
+                    presentedSheet = PresentedStatusMenuSheet(
+                        content: .operationOutput(output)
+                    )
                 }
                 Divider()
             }
             StatusMenuContent(
                 state: store.state,
                 packageActionsDisabled: store.isPerformingHomebrewWork,
+                onRefresh: refresh,
+                onShowRefreshFailureDetails: {
+                    presentedSheet = PresentedStatusMenuSheet(
+                        content: .refreshFailure($0)
+                    )
+                },
                 onUpdate: { prepareOperation(for: $0, kind: .update) },
                 onUninstall: { prepareOperation(for: $0, kind: .uninstall) }
             )
             Divider()
             HStack {
                 Button {
-                    Task { await store.refresh() }
+                    refresh()
                 } label: {
                     Label(
                         store.state.isLoading ? "Refreshing…" : "Refresh",
@@ -74,8 +82,13 @@ struct StatusMenuView: View {
                 await store.refresh()
             }
         }
-        .sheet(item: $presentedOutput) { output in
-            PackageOperationOutputDetails(output: output)
+        .sheet(item: $presentedSheet) { sheet in
+            switch sheet.content {
+            case .operationOutput(let output):
+                PackageOperationOutputDetails(output: output)
+            case .refreshFailure(let failure):
+                RefreshFailureOutputDetails(failure: failure)
+            }
         }
         .alert(
             "Unable to Prepare Package Action",
@@ -85,6 +98,10 @@ struct StatusMenuView: View {
         } message: {
             Text(operationPreparationErrorMessage)
         }
+    }
+
+    private func refresh() {
+        Task { await store.refresh() }
     }
 
     private func prepareOperation(
@@ -102,6 +119,16 @@ struct StatusMenuView: View {
             isShowingOperationPreparationError = true
         }
     }
+}
+
+private struct PresentedStatusMenuSheet: Identifiable {
+    enum Content {
+        case operationOutput(HomebrewPackageOperationOutput)
+        case refreshFailure(PackageStore.Failure)
+    }
+
+    let id = UUID()
+    let content: Content
 }
 
 #if DEBUG

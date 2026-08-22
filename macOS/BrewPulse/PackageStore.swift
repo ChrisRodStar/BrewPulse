@@ -5,8 +5,71 @@ import Observation
 @MainActor
 final class PackageStore {
     struct Failure: Equatable {
+        enum Kind: Equatable {
+            case homebrewNotInstalled
+            case commandFailed
+            case connectivityFailure
+            case unreadableOutdatedData
+            case unreadablePackageMetadata
+            case unexpected
+        }
+
+        let kind: Kind
         let message: String
         let commandResults: [CommandResult]
+        let searchedExecutablePaths: [String]
+
+        init(homebrewError: HomebrewError) {
+            kind = Self.kind(for: homebrewError)
+            message = homebrewError.localizedDescription
+            commandResults = homebrewError.commandResults
+            searchedExecutablePaths = switch homebrewError {
+            case .notInstalled:
+                HomebrewExecutableLocator.candidatePaths
+            case .commandFailed,
+                 .invalidOutdatedData,
+                 .invalidPackageMetadata:
+                []
+            }
+        }
+
+        init(unexpectedError: any Error) {
+            kind = .unexpected
+            message = unexpectedError.localizedDescription
+            commandResults = []
+            searchedExecutablePaths = []
+        }
+
+        private static func kind(for error: HomebrewError) -> Kind {
+            switch error {
+            case .notInstalled:
+                .homebrewNotInstalled
+            case .commandFailed(let results):
+                isLikelyConnectivityFailure(results.last?.standardError ?? "")
+                    ? .connectivityFailure
+                    : .commandFailed
+            case .invalidOutdatedData:
+                .unreadableOutdatedData
+            case .invalidPackageMetadata:
+                .unreadablePackageMetadata
+            }
+        }
+
+        private static func isLikelyConnectivityFailure(_ standardError: String) -> Bool {
+            let normalizedError = standardError.lowercased()
+            return [
+                "could not resolve host",
+                "couldn't resolve host",
+                "failed to connect",
+                "could not connect",
+                "couldn't connect",
+                "network is unreachable",
+                "network unavailable",
+                "connection timed out",
+                "operation timed out",
+                "network connection was lost"
+            ].contains { normalizedError.contains($0) }
+        }
     }
 
     enum State: Equatable {
@@ -158,18 +221,12 @@ final class PackageStore {
             state = .loaded(report)
         } catch let error as HomebrewError {
             state = .failed(
-                Failure(
-                    message: error.localizedDescription,
-                    commandResults: error.commandResults
-                ),
+                Failure(homebrewError: error),
                 previousReport: previousReport
             )
         } catch {
             state = .failed(
-                Failure(
-                    message: error.localizedDescription,
-                    commandResults: []
-                ),
+                Failure(unexpectedError: error),
                 previousReport: previousReport
             )
         }

@@ -65,12 +65,13 @@ Open `macOS/BrewPulse.xcodeproj` in Xcode and build the `BrewPulse` scheme.
 
 ```text
 BrewPulse/
-├── macOS/       Native macOS app
-├── tests/       Test support and fixtures
-├── docs/        Public project documentation
-├── TODO.md      Roadmap and implementation status
-├── LICENSE      Mozilla Public License 2.0
-└── NOTICE       Copyright and branding notice
+├── macOS/
+│   ├── BrewPulse/       Native macOS app
+│   └── BrewPulseTests/  Tests, support types, and fixtures
+├── docs/                Public project documentation
+├── TODO.md              Roadmap and implementation status
+├── LICENSE              Mozilla Public License 2.0
+└── NOTICE               Copyright and branding notice
 ```
 
 ## Roadmap
