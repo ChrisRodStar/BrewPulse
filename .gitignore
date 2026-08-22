@@ -1,6 +1,7 @@
 # Xcode & macOS
 .DS_Store
 build/
+artifacts/
 DerivedData/
 *.xcuserstate
 project.xcworkspace/xcuserdata/

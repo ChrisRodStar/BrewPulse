@@ -45,6 +45,16 @@ For macOS changes, the current GitHub workflow validates:
 
 A code pull request should not be considered ready to merge until the current revision passes the required validation.
 
+To build from the command line without an Apple Developer account or the maintainer's signing identity:
+
+```text
+./scripts/build-local.sh
+```
+
+Pass `Release` as the first argument to build the Release configuration. The app is left unsigned and is intended for local development only.
+
+The script uses the Xcode selected for command-line tools. If Xcode is installed somewhere other than the standard path, set `DEVELOPER_DIR` for the command, such as `DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer ./scripts/build-local.sh`.
+
 ## Security Issues
 
 Do not disclose suspected security vulnerabilities in a public issue.

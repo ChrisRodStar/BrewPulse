@@ -10,6 +10,7 @@
 		A10000000000000000000001 /* BrewPulseApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* BrewPulseApp.swift */; };
 		A10000000000000000000002 /* StatusMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* StatusMenuView.swift */; };
 		A10000000000000000000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* Assets.xcassets */; };
+		AB0000000000000000000001 /* BrewPulse.icon in Resources */ = {isa = PBXBuildFile; fileRef = AC0000000000000000000001 /* BrewPulse.icon */; };
 		A10000000000000000000004 /* HomebrewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* HomebrewService.swift */; };
 		A10000000000000000000005 /* PackageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000007 /* PackageStore.swift */; };
 		A10000000000000000000006 /* CommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* CommandRunner.swift */; };
@@ -108,6 +109,7 @@
 		A20000000000000000000001 /* BrewPulseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewPulseApp.swift; sourceTree = "<group>"; };
 		A20000000000000000000002 /* StatusMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMenuView.swift; sourceTree = "<group>"; };
 		A20000000000000000000003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AC0000000000000000000001 /* BrewPulse.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = BrewPulse.icon; sourceTree = "<group>"; };
 		A20000000000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A20000000000000000000005 /* BrewPulse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BrewPulse.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000000000000000000006 /* HomebrewService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewService.swift; sourceTree = "<group>"; };
@@ -237,6 +239,7 @@
 				A20000000000000000000009 /* ProcessCommandRunner.swift */,
 				A20000000000000000000010 /* SerializedCommandRunner.swift */,
 				A20000000000000000000003 /* Assets.xcassets */,
+				AC0000000000000000000001 /* BrewPulse.icon */,
 				A20000000000000000000004 /* Info.plist */,
 			);
 			path = BrewPulse;
@@ -501,6 +504,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000000000000000000003 /* Assets.xcassets in Resources */,
+				AB0000000000000000000001 /* BrewPulse.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -721,13 +725,12 @@
 		AA0000000000000000000003 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = BrewPulse;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = C9MTFET49E;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -749,13 +752,12 @@
 		AA0000000000000000000004 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = BrewPulse;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = C9MTFET49E;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -779,7 +781,6 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = C9MTFET49E;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chrisrodstar.BrewPulseTests;
@@ -796,7 +797,6 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = C9MTFET49E;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chrisrodstar.BrewPulseTests;
