@@ -24,9 +24,15 @@ struct StatusMenuView: View {
                 )
                 Divider()
             } else if let output = store.operationState.terminalOutput {
-                PackageOperationOutputBanner(output: output) {
+                PackageOperationOutputBanner(
+                    output: output,
+                    followUpRefreshFailure: store.operationFollowUpRefreshFailure
+                ) {
                     presentedSheet = PresentedStatusMenuSheet(
-                        content: .operationOutput(output)
+                        content: .operationOutput(
+                            output,
+                            followUpRefreshFailure: store.operationFollowUpRefreshFailure
+                        )
                     )
                 }
                 Divider()
@@ -84,8 +90,11 @@ struct StatusMenuView: View {
         }
         .sheet(item: $presentedSheet) { sheet in
             switch sheet.content {
-            case .operationOutput(let output):
-                PackageOperationOutputDetails(output: output)
+            case .operationOutput(let output, let followUpRefreshFailure):
+                PackageOperationOutputDetails(
+                    output: output,
+                    followUpRefreshFailure: followUpRefreshFailure
+                )
             case .refreshFailure(let failure):
                 RefreshFailureOutputDetails(failure: failure)
             }
@@ -123,7 +132,10 @@ struct StatusMenuView: View {
 
 private struct PresentedStatusMenuSheet: Identifiable {
     enum Content {
-        case operationOutput(HomebrewPackageOperationOutput)
+        case operationOutput(
+            HomebrewPackageOperationOutput,
+            followUpRefreshFailure: PackageStore.Failure?
+        )
         case refreshFailure(PackageStore.Failure)
     }
 
