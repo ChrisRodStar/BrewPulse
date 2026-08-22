@@ -101,9 +101,98 @@ struct PackageStoreTests {
             Issue.record("Expected the package store to fail")
             return
         }
+        #expect(failure.kind == .commandFailed)
         #expect(failure.message == "permission denied")
         #expect(failure.commandResults.map(\.standardOutput) == ["partial output\n"])
         #expect(failure.commandResults.map(\.standardError) == ["  permission denied\n"])
+    }
+
+    @Test("Reports missing Homebrew with every searched executable path")
+    @MainActor
+    func reportsMissingHomebrewPaths() async {
+        let runner = RecordingCommandRunner { request in
+            throw RecordingCommandRunnerError.unexpectedRequest(request)
+        }
+        let store = PackageStore(
+            homebrewService: HomebrewService(
+                commandRunner: runner,
+                executableLocator: HomebrewExecutableLocator { _ in false }
+            )
+        )
+
+        await store.refresh()
+
+        guard case .failed(let failure, previousReport: nil) = store.state else {
+            Issue.record("Expected a missing Homebrew failure")
+            return
+        }
+        #expect(failure.kind == .homebrewNotInstalled)
+        #expect(
+            failure.searchedExecutablePaths
+                == HomebrewExecutableLocator.candidatePaths
+        )
+        #expect(failure.commandResults.isEmpty)
+        #expect(runner.requests.isEmpty)
+    }
+
+    @Test("Classifies refresh failures without discarding their command output")
+    @MainActor
+    func classifiesRefreshFailures() {
+        let request = CommandRequest(
+            executableURL: brewURL,
+            arguments: ["outdated", "--json=v2"]
+        )
+        let connectivityResult = CommandResult.testResult(
+            for: request,
+            standardOutput: "partial output\n",
+            standardError: "curl: (6) Could not resolve host: formulae.brew.sh\n",
+            terminationStatus: 1
+        )
+        let ordinaryFailureResult = CommandResult.testResult(
+            for: request,
+            standardError: "permission denied\n",
+            terminationStatus: 1
+        )
+
+        let connectivityFailure = PackageStore.Failure(
+            homebrewError: .commandFailed(results: [connectivityResult])
+        )
+        let commandFailure = PackageStore.Failure(
+            homebrewError: .commandFailed(results: [ordinaryFailureResult])
+        )
+        let outdatedDataFailure = PackageStore.Failure(
+            homebrewError: .invalidOutdatedData(results: [ordinaryFailureResult])
+        )
+        let metadataFailure = PackageStore.Failure(
+            homebrewError: .invalidPackageMetadata(results: [ordinaryFailureResult])
+        )
+
+        #expect(connectivityFailure.kind == .connectivityFailure)
+        #expect(connectivityFailure.commandResults == [connectivityResult])
+        #expect(commandFailure.kind == .commandFailed)
+        #expect(outdatedDataFailure.kind == .unreadableOutdatedData)
+        #expect(metadataFailure.kind == .unreadablePackageMetadata)
+    }
+
+    @Test("Formats complete failed refresh details for copying")
+    func formatsFailedRefreshDetailsForCopying() {
+        let request = CommandRequest(
+            executableURL: brewURL,
+            arguments: ["outdated", "--json=v2"]
+        )
+        let result = CommandResult.testResult(
+            for: request,
+            standardOutput: "partial output\n",
+            standardError: "network unavailable\n",
+            terminationStatus: 7
+        )
+
+        let output = RefreshFailureOutputFormatter().string(for: [result])
+
+        #expect(output.contains("Exact command: /test/homebrew/bin/brew outdated --json=v2"))
+        #expect(output.contains("Exit status: 7"))
+        #expect(output.contains("Standard output:\npartial output\n"))
+        #expect(output.contains("Standard error:\nnetwork unavailable\n"))
     }
 
     @Test("Preserves the previous report while refreshing")
@@ -179,6 +268,7 @@ struct PackageStoreTests {
             return
         }
         #expect(failure.message == "network unavailable")
+        #expect(failure.kind == .connectivityFailure)
         #expect(retainedReport == previousReport)
         #expect(store.state.availableUpdateCount == 1)
     }

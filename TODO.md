@@ -6,7 +6,7 @@ BrewPulse is the public macOS client and the shared Homebrew implementation used
 
 ## Current state
 
-The core workflow is implemented and locally verified. On August 21, 2026, all 73 tests passed with Xcode 27.0, the Release build passed, and static analysis passed.
+The core workflow is implemented and locally verified. On August 21, 2026, all 76 tests passed with Xcode 27.0, the Release build passed, and static analysis passed.
 
 | Area | Status |
 | --- | --- |
@@ -26,13 +26,13 @@ Work through these areas in order. Keep each code change small enough to review 
 
 ### 1. Missing Homebrew and refresh failures
 
-- [ ] Give a missing Homebrew installation its own state instead of presenting it as a generic load failure.
-- [ ] Explain where BrewPulse looked for Homebrew and provide a safe link to installation information without running an install command.
-- [ ] Keep Refresh available as the retry action after Homebrew is installed or repaired.
-- [ ] Distinguish command failure, unreadable Homebrew output, and likely connectivity failure in user-facing copy.
-- [ ] Let users inspect and copy preserved stdout, stderr, exit status, and the exact command from a failed refresh.
-- [ ] Decide whether a later refresh failure can safely show newly collected partial inventory. If not, label the retained snapshot and its timestamp clearly.
-- [ ] Add focused tests and self-contained previews for missing Homebrew, initial failure, retained-data failure, and empty inventory.
+- [x] Give a missing Homebrew installation its own state instead of presenting it as a generic load failure.
+- [x] Explain where BrewPulse looked for Homebrew and provide a safe link to installation information without running an install command.
+- [x] Keep Refresh available as the retry action after Homebrew is installed or repaired.
+- [x] Distinguish command failure, unreadable Homebrew output, and likely connectivity failure in user-facing copy.
+- [x] Let users inspect and copy preserved stdout, stderr, exit status, and the exact command from a failed refresh.
+- [x] Keep the last complete snapshot after a later refresh fails rather than applying partial inventory, and label the retained snapshot with its timestamp.
+- [x] Add focused tests and self-contained previews for missing Homebrew, initial failure, retained-data failure, and empty inventory.
 
 ### 2. Command lifecycle and recovery
 
@@ -108,7 +108,7 @@ The first public beta is ready when:
 - [x] Preserve operation output across success, failure, interruption, and cancellation.
 - [x] Refresh inventory after package actions.
 - [x] Add Settings and launch-at-login support.
-- [x] Add CI, a Release build check, static analysis, fixtures, command tests, and ten focused `PackageStore` state tests.
+- [x] Add CI, a Release build check, static analysis, fixtures, command tests, and thirteen focused `PackageStore` state tests.
 - [x] Build and test the Free app without any private repository or dependency.
 
 ## Open-core boundary
