@@ -5,6 +5,9 @@ final class ProcessCommandRunner: CommandRunning, @unchecked Sendable {
     private struct ActiveCommand {
         let processIdentifier: pid_t
         var stopReason: CommandTerminationReason?
+        var stopRequestedAt: ContinuousClock.Instant?
+        var sentTerminate = false
+        var sentKill = false
     }
 
     private let stateLock = NSLock()
@@ -68,7 +71,8 @@ final class ProcessCommandRunner: CommandRunning, @unchecked Sendable {
                 : nil
             activeCommand = ActiveCommand(
                 processIdentifier: processIdentifier,
-                stopReason: stopReason
+                stopReason: stopReason,
+                stopRequestedAt: stopReason == nil ? nil : ContinuousClock().now
             )
             return stopReason != nil
         }
@@ -83,15 +87,12 @@ final class ProcessCommandRunner: CommandRunning, @unchecked Sendable {
 
         if shouldCancel {
             signalProcessGroup(processIdentifier, signal: SIGINT)
-            scheduleEscalation(for: processIdentifier)
         }
 
-        let timeoutWorkItem = timeoutWorkItem(
+        let terminationStatus = try waitForExit(
             for: processIdentifier,
             timeout: policy.timeout
         )
-        let terminationStatus = try waitForExit(of: processIdentifier)
-        timeoutWorkItem?.cancel()
         let duration = start.duration(to: clock.now)
 
         let terminationReason = stateLock.withLock {
@@ -125,13 +126,13 @@ final class ProcessCommandRunner: CommandRunning, @unchecked Sendable {
                 return nil
             }
             activeCommand.stopReason = .cancelled
+            activeCommand.stopRequestedAt = ContinuousClock().now
             self.activeCommand = activeCommand
             return activeCommand.processIdentifier
         }
 
         guard let processIdentifier else { return }
         signalProcessGroup(processIdentifier, signal: SIGINT)
-        scheduleEscalation(for: processIdentifier)
     }
 
     nonisolated private func spawn(
@@ -212,13 +213,27 @@ final class ProcessCommandRunner: CommandRunning, @unchecked Sendable {
     }
 
     nonisolated private func waitForExit(
-        of processIdentifier: pid_t
+        for processIdentifier: pid_t,
+        timeout: Duration?
     ) throws -> Int32 {
         var status: Int32 = 0
-        while waitpid(processIdentifier, &status, 0) == -1 {
-            guard errno == EINTR else {
+        let clock = ContinuousClock()
+        let timeoutDeadline = timeout.map { clock.now.advanced(by: $0) }
+
+        while true {
+            let waitResult = waitpid(processIdentifier, &status, WNOHANG)
+            if waitResult == processIdentifier {
+                break
+            }
+            if waitResult == -1, errno != EINTR {
                 throw posixError(errno)
             }
+
+            if let timeoutDeadline, clock.now >= timeoutDeadline {
+                requestTimeout(for: processIdentifier)
+            }
+            enforceStopEscalation(for: processIdentifier, now: clock.now)
+            Thread.sleep(forTimeInterval: 0.01)
         }
 
         let terminatingSignal = status & 0x7f
@@ -226,22 +241,6 @@ final class ProcessCommandRunner: CommandRunning, @unchecked Sendable {
             return (status >> 8) & 0xff
         }
         return 128 + terminatingSignal
-    }
-
-    nonisolated private func timeoutWorkItem(
-        for processIdentifier: pid_t,
-        timeout: Duration?
-    ) -> DispatchWorkItem? {
-        guard let timeout else { return nil }
-
-        let workItem = DispatchWorkItem { [weak self] in
-            self?.requestTimeout(for: processIdentifier)
-        }
-        DispatchQueue.global(qos: .utility).asyncAfter(
-            deadline: .now() + timeout.timeInterval,
-            execute: workItem
-        )
-        return workItem
     }
 
     nonisolated private func requestTimeout(for processIdentifier: pid_t) {
@@ -252,39 +251,43 @@ final class ProcessCommandRunner: CommandRunning, @unchecked Sendable {
                 return false
             }
             activeCommand.stopReason = .timedOut
+            activeCommand.stopRequestedAt = ContinuousClock().now
             self.activeCommand = activeCommand
             return true
         }
 
         guard shouldStop else { return }
         signalProcessGroup(processIdentifier, signal: SIGINT)
-        scheduleEscalation(for: processIdentifier)
     }
 
-    nonisolated private func scheduleEscalation(
-        for processIdentifier: pid_t
-    ) {
-        DispatchQueue.global(qos: .utility).asyncAfter(
-            deadline: .now() + stopGracePeriod.timeInterval
-        ) { [weak self] in
-            self?.escalateStop(for: processIdentifier, signal: SIGTERM)
-        }
-        DispatchQueue.global(qos: .utility).asyncAfter(
-            deadline: .now() + (stopGracePeriod + stopGracePeriod).timeInterval
-        ) { [weak self] in
-            self?.escalateStop(for: processIdentifier, signal: SIGKILL)
-        }
-    }
-
-    nonisolated private func escalateStop(
+    nonisolated private func enforceStopEscalation(
         for processIdentifier: pid_t,
-        signal: Int32
+        now: ContinuousClock.Instant
     ) {
-        let isStillStopping = stateLock.withLock {
-            activeCommand?.processIdentifier == processIdentifier
-                && activeCommand?.stopReason != nil
+        let signal = stateLock.withLock { () -> Int32? in
+            guard var activeCommand,
+                  activeCommand.processIdentifier == processIdentifier,
+                  let stopRequestedAt = activeCommand.stopRequestedAt else {
+                return nil
+            }
+
+            let elapsed = stopRequestedAt.duration(to: now)
+            if elapsed >= stopGracePeriod + stopGracePeriod,
+               !activeCommand.sentKill {
+                activeCommand.sentKill = true
+                self.activeCommand = activeCommand
+                return SIGKILL
+            }
+            if elapsed >= stopGracePeriod,
+               !activeCommand.sentTerminate {
+                activeCommand.sentTerminate = true
+                self.activeCommand = activeCommand
+                return SIGTERM
+            }
+            return nil
         }
-        guard isStillStopping else { return }
+
+        guard let signal else { return }
         signalProcessGroup(processIdentifier, signal: signal)
     }
 
