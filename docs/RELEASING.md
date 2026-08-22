@@ -1,17 +1,22 @@
 # Release process
 
-The public beta is distributed as a notarized ZIP containing `BrewPulse.app`. The release build is universal and contains Apple Silicon and Intel code.
+The ordinary public beta is distributed as a notarized ZIP containing `BrewPulse.app`. A prerelease may be distributed as an explicitly labeled unsigned preview. Both builds are universal and contain Apple Silicon and Intel code.
 
-## Prerequisites
+## Build prerequisite
 
 - the Xcode version pinned in `.github/workflows/macos-ci.yml`
+
+The scripts use the Xcode selected for command-line tools. Set `DEVELOPER_DIR` on the command if the required Xcode is installed in a nonstandard location.
+
+An unsigned preview does not require Apple signing or notarization credentials.
+
+## Signed-release prerequisites
+
 - a valid `Developer ID Application` identity in the login keychain
 - an Apple Developer team ID
 - a `notarytool` keychain profile named `BrewPulse`, or a different name supplied through `BREWPULSE_NOTARY_PROFILE`
 
-The scripts use the Xcode selected for command-line tools. Set `DEVELOPER_DIR` on the command if the required Xcode is installed in a nonstandard location.
-
-A public build must come from a clean checkout. The matching `vVERSION` tag must point to the checked-out commit, and the version heading in `CHANGELOG.md` must have a release date instead of `unreleased`.
+A published build must come from a clean checkout. Its release tag must point to the checked-out commit, and the version heading in `CHANGELOG.md` must end with a release date instead of `unreleased`.
 
 Store notarization credentials once:
 
@@ -26,15 +31,38 @@ Do not commit certificate exports, passwords, API keys, or notarization credenti
 
 ## Validate without credentials
 
-This builds a universal unsigned archive and ZIP. It exercises the release configuration and packaging but does not create a distributable beta:
+This builds a universal unsigned archive and ZIP:
 
 ```text
 ./scripts/release.sh --unsigned
 ```
 
-The output filename contains `unsigned` so it cannot be confused with the public artifact. The script builds in isolated temporary directories, verifies the app version and both architectures, tests the ZIP, and writes a SHA-256 checksum before publishing the artifacts to `artifacts/`.
+The output filename contains `unsigned` so it cannot be confused with the signed public artifact. The script builds in isolated temporary directories, verifies the app version and both architectures, tests the ZIP, and writes a SHA-256 checksum before publishing the artifacts to `artifacts/`.
 
-## Create the public artifact
+## Publish an unsigned preview
+
+Unsigned previews are GitHub prereleases for early testers who accept the Gatekeeper warning. They are not the signed public beta.
+
+1. Use a clean commit whose changelog names the preview and its limitations.
+2. Create a prerelease tag such as `v0.1.0-beta.1` on that commit.
+3. Set `BREWPULSE_RELEASE_TAG` to the preview tag and `BREWPULSE_BUILD_NUMBER` to a positive integer.
+4. Run `./scripts/release.sh --unsigned-preview`.
+5. Verify the ZIP checksum and confirm the packaged app contains `arm64` and `x86_64`.
+6. Create a GitHub prerelease. Put `Unsigned` in its title and opening warning.
+7. Attach only the unsigned ZIP and checksum. Keep the `.xcarchive` private.
+8. Link the website to the exact prerelease and repeat the download and checksum test.
+
+For the first preview:
+
+```text
+export BREWPULSE_RELEASE_TAG="v0.1.0-beta.1"
+export BREWPULSE_BUILD_NUMBER="1"
+./scripts/release.sh --unsigned-preview
+```
+
+The release and website must tell users that macOS cannot verify the developer or notarization status. Link to Apple's [Gatekeeper override instructions](https://support.apple.com/en-us/102445). The checksum only confirms that the ZIP matches the GitHub asset; it does not replace signing or notarization. Do not recommend disabling Gatekeeper or removing quarantine attributes.
+
+## Create the signed public artifact
 
 ```text
 export BREWPULSE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAM_ID)"

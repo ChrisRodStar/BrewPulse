@@ -33,7 +33,7 @@ BrewPulse can already:
 - Keep Homebrew's stdout and stderr available when something goes wrong.
 - Handle running, completed, failed, interrupted, and cancelled operations.
 
-The app is in beta prep. The core workflow and automated checks are in place; signing credentials, notarization, and the hands-on beta matrix still gate publication. The current checklist is in [TODO.md](TODO.md).
+An [unsigned 0.1.0 preview](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.1.0-beta.1) is available for early testing. macOS will block it on first launch because it has no Apple Developer ID signature or notarization ticket. Read the [beta guide](docs/BETA.md) before installing it. Signing, notarization, and the hands-on beta matrix still gate the ordinary public beta. The current checklist is in [TODO.md](TODO.md).
 
 ## Safety and transparency
 
@@ -56,6 +56,14 @@ I want someone to be able to use the free app without feeling like the useful pa
 - macOS 14 Sonoma or newer
 - Homebrew installed locally
 - Apple Silicon or Intel Mac
+
+## Download the unsigned preview
+
+This build is intentionally unsigned. macOS cannot verify its developer or check it through Apple's notarization service, so Gatekeeper will block the first launch. The [beta guide](docs/BETA.md) explains the warning, checksum verification, installation, and removal steps. If you do not want to override Gatekeeper for an unsigned app, build from source or wait for the signed beta.
+
+- [Download `BrewPulse-0.1.0-macos-unsigned.zip`](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.1.0-beta.1/BrewPulse-0.1.0-macos-unsigned.zip)
+- [Download the SHA-256 checksum](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.1.0-beta.1/BrewPulse-0.1.0-macos-unsigned.zip.sha256)
+- [Read the complete release notes](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.1.0-beta.1)
 
 ## Building from source
 
@@ -84,7 +92,7 @@ BrewPulse/
 
 [TODO.md](TODO.md) is the working roadmap.
 
-Right now the focus is finishing the free app properly before spending time on payments or Pro-only automation. That means polishing the UI, covering more failure cases, improving accessibility, expanding the tests, and getting the public beta signed and notarized.
+Right now the focus is finishing the free app properly before spending time on payments or Pro-only automation. The unsigned preview lets early testers try the current build, while accessibility, real-package testing, Developer ID signing, and notarization remain on the path to the ordinary public beta.
 
 Beta installation, privacy, support, and release details live in [`docs/`](docs/):
 

@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 beta - unreleased
+## 0.1.0 beta 1 - 2026-08-22
 
 ### Included
 
@@ -14,7 +14,8 @@
 
 ### Known limitations
 
+- This preview is unsigned and not notarized. macOS blocks its first launch until the user explicitly allows it in Privacy & Security settings.
 - No Update All, scheduling, background notifications, or automatic app updater.
 - Cask installers may require interaction in another window or administrator approval.
-- Intel runtime verification and the full accessibility pass must be completed on release hardware before publication.
+- Intel runtime verification, real-package testing, and the full accessibility pass are not complete.
 - The beta does not collect crash reports or analytics.
