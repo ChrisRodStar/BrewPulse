@@ -73,7 +73,7 @@ Work through these areas in order. Keep each code change small enough to review 
 - [ ] Notarize and staple a release artifact successfully.
 - [x] Choose a simple beta package format and document installation and removal.
 - [x] Make contributor builds work without requiring the maintainer's signing identity.
-- [ ] Enable GitHub branch protection for `main`. The local pre-push hook is active, but the public repository has no hosted protection yet.
+- [x] Protect `main` with pull requests, current `macOS Validation`, conversation resolution, and force-push and deletion blocking.
 - [x] Document the supported macOS, Homebrew, and BrewPulse versions for the release.
 - [x] Decide how Free users learn about BrewPulse updates without requiring a paid account or service.
 - [x] Publish honest release notes, known limitations, support instructions, and a feedback path.
