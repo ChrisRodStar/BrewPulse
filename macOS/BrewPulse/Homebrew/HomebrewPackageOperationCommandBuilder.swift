@@ -59,17 +59,32 @@ nonisolated struct HomebrewPackageOperationCommandBuilder: Sendable {
             return false
         }
 
-        let allowedCharacters = CharacterSet(
-            charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-._@"
-        )
-        let alphanumericCharacters = CharacterSet(
-            charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        )
-
         return components.allSatisfy { component in
             !component.isEmpty
-                && component.unicodeScalars.allSatisfy(allowedCharacters.contains)
-                && component.unicodeScalars.contains(where: alphanumericCharacters.contains)
+                && component.unicodeScalars.allSatisfy(isAllowedNameScalar)
+                && component.unicodeScalars.contains(where: isASCIIAlphanumeric)
+        }
+    }
+
+    private static func isAllowedNameScalar(_ scalar: Unicode.Scalar) -> Bool {
+        if isASCIIAlphanumeric(scalar) {
+            return true
+        }
+
+        return switch scalar.value {
+        case 43, 45, 46, 64, 95: // + - . @ _
+            true
+        default:
+            false
+        }
+    }
+
+    private static func isASCIIAlphanumeric(_ scalar: Unicode.Scalar) -> Bool {
+        switch scalar.value {
+        case 48...57, 65...90, 97...122:
+            true
+        default:
+            false
         }
     }
 }

@@ -17,6 +17,7 @@ fi
 
 derived_data_path="$validation_root/DerivedData"
 result_bundle_path="$validation_root/BrewPulseTests.xcresult"
+release_result_bundle_path="$validation_root/BrewPulseReleaseTests.xcresult"
 
 if [[ -z "${DEVELOPER_DIR:-}" ]]; then
     for xcode_app in /Applications/Xcode_27.0.app /Applications/Xcode-beta.app /Applications/Xcode.app; do
@@ -50,6 +51,19 @@ xcodebuild \
     CODE_SIGNING_ALLOWED=NO \
     COMPILER_INDEX_STORE_ENABLE=NO \
     test
+
+xcodebuild \
+    -project "$project_path" \
+    -scheme "$scheme" \
+    -configuration Release \
+    -destination "platform=macOS" \
+    -derivedDataPath "$derived_data_path" \
+    -resultBundlePath "$release_result_bundle_path" \
+    CODE_SIGNING_ALLOWED=NO \
+    COMPILER_INDEX_STORE_ENABLE=NO \
+    ENABLE_TESTABILITY=YES \
+    test \
+    -only-testing:BrewPulseTests/HomebrewPackageOperationCommandBuilderTests
 
 xcodebuild \
     -project "$project_path" \

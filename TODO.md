@@ -6,7 +6,7 @@ BrewPulse is the public macOS client and the shared Homebrew implementation used
 
 ## Current state
 
-The core workflow is implemented and locally verified. On August 21, 2026, all 80 tests passed with Xcode 27.0, the Release build passed, and static analysis passed.
+The core workflow is implemented and locally verified. On August 22, 2026, all 80 tests passed with Xcode 27.0, the optimized command-builder regression suite passed, the Release build passed, and static analysis passed.
 
 | Area | Status |
 | --- | --- |
@@ -58,7 +58,7 @@ Work through these areas in order. Keep each code change small enough to review 
 
 These checks improve the preview and remain required for the later signed beta. They do not block the explicitly unsigned download.
 
-- [ ] Test a complete formula update on a clean supported Mac.
+- [x] Test a complete formula update on a clean supported Mac.
 - [ ] Test a cask update, including a cask that opens an installer or requests administrator approval when practical.
 - [ ] Test formula and cask uninstall without `--zap`, force, or dependency overrides.
 - [ ] Test Apple Silicon and Intel Homebrew installations on supported macOS versions.
