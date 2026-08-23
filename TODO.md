@@ -59,7 +59,8 @@ Work through these areas in order. Keep each code change small enough to review 
 These checks improve the preview and remain required for the later signed beta. They do not block the explicitly unsigned download.
 
 - [x] Test a complete formula update on a clean supported Mac.
-- [ ] Test a cask update, including a cask that opens an installer or requests administrator approval when practical.
+- [x] Test a complete cask update.
+- [ ] Test a cask that opens an installer or requests administrator approval when practical.
 - [ ] Test formula and cask uninstall without `--zap`, force, or dependency overrides.
 - [ ] Test Apple Silicon and Intel Homebrew installations on supported macOS versions.
 - [ ] Verify launch at login and ordinary relaunch after a macOS restart.
