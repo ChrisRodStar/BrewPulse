@@ -3,6 +3,7 @@ import SwiftUI
 struct GeneralSettingsView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(AppSettings.self) private var settings
+    @EnvironmentObject private var updater: AppUpdater
 
     var body: some View {
         Form {
@@ -24,6 +25,24 @@ struct GeneralSettingsView: View {
                         openSystemSettings: settings.openLoginItemSettings
                     )
                 }
+            }
+
+            Section("Updates") {
+                HStack(alignment: .center, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("BrewPulse updates")
+                        Text(updateDescription)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+
+                    Button("Check for Updates…", action: updater.checkForUpdates)
+                        .disabled(!updater.canCheckForUpdates)
+                        .help("Check whether a newer version of BrewPulse is available")
+                }
+                .accessibilityElement(children: .contain)
             }
         }
         .formStyle(.grouped)
@@ -75,6 +94,13 @@ struct GeneralSettingsView: View {
         case .disabled, .enabled:
             "Controls whether BrewPulse opens automatically when you sign in."
         }
+    }
+
+    private var updateDescription: String {
+        let version = Bundle.main.object(
+            forInfoDictionaryKey: "CFBundleShortVersionString"
+        ) as? String ?? "Unknown"
+        return "Version \(version). BrewPulse checks automatically and asks before installing."
     }
 }
 

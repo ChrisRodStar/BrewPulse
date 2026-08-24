@@ -48,5 +48,6 @@ private struct SettingsIdentityHeader: View {
     BrewPulseSettingsView()
         .environment(AppSettings())
         .environment(ApplicationPresentationController())
+        .environmentObject(AppUpdater(startingUpdater: false))
 }
 #endif

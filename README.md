@@ -34,6 +34,8 @@ BrewPulse can already:
 
 An [unsigned 0.1.0 Beta 3 preview](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.1.0-beta.3) is available for early testing. macOS will block it on first launch because it has no Apple Developer ID signature or notarization ticket. Read the [beta guide](docs/BETA.md) before installing it. Signing, notarization, and the hands-on beta matrix still gate the ordinary public beta. The current checklist is in [TODO.md](TODO.md).
 
+Development on `main` is now version 0.2.0. It adds signed in-app updates, a manual update check in Settings, and a redesigned drag-to-Applications installer. The downloadable 0.1.0 Beta 3 does not contain the updater, so installing 0.2.0 will require one final manual download when that release is published.
+
 ## Safety and transparency
 
 A package manager UI should not make it harder to understand what changed on your computer.

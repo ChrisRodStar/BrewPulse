@@ -4,6 +4,8 @@ BrewPulse Free does not collect analytics, telemetry, crash reports, identifiers
 
 BrewPulse runs Homebrew commands on the Mac. Homebrew may access its own servers and third-party package sources while checking, updating, or uninstalling packages. Homebrew's behavior and data practices are separate from BrewPulse.
 
+BrewPulse contacts GitHub when it checks for app updates and downloads an update you approve. These requests carry ordinary network information such as the IP address and user agent, but they do not include the Homebrew package inventory or command output.
+
 Command output stays on the Mac unless the user copies and shares it. That output can contain package names, local paths, or messages from third-party installers, so review it before posting it publicly.
 
 Launch-at-login status is managed through Apple's `ServiceManagement` framework. BrewPulse does not store credentials or install a privileged helper.

@@ -93,6 +93,9 @@
 		Z10000000000000000000007 /* HomebrewVersionParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = Z20000000000000000000007 /* HomebrewVersionParserTests.swift */; };
 		Z10000000000000000000008 /* PackageOperationReviewPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = Z20000000000000000000008 /* PackageOperationReviewPresentation.swift */; };
 		Z10000000000000000000009 /* PackageOperationReviewPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = Z20000000000000000000009 /* PackageOperationReviewPresentationTests.swift */; };
+		803621068031410091B37BCB /* AppUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056D19A9B5994E2B83DF0EC9 /* AppUpdater.swift */; };
+		D55A2082EC6A4583BC98063E /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = B254318613664F09A6D0440B /* Sparkle */; };
+		966CCECB27E54D1CA25A90C6 /* AppUpdateConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9053C5831C1436EA895E176 /* AppUpdateConfigurationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -195,6 +198,8 @@
 		Z20000000000000000000007 /* HomebrewVersionParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomebrewVersionParserTests.swift; sourceTree = "<group>"; };
 		Z20000000000000000000008 /* PackageOperationReviewPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageOperationReviewPresentation.swift; sourceTree = "<group>"; };
 		Z20000000000000000000009 /* PackageOperationReviewPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageOperationReviewPresentationTests.swift; sourceTree = "<group>"; };
+		056D19A9B5994E2B83DF0EC9 /* AppUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdater.swift; sourceTree = "<group>"; };
+		E9053C5831C1436EA895E176 /* AppUpdateConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateConfigurationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -202,6 +207,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D55A2082EC6A4583BC98063E /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,6 +234,7 @@
 			isa = PBXGroup;
 			children = (
 				A20000000000000000000001 /* BrewPulseApp.swift */,
+				7B40DFA5D57640F4AB502289 /* AppUpdates */,
 				W40000000000000000000001 /* Settings */,
 				N40000000000000000000001 /* MenuBar */,
 				O40000000000000000000001 /* StatusMenu */,
@@ -257,6 +264,7 @@
 		B40000000000000000000001 /* BrewPulseTests */ = {
 			isa = PBXGroup;
 			children = (
+				75E8DF74EA0F4D92B3CCF1F0 /* AppUpdates */,
 				W40000000000000000000002 /* Settings */,
 				C40000000000000000000002 /* Homebrew */,
 				N40000000000000000000002 /* MenuBar */,
@@ -422,6 +430,22 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
+		7B40DFA5D57640F4AB502289 /* AppUpdates */ = {
+			isa = PBXGroup;
+			children = (
+				056D19A9B5994E2B83DF0EC9 /* AppUpdater.swift */,
+			);
+			path = AppUpdates;
+			sourceTree = "<group>";
+		};
+		75E8DF74EA0F4D92B3CCF1F0 /* AppUpdates */ = {
+			isa = PBXGroup;
+			children = (
+				E9053C5831C1436EA895E176 /* AppUpdateConfigurationTests.swift */,
+			);
+			path = AppUpdates;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -438,6 +462,9 @@
 			dependencies = (
 			);
 			name = BrewPulse;
+			packageProductDependencies = (
+				B254318613664F09A6D0440B /* Sparkle */,
+			);
 			productName = BrewPulse;
 			productReference = A20000000000000000000005 /* BrewPulse.app */;
 			productType = "com.apple.product-type.application";
@@ -488,6 +515,9 @@
 				Base,
 			);
 			mainGroup = A40000000000000000000001;
+			packageReferences = (
+				B2B56F8BA1A54670A54925FA /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			productRefGroup = A40000000000000000000003 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -527,6 +557,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000000000000000000001 /* BrewPulseApp.swift in Sources */,
+				803621068031410091B37BCB /* AppUpdater.swift in Sources */,
 				W10000000000000000000001 /* LaunchAtLoginService.swift in Sources */,
 				W10000000000000000000002 /* AppSettings.swift in Sources */,
 				W10000000000000000000003 /* BrewPulseSettingsView.swift in Sources */,
@@ -586,6 +617,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				966CCECB27E54D1CA25A90C6 /* AppUpdateConfigurationTests.swift in Sources */,
 				W10000000000000000000005 /* AppSettingsTests.swift in Sources */,
 				Y10000000000000000000003 /* ApplicationPresentationControllerTests.swift in Sources */,
 				B10000000000000000000001 /* ProcessCommandRunnerTests.swift in Sources */,
@@ -729,7 +761,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -739,7 +771,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chrisrodstar.BrewPulse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -756,7 +788,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -766,7 +798,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chrisrodstar.BrewPulse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -839,6 +871,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B2B56F8BA1A54670A54925FA /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B254318613664F09A6D0440B /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B2B56F8BA1A54670A54925FA /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A60000000000000000000001 /* Project object */;
 }

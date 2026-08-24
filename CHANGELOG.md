@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0 - Unreleased
+
+### Added
+
+- BrewPulse checks for app updates when it opens and at least once per day, then asks before downloading or installing anything.
+- Settings includes a manual "Check for Updates…" action and shows the installed BrewPulse version.
+- Update archives and the appcast feed are signed with a dedicated EdDSA key. The release process produces a universal update archive for Apple Silicon and Intel Macs.
+- Disk images now open as a compact BrewPulse-branded install window with a clear drag-to-Applications layout.
+
 ## 0.1.0 beta 3 - 2026-08-23
 
 ### Added

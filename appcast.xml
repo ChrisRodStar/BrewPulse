@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+    <channel>
+        <title>BrewPulse updates</title>
+        <link>https://github.com/ChrisRodStar/BrewPulse</link>
+        <description>Signed BrewPulse updates</description>
+        <language>en</language>
+    </channel>
+</rss>
+<!-- sparkle-signatures:
+edSignature: JnFavm735WkgYpo4KAVBrngPwPKQgqvN9VL4uK2GAWmevIIwSFz5ChwASfOSsjl6D9miMcIBsJtgZ5WDfOjbDA==
+length: 359
+-->

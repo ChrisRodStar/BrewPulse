@@ -23,6 +23,9 @@ project_build_number="$(awk -F ' = ' '/CURRENT_PROJECT_VERSION =/ { gsub(/;/, ""
 build_number="${BREWPULSE_BUILD_NUMBER:-$project_build_number}"
 artifact_directory="${BREWPULSE_ARTIFACT_DIRECTORY:-$repository_root/artifacts}"
 architecture_specs=("arm64:arm64" "x86_64:x64")
+installer_background="$repository_root/macOS/Packaging/BrewPulseInstallerBackground.png"
+installer_background_2x="$repository_root/macOS/Packaging/BrewPulseInstallerBackground@2x.png"
+installer_layout_script="$repository_root/scripts/configure-dmg.applescript"
 
 if ! xcodebuild -version >/dev/null 2>&1; then
     echo "Select a full Xcode installation with xcode-select or set DEVELOPER_DIR, then try again." >&2
@@ -35,6 +38,14 @@ if [[ -z "$version" ]]; then
 fi
 if ! print -r -- "$build_number" | grep -Eq '^[1-9][0-9]*$'; then
     echo "BREWPULSE_BUILD_NUMBER must be a positive integer." >&2
+    exit 1
+fi
+if [[ ! -f "$installer_background" || ! -f "$installer_background_2x" ]]; then
+    echo "The BrewPulse installer background assets are missing." >&2
+    exit 1
+fi
+if [[ ! -f "$installer_layout_script" ]]; then
+    echo "The BrewPulse installer layout script is missing." >&2
     exit 1
 fi
 if [[ "$mode" != "unsigned" && -z "${BREWPULSE_BUILD_NUMBER:-}" ]]; then
@@ -73,6 +84,10 @@ case "$mode" in
         )
         ;;
 esac
+
+if [[ "$mode" != "unsigned-preview" ]]; then
+    architecture_specs+=("arm64 x86_64:universal")
+fi
 
 if [[ "$mode" == "notarized" || "$mode" == "unsigned-preview" ]]; then
     if [[ -n "$(git -C "$repository_root" status --porcelain --untracked-files=normal)" ]]; then
@@ -117,6 +132,7 @@ done
 temporary_directory="$(mktemp -d "${TMPDIR:-/tmp}/BrewPulse-release.XXXXXX")"
 staging_directory="$(mktemp -d "$artifact_directory/.BrewPulse-release.XXXXXX")"
 derived_data_path="$temporary_directory/DerivedData"
+source_packages_path="$temporary_directory/SourcePackages"
 mounted_volume=""
 
 cleanup() {
@@ -180,9 +196,10 @@ verify_app_bundle() {
         exit 1
     fi
 
-    architectures="$(lipo -archs "$target_binary")"
+    architectures="$(lipo -archs "$target_binary" | tr ' ' '\n' | sort | tr '\n' ' ')"
+    expected_architecture="$(print -r -- "$expected_architecture" | tr ' ' '\n' | sort | tr '\n' ' ')"
     if [[ "$architectures" != "$expected_architecture" ]]; then
-        echo "Expected a $expected_architecture binary, found: $architectures" >&2
+        echo "Expected architectures $expected_architecture, found: $architectures" >&2
         exit 1
     fi
 }
@@ -196,9 +213,10 @@ build_disk_image() {
     local image_root="$temporary_directory/$artifact_name-image"
     local staged_dmg="$staging_directory/$artifact_name.dmg"
     local staged_checksum="$staging_directory/$artifact_name.dmg.sha256"
+    local writable_dmg="$temporary_directory/$artifact_name-writable.dmg"
     local output_dmg="$artifact_directory/$artifact_name.dmg"
     local output_checksum="$artifact_directory/$artifact_name.dmg.sha256"
-    local mount_point="$temporary_directory/$artifact_name-mounted"
+    local mount_point="$temporary_directory/dmg-$asset_architecture"
     local mounted_app
     local checksum
 
@@ -209,6 +227,7 @@ build_disk_image() {
         -destination "generic/platform=macOS" \
         -archivePath "$archive_path" \
         -derivedDataPath "$derived_data_path" \
+        -clonedSourcePackagesDirPath "$source_packages_path" \
         "MARKETING_VERSION=$version" \
         "CURRENT_PROJECT_VERSION=$build_number" \
         "ARCHS=$build_architecture" \
@@ -225,13 +244,53 @@ build_disk_image() {
     mkdir -p "$image_root"
     ditto "$app_path" "$image_root/BrewPulse.app"
     ln -s /Applications "$image_root/Applications"
-
+    mkdir -p "$image_root/.background"
+    tiffutil -cathidpicheck \
+        "$installer_background" \
+        "$installer_background_2x" \
+        -out "$image_root/.background/BrewPulseInstallerBackground.tiff"
     hdiutil create \
         -quiet \
         -volname "BrewPulse" \
         -srcfolder "$image_root" \
+        -fs HFS+ \
+        -format UDRW \
+        "$writable_dmg"
+
+    mkdir -p "$mount_point"
+    hdiutil attach \
+        -quiet \
+        -nobrowse \
+        -noautoopen \
+        -readwrite \
+        -mountpoint "$mount_point" \
+        "$writable_dmg"
+    mounted_volume="$mount_point"
+
+    osascript \
+        "$installer_layout_script" \
+        "$(basename "$mount_point")" \
+        "$mount_point"
+
+    local layout_attempt
+    for layout_attempt in {1..10}; do
+        [[ -f "$mount_point/.DS_Store" ]] && break
+        sleep 1
+    done
+    if [[ ! -f "$mount_point/.DS_Store" ]]; then
+        echo "Finder did not save the disk image layout." >&2
+        exit 1
+    fi
+
+    hdiutil detach -quiet "$mount_point"
+    mounted_volume=""
+
+    hdiutil convert \
+        -quiet \
+        "$writable_dmg" \
         -format UDZO \
-        "$staged_dmg"
+        -imagekey zlib-level=9 \
+        -o "$staged_dmg"
 
     if [[ "$mode" != "unsigned" && "$mode" != "unsigned-preview" ]]; then
         codesign \
@@ -271,6 +330,14 @@ build_disk_image() {
         echo "The disk image does not contain an Applications shortcut." >&2
         exit 1
     fi
+    if [[ ! -f "$mount_point/.DS_Store" ]]; then
+        echo "The disk image does not contain its saved Finder layout." >&2
+        exit 1
+    fi
+    if [[ ! -f "$mount_point/.background/BrewPulseInstallerBackground.tiff" ]]; then
+        echo "The disk image does not contain its installer background." >&2
+        exit 1
+    fi
     if [[ "$mode" != "unsigned" && "$mode" != "unsigned-preview" ]]; then
         verify_developer_id_signature "$mounted_app"
     fi
@@ -292,11 +359,60 @@ build_disk_image() {
     echo "Architecture: $build_architecture"
 }
 
+generate_update_feed() {
+    local appcast_directory="$temporary_directory/Appcast"
+    local generate_appcast="$source_packages_path/artifacts/sparkle/Sparkle/bin/generate_appcast"
+    local release_notes="$temporary_directory/release-notes.md"
+    local download_url="https://github.com/ChrisRodStar/BrewPulse/releases/download/$release_tag/"
+
+    if [[ ! -x "$generate_appcast" ]]; then
+        echo "Sparkle's generate_appcast tool was not found at $generate_appcast" >&2
+        exit 1
+    fi
+
+    awk -v version="$version" '
+        index($0, "## " version) == 1 { capture = 1; next }
+        capture && /^## / { exit }
+        capture { print }
+    ' "$repository_root/CHANGELOG.md" > "$release_notes"
+
+    if [[ ! -s "$release_notes" ]]; then
+        echo "Could not extract release notes for $version from CHANGELOG.md." >&2
+        exit 1
+    fi
+
+    mkdir -p "$appcast_directory"
+    cp "$repository_root/appcast.xml" "$appcast_directory/appcast.xml"
+
+    for staged_dmg in "$staging_directory"/*-universal.dmg; do
+        local appcast_dmg="$appcast_directory/$(basename "$staged_dmg")"
+        local release_notes_path="${appcast_dmg:r}.md"
+        cp "$staged_dmg" "$appcast_dmg"
+        cp "$release_notes" "$release_notes_path"
+    done
+
+    "$generate_appcast" \
+        --account "${BREWPULSE_SPARKLE_ACCOUNT:-ed25519}" \
+        --disable-signing-warning \
+        --download-url-prefix "$download_url" \
+        --embed-release-notes \
+        --maximum-deltas 0 \
+        "$appcast_directory"
+
+    xmllint --noout "$appcast_directory/appcast.xml"
+    cp "$appcast_directory/appcast.xml" "$repository_root/appcast.xml"
+    echo "Updated $repository_root/appcast.xml"
+}
+
 for architecture_spec in "${architecture_specs[@]}"; do
     build_architecture="${architecture_spec%%:*}"
     asset_architecture="${architecture_spec#*:}"
     build_disk_image "$build_architecture" "$asset_architecture"
 done
+
+if [[ "$mode" == "notarized" ]]; then
+    generate_update_feed
+fi
 
 for staged_artifact in "$staging_directory"/*; do
     output_artifact="$artifact_directory/$(basename "$staged_artifact")"

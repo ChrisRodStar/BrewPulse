@@ -2,11 +2,11 @@
 
 BrewPulse is the public macOS client and the shared Homebrew implementation used by every future BrewPulse product.
 
-> **Current priority:** collect feedback on the published unsigned 0.1.0 Beta 3 preview, then use that feedback and the remaining manual matrix to prepare a signed beta. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
+> **Current priority:** collect feedback on the published unsigned 0.1.0 Beta 3 preview, then use that feedback and the remaining manual matrix to prepare the signed 0.2.0 beta. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
 
 ## Current state
 
-The core workflow is implemented and locally verified. On August 22, 2026, all 80 tests passed with Xcode 27.0, the optimized command-builder regression suite passed, the Release build passed, and static analysis passed.
+The core workflow is implemented and locally verified. On August 24, 2026, all 86 tests passed with Xcode 27.0, the optimized command-builder regression suite passed, the Release build passed, and static analysis passed.
 
 | Area | Status |
 | --- | --- |
@@ -16,6 +16,7 @@ The core workflow is implemented and locally verified. On August 22, 2026, all 8
 | Store and command-runner coverage | Complete for current behavior |
 | Failure recovery and command lifecycle | In progress |
 | Accessibility and UI edge cases | In progress |
+| Signed in-app updates | Complete |
 | Unsigned preview and later signed beta | In progress |
 
 Only the **Now** section should drive the next code task. The later sections record release gates and boundaries without pretending they are active work.
@@ -82,6 +83,7 @@ These checks improve the preview and remain required for the later signed beta. 
 - [x] Protect `main` against force pushes and deletion, keep pull-request validation for outside contributions, and validate maintainer pushes locally and on GitHub.
 - [x] Document the supported macOS, Homebrew, and BrewPulse versions for the release.
 - [x] Decide how Free users learn about BrewPulse updates without requiring a paid account or service.
+- [x] Add signed in-app updates with automatic checks, an approval prompt, and a manual check in Settings.
 - [x] Publish honest release notes, known limitations, support instructions, and a feedback path.
 
 ## Unsigned preview gate

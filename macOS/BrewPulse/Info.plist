@@ -26,5 +26,17 @@
 	<string>Copyright © 2026. All rights reserved.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUAutomaticallyUpdate</key>
+	<false/>
+	<key>SUFeedURL</key>
+	<string>https://raw.githubusercontent.com/ChrisRodStar/BrewPulse/main/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>JMkBQgpJUKuGsvmMr4Ws/SnVLKq2c9ft/ThetPhSm3k=</string>
+	<key>SURequireSignedFeed</key>
+	<true/>
+	<key>SUVerifyUpdateBeforeExtraction</key>
+	<true/>
 </dict>
 </plist>

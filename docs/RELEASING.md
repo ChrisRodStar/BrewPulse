@@ -1,6 +1,6 @@
 # Release process
 
-The ordinary public beta is distributed as two notarized disk images: one for Apple Silicon and one for Intel. Each DMG contains `BrewPulse.app` and an Applications shortcut. A prerelease may use the same format as an explicitly labeled unsigned preview.
+The ordinary public beta has separate notarized disk images for Apple Silicon and Intel, plus a universal DMG used by the in-app updater. Each DMG contains `BrewPulse.app` and an Applications shortcut. A prerelease may use the two architecture-specific images as an explicitly labeled unsigned preview.
 
 ## Build prerequisite
 
@@ -15,6 +15,7 @@ An unsigned preview does not require Apple signing or notarization credentials.
 - a valid `Developer ID Application` identity in the login keychain
 - an Apple Developer team ID
 - a `notarytool` keychain profile named `BrewPulse`, or a different name supplied through `BREWPULSE_NOTARY_PROFILE`
+- the BrewPulse Sparkle EdDSA private key in the login keychain under the `ed25519` account
 
 A published build must come from a clean checkout. Its release tag must point to the checked-out commit, and the version heading in `CHANGELOG.md` must end with a release date instead of `unreleased`.
 
@@ -27,11 +28,13 @@ xcrun notarytool store-credentials BrewPulse \
   --password "APP_SPECIFIC_PASSWORD"
 ```
 
-Do not commit certificate exports, passwords, API keys, or notarization credentials.
+Sparkle's private key signs update archives. Back it up somewhere encrypted with Sparkle's `generate_keys -x` option. The public key is stored in `Info.plist`; never commit the exported private key.
+
+Do not commit certificate exports, passwords, API keys, private keys, or notarization credentials.
 
 ## Validate without credentials
 
-This builds unsigned Apple Silicon and Intel disk images:
+This builds unsigned Apple Silicon and Intel disk images plus the universal archive used to validate the in-app update path:
 
 ```text
 ./scripts/release.sh --unsigned
@@ -74,18 +77,19 @@ export BREWPULSE_BUILD_NUMBER="1"
 
 Use a positive integer for `BREWPULSE_BUILD_NUMBER` and increase it for every release build. The script writes it to `CFBundleVersion` and checks the archived and packaged copies.
 
-For each architecture, the script:
+For each release variant, the script:
 
 1. creates a Release archive containing only the requested architecture;
 2. confirms the bundle version, build number, and executable architecture;
 3. verifies the Developer ID authority, team, hardened runtime, and timestamp;
-4. creates a DMG containing `BrewPulse.app` and an Applications shortcut;
+4. creates a compact branded DMG containing `BrewPulse.app`, an Applications shortcut, and a saved Finder layout;
 5. signs the DMG, submits it to Apple's notarization service, and waits for the result;
 6. staples and validates the DMG ticket;
 7. asks Gatekeeper to assess the disk image;
 8. mounts the DMG read-only, verifies the packaged app again, and asks Gatekeeper to assess the app;
 9. writes a SHA-256 checksum;
-10. moves both architectures and both checksums into `artifacts/` only after the complete set passes.
+10. signs the universal update archive with Sparkle and updates `appcast.xml` with its release notes and URL;
+11. moves all three disk images and their checksums into `artifacts/` only after the complete set passes.
 
 Successful output is written to `artifacts/`:
 
@@ -93,6 +97,8 @@ Successful output is written to `artifacts/`:
 - `BrewPulse-VERSION-macos-arm64.dmg.sha256`
 - `BrewPulse-VERSION-macos-x64.dmg`
 - `BrewPulse-VERSION-macos-x64.dmg.sha256`
+- `BrewPulse-VERSION-macos-universal.dmg`
+- `BrewPulse-VERSION-macos-universal.dmg.sha256`
 
 The script refuses to overwrite an existing artifact. Move a prior build elsewhere or change the version before rebuilding.
 
@@ -104,7 +110,7 @@ shasum -a 256 -c BrewPulse-VERSION-macos-arm64.dmg.sha256
 
 ## Signed diagnostic build
 
-`./scripts/release.sh --skip-notarization` creates explicitly named Apple Silicon and Intel `signed-unnotarized` disk images. Use them only to diagnose signing. Never publish them.
+`./scripts/release.sh --skip-notarization` creates explicitly named Apple Silicon, Intel, and universal `signed-unnotarized` disk images. Use them only to diagnose signing. Never publish them.
 
 ## Release checklist
 
@@ -115,5 +121,7 @@ shasum -a 256 -c BrewPulse-VERSION-macos-arm64.dmg.sha256
 5. Run the notarized release command from the tag.
 6. Confirm the packaged-copy signature, stapler validation, Gatekeeper assessment, and checksum all pass.
 7. Repeat the install, open, launch-at-login, individual update, Update All, quit, and app removal smoke tests with both notarized disk images on matching Macs.
-8. Create the GitHub release and attach both DMGs and both `.sha256` files.
-9. Confirm the website detects a supported architecture where the browser exposes it, chooses the matching DMG, and keeps the manual Apple Silicon/Intel switch available.
+8. Create the GitHub release and attach all three DMGs and their `.sha256` files. The universal DMG is for in-app updates; keep the smaller architecture-specific downloads on the website.
+9. Confirm the universal DMG URL in `appcast.xml` resolves, then commit and push the updated feed to `main`.
+10. From the previous update-capable BrewPulse release, choose "Check for Updates…" and complete an update on both Apple Silicon and Intel.
+11. Confirm the website detects a supported architecture where the browser exposes it, chooses the matching DMG, and keeps the manual Apple Silicon/Intel switch available.

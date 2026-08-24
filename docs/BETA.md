@@ -38,7 +38,7 @@ BrewPulse does not install a privileged helper, background daemon, browser exten
 
 ## Updates
 
-The beta does not update itself. New versions are announced on the BrewPulse website and published through GitHub Releases. Download the newer DMG for your Mac and replace the existing app in Applications.
+The 0.1.0 Beta 3 preview does not contain the updater, so moving to the first update-capable build still requires a manual download. After that, BrewPulse checks for new versions when it opens and at least once per day. When an update is available, BrewPulse shows the version and release notes and waits for you to approve the download and installation. You can also check manually in BrewPulse Settings.
 
 ## Known limitations
 

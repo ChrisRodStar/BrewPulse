@@ -2,6 +2,7 @@ import SwiftUI
 
 @main
 struct BrewPulseApp: App {
+    @StateObject private var updater = AppUpdater()
     @State private var store = PackageStore()
     @State private var settings = AppSettings()
     @State private var presentation = ApplicationPresentationController()
@@ -24,6 +25,7 @@ struct BrewPulseApp: App {
             BrewPulseSettingsView()
                 .environment(settings)
                 .environment(presentation)
+                .environmentObject(updater)
         }
     }
 
