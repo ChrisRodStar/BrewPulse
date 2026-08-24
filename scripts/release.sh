@@ -362,6 +362,7 @@ generate_update_feed() {
     local generate_appcast="$source_packages_path/artifacts/sparkle/Sparkle/bin/generate_appcast"
     local release_notes="$temporary_directory/release-notes.md"
     local download_url="https://github.com/ChrisRodStar/BrewPulse/releases/download/$release_tag/"
+    local staged_dmg="$staging_directory/BrewPulse-$version-macos-universal$artifact_suffix.dmg"
 
     if [[ ! -x "$generate_appcast" ]]; then
         echo "Sparkle's generate_appcast tool was not found at $generate_appcast" >&2
@@ -382,12 +383,15 @@ generate_update_feed() {
     mkdir -p "$appcast_directory"
     cp "$repository_root/appcast.xml" "$appcast_directory/appcast.xml"
 
-    for staged_dmg in "$staging_directory"/*-universal.dmg; do
-        local appcast_dmg="$appcast_directory/$(basename "$staged_dmg")"
-        local release_notes_path="${appcast_dmg:r}.md"
-        cp "$staged_dmg" "$appcast_dmg"
-        cp "$release_notes" "$release_notes_path"
-    done
+    if [[ ! -f "$staged_dmg" ]]; then
+        echo "The universal update disk image was not found at $staged_dmg" >&2
+        exit 1
+    fi
+
+    local appcast_dmg="$appcast_directory/$(basename "$staged_dmg")"
+    local release_notes_path="${appcast_dmg:r}.md"
+    cp "$staged_dmg" "$appcast_dmg"
+    cp "$release_notes" "$release_notes_path"
 
     "$generate_appcast" \
         --account "${BREWPULSE_SPARKLE_ACCOUNT:-ed25519}" \
