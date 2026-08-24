@@ -169,6 +169,64 @@ verify_developer_id_signature() {
     fi
 }
 
+sign_ad_hoc_app_bundle() {
+    local target_app="$1"
+    local sparkle_framework="$target_app/Contents/Frameworks/Sparkle.framework"
+    local sparkle_version="$sparkle_framework/Versions/B"
+
+    # Xcode strips development-only Sparkle resources while archiving. Re-sign
+    # every nested component inside out so the final app seal describes the
+    # files that are actually shipped. An ad-hoc signature is not a substitute
+    # for Developer ID or notarization, but it prevents Gatekeeper from treating
+    # the unsigned preview as a damaged bundle.
+    codesign \
+        --force \
+        --sign - \
+        --options runtime \
+        "$sparkle_version/XPCServices/Installer.xpc"
+    codesign \
+        --force \
+        --sign - \
+        --options runtime \
+        --preserve-metadata=entitlements \
+        "$sparkle_version/XPCServices/Downloader.xpc"
+    codesign \
+        --force \
+        --sign - \
+        --options runtime \
+        "$sparkle_version/Autoupdate"
+    codesign \
+        --force \
+        --sign - \
+        --options runtime \
+        "$sparkle_version/Updater.app"
+    codesign \
+        --force \
+        --sign - \
+        "$sparkle_framework"
+    codesign \
+        --force \
+        --sign - \
+        "$target_app"
+}
+
+verify_ad_hoc_signature() {
+    local target_app="$1"
+    local signature_metadata
+
+    codesign --verify --deep --strict --verbose=2 "$target_app"
+    signature_metadata="$(codesign -dv --verbose=4 "$target_app" 2>&1)"
+
+    if ! print -r -- "$signature_metadata" | grep -q '^Signature=adhoc$'; then
+        echo "Unsigned preview app does not have a complete ad-hoc signature." >&2
+        exit 1
+    fi
+    if ! print -r -- "$signature_metadata" | grep -q '^Sealed Resources version=2'; then
+        echo "Unsigned preview app does not have a version 2 resource seal." >&2
+        exit 1
+    fi
+}
+
 verify_app_bundle() {
     local target_app="$1"
     local expected_architecture="$2"
@@ -235,7 +293,10 @@ build_disk_image() {
         archive
 
     verify_app_bundle "$app_path" "$build_architecture"
-    if [[ "$mode" != "unsigned" && "$mode" != "unsigned-preview" ]]; then
+    if [[ "$mode" == "unsigned" || "$mode" == "unsigned-preview" ]]; then
+        sign_ad_hoc_app_bundle "$app_path"
+        verify_ad_hoc_signature "$app_path"
+    else
         verify_developer_id_signature "$app_path"
     fi
 
@@ -336,7 +397,9 @@ build_disk_image() {
         echo "The disk image does not contain its installer background." >&2
         exit 1
     fi
-    if [[ "$mode" != "unsigned" && "$mode" != "unsigned-preview" ]]; then
+    if [[ "$mode" == "unsigned" || "$mode" == "unsigned-preview" ]]; then
+        verify_ad_hoc_signature "$mounted_app"
+    else
         verify_developer_id_signature "$mounted_app"
     fi
     if [[ "$mode" == "notarized" ]]; then

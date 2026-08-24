@@ -45,23 +45,23 @@ The output filenames contain `unsigned` so they cannot be confused with signed p
 
 ## Publish an unsigned release
 
-Unsigned releases are GitHub prereleases for testers who accept the Gatekeeper warning. Sparkle signs the universal update archive and appcast with the separate EdDSA key; this does not sign or notarize the app with Apple.
+Unsigned releases are GitHub releases for testers who accept the Gatekeeper warning. Sparkle signs the universal update archive and appcast with the separate EdDSA key; this does not sign or notarize the app with Apple. The app bundle also receives a free ad-hoc signature so macOS can verify its internal integrity, but that signature does not identify the developer.
 
 1. Use a clean commit whose changelog names the release and its limitations.
-2. Create a release tag such as `v0.2.0` on that commit.
+2. Create a release tag such as `v0.2.1` on that commit.
 3. Set `BREWPULSE_RELEASE_TAG` to the tag and `BREWPULSE_BUILD_NUMBER` to a positive integer.
 4. Run `./scripts/release.sh --unsigned-preview`.
 5. Verify all three DMG checksums. Confirm the Apple Silicon image contains `arm64`, the Intel image contains `x86_64`, and the universal image contains both architectures.
-6. Create a GitHub prerelease. Put `Unsigned` in its title and opening warning.
+6. Create a GitHub release. Put `Unsigned` in its title and opening warning.
 7. Attach all three unsigned DMGs and their checksums. The universal DMG serves the appcast; the website links to the smaller architecture-specific downloads.
 8. Confirm the universal DMG URL in `appcast.xml` matches the release, then commit and push the updated feed to `main`.
-9. Link the website to the exact prerelease and repeat the download and checksum test.
+9. Link the website to the exact release and repeat the download and checksum test.
 
-For version 0.2.0:
+For version 0.2.1:
 
 ```text
-export BREWPULSE_RELEASE_TAG="v0.2.0"
-export BREWPULSE_BUILD_NUMBER="4"
+export BREWPULSE_RELEASE_TAG="v0.2.1"
+export BREWPULSE_BUILD_NUMBER="5"
 ./scripts/release.sh --unsigned-preview
 ```
 

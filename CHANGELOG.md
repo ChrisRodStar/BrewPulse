@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.1 - 2026-08-24
+
+### Fixed
+
+- Unsigned release apps now receive a complete ad-hoc bundle signature after Sparkle is embedded, so macOS no longer reports a verified download as damaged.
+- The release process now checks the full signature and resource seal in both the archive and the finished DMG before publishing any artifact.
+
+### Known limitations
+
+- This release is not signed with an Apple Developer ID and is not notarized. macOS still requires the user to allow its first launch in Privacy & Security.
+- Anyone who downloaded the affected 0.2.0 installer must replace it with 0.2.1 manually because the damaged app cannot run its updater.
+
 ## 0.2.0 - 2026-08-24
 
 ### Added

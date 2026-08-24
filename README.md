@@ -32,9 +32,9 @@ BrewPulse can already:
 - Keep Homebrew's stdout and stderr available when something goes wrong.
 - Handle running, completed, failed, interrupted, and cancelled operations.
 
-The current release is [BrewPulse 0.2.0](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.2.0). It is unsigned by Apple and not notarized, so macOS will block it on first launch. Read the [beta guide](docs/BETA.md) before installing it. Apple Developer ID signing and notarization remain deferred; the current checklist is in [TODO.md](TODO.md).
+The current release is [BrewPulse 0.2.1](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.2.1). It is unsigned by Apple and not notarized, so macOS will block it on first launch. Read the [beta guide](docs/BETA.md) before installing it. Apple Developer ID signing and notarization remain deferred; the current checklist is in [TODO.md](TODO.md).
 
-Version 0.2.0 adds Sparkle-signed in-app updates, a manual update check in Settings, and a redesigned drag-to-Applications installer. Users on 0.1.0 Beta 3 need one final manual download to install 0.2.0. After that, BrewPulse can offer later releases from inside the app.
+Version 0.2.1 keeps the Sparkle-signed in-app updates and redesigned installer from 0.2.0, while repairing the incomplete app signature that caused macOS to call some 0.2.0 installs damaged. Users on 0.1.0 Beta 3 or the affected 0.2.0 build need one final manual download. After that, BrewPulse can offer later releases from inside the app.
 
 ## Safety and transparency
 
@@ -58,15 +58,15 @@ I want someone to be able to use the free app without feeling like the useful pa
 - Homebrew installed locally
 - Apple Silicon or Intel Mac
 
-## Download 0.2.0
+## Download 0.2.1
 
-This build is intentionally unsigned. macOS cannot verify its developer or check it through Apple's notarization service, so Gatekeeper will block the first launch. The [beta guide](docs/BETA.md) explains the warning, checksum verification, installation, and removal steps. If you do not want to override Gatekeeper for an unsigned app, build from source.
+This build has an ad-hoc signature for bundle integrity, but it is not signed with an Apple Developer ID or notarized. Gatekeeper will block the first launch because macOS cannot verify the developer or check the app through Apple's notarization service. The [beta guide](docs/BETA.md) explains the warning, checksum verification, installation, and removal steps. If you do not want to override Gatekeeper for an unsigned app, build from source.
 
-- [Download for Apple Silicon](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.0/BrewPulse-0.2.0-macos-arm64-unsigned.dmg)
-- [Apple Silicon SHA-256 checksum](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.0/BrewPulse-0.2.0-macos-arm64-unsigned.dmg.sha256)
-- [Download for Intel](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.0/BrewPulse-0.2.0-macos-x64-unsigned.dmg)
-- [Intel SHA-256 checksum](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.0/BrewPulse-0.2.0-macos-x64-unsigned.dmg.sha256)
-- [Read the complete release notes](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.2.0)
+- [Download for Apple Silicon](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.1/BrewPulse-0.2.1-macos-arm64-unsigned.dmg)
+- [Apple Silicon SHA-256 checksum](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.1/BrewPulse-0.2.1-macos-arm64-unsigned.dmg.sha256)
+- [Download for Intel](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.1/BrewPulse-0.2.1-macos-x64-unsigned.dmg)
+- [Intel SHA-256 checksum](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.1/BrewPulse-0.2.1-macos-x64-unsigned.dmg.sha256)
+- [Read the complete release notes](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.2.1)
 
 ## Building from source
 
@@ -95,7 +95,7 @@ BrewPulse/
 
 [TODO.md](TODO.md) is the working roadmap.
 
-Right now the focus is finishing the free app properly before spending time on payments or Pro-only automation. The unsigned 0.2.0 release lets early testers use the updater-enabled build while accessibility and real-package testing continue. Developer ID signing and notarization are deferred.
+Right now the focus is finishing the free app properly before spending time on payments or Pro-only automation. The unsigned 0.2.1 release lets early testers use the updater-enabled build while accessibility and real-package testing continue. Developer ID signing and notarization are deferred.
 
 Beta installation, privacy, support, and release details live in [`docs/`](docs/):
 

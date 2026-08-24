@@ -15,4 +15,4 @@ Do not post suspected security vulnerabilities publicly. Follow [SECURITY.md](..
 
 ## Scope of the beta
 
-The public 0.2.0 release covers Homebrew discovery, the Overview and Updates interface, individual updates, reviewed Update All, cancellation, failure recovery, and user-approved in-app updates. Requests for paid automation, accounts, fleet management, or hosted services are outside BrewPulse Free.
+The public 0.2.1 release covers Homebrew discovery, the Overview and Updates interface, individual updates, reviewed Update All, cancellation, failure recovery, and user-approved in-app updates. Requests for paid automation, accounts, fleet management, or hosted services are outside BrewPulse Free.
