@@ -6,6 +6,28 @@
         <description>Signed BrewPulse updates</description>
         <language>en</language>
         <item>
+            <title>0.2.2</title>
+            <pubDate>Mon, 24 Aug 2026 15:32:40 -0400</pubDate>
+            <sparkle:version>6</sparkle:version>
+            <sparkle:shortVersionString>0.2.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[
+### Changed
+
+- Refresh failures and package-operation details now share one selectable, scrollable output view, which keeps very large Homebrew logs responsive.
+- Launch-at-login settings now use direct state bindings and clear failed registration alerts through the same presentation state used by the settings window.
+
+### Known limitations
+
+- This release is not signed with an Apple Developer ID and is not notarized. macOS still requires the user to allow its first launch in Privacy & Security.
+- Users on 0.1.0 Beta 3 or the affected 0.2.0 build must install 0.2.2 manually. Version 0.2.1 can update to this release from inside BrewPulse.
+- Scheduling and background Homebrew update notifications are not included.
+- Cask installers may require interaction in another window or administrator approval.
+
+]]></description>
+            <enclosure url="https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.2/BrewPulse-0.2.2-macos-universal-unsigned.dmg" length="5592275" type="application/octet-stream" sparkle:edSignature="YGIUPH2BAv7mxCdGdKmFI1jciiDaKYKVkaiQHl3mPItdA7ZZlGQ6whlCjMzSNvR1VkIBDoteisWUgjsD1pV0AA=="/>
+        </item>
+        <item>
             <title>0.2.1</title>
             <pubDate>Mon, 24 Aug 2026 03:05:29 -0400</pubDate>
             <sparkle:version>5</sparkle:version>
@@ -54,6 +76,6 @@
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: SU4acfabrTOq89eR77vtYDrCLKC/CXH7gVXAAVBH5ulOAjDplLPBhrmL73GU7wPcCFgzQ7CEtdbFt6yRkTdxCA==
-length: 3593
+edSignature: y5g98xf7MC7koweJJq1sWVgWGpfHEGHYVIKTX/5BL2CXOfikNkgpOYSRzAMxukrryg2Cc0Wl/pkPYYOQ7kUAAQ==
+length: 5114
 -->

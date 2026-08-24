@@ -17,7 +17,7 @@ The core workflow is implemented and locally verified. On August 24, 2026, all 8
 | Failure recovery and command lifecycle | In progress |
 | Accessibility and UI edge cases | In progress |
 | Signed in-app updates | Complete |
-| Unsigned 0.2.2 release | Ready to publish |
+| Unsigned 0.2.2 release | Complete |
 
 Only the **Now** section should drive the next code task. The later sections record release gates and boundaries without pretending they are active work.
 
