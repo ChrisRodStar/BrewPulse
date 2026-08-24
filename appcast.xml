@@ -1,13 +1,39 @@
-<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
     <channel>
         <title>BrewPulse updates</title>
         <link>https://github.com/ChrisRodStar/BrewPulse</link>
         <description>Signed BrewPulse updates</description>
         <language>en</language>
+        <item>
+            <title>0.2.0</title>
+            <pubDate>Mon, 24 Aug 2026 02:35:53 -0400</pubDate>
+            <sparkle:version>4</sparkle:version>
+            <sparkle:shortVersionString>0.2.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[
+### Added
+
+- BrewPulse checks for app updates when it opens and at least once per day, then asks before downloading or installing anything.
+- Settings includes a manual "Check for Updates…" action and shows the installed BrewPulse version.
+- Update archives and the appcast feed are signed with a dedicated EdDSA key. The release process produces a universal update archive for Apple Silicon and Intel Macs.
+- Disk images now open as a compact BrewPulse-branded install window with a clear drag-to-Applications layout.
+
+### Known limitations
+
+- This release is unsigned and not notarized. macOS blocks its first launch until the user explicitly allows it in Privacy & Security settings.
+- Users on 0.1.0 Beta 3 must install 0.2.0 manually once. BrewPulse can offer later releases from inside the app.
+- Scheduling and background Homebrew update notifications are not included.
+- Cask installers may require interaction in another window or administrator approval.
+- Intel packaging is verified, but hands-on Intel runtime testing and the full keyboard, VoiceOver, and larger-text passes are not complete.
+- BrewPulse does not collect crash reports or analytics.
+
+]]></description>
+            <enclosure url="https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.0/BrewPulse-0.2.0-macos-universal-unsigned.dmg" length="5598035" type="application/octet-stream" sparkle:edSignature="kx7dQ3QbBD1t/ijZHRbfj/IRhh6JBLrUuCpScyEeNPAQ/7wmX0OcvyNKLTVxgRqoi/k8bgpuNH9gQ3ybZCN4Cg=="/>
+        </item>
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: JnFavm735WkgYpo4KAVBrngPwPKQgqvN9VL4uK2GAWmevIIwSFz5ChwASfOSsjl6D9miMcIBsJtgZ5WDfOjbDA==
-length: 359
+edSignature: 0tL6vFK77aMaR96DDvt9Y/Zb8STC+sw952OJJXvEZdXRyq7FsWU540UfffMX4Zwu4hKzpKJYq7/GEvdaGNNTAw==
+length: 2252
 -->
