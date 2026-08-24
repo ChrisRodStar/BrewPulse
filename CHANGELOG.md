@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.2 - 2026-08-24
+
+### Changed
+
+- Refresh failures and package-operation details now share one selectable, scrollable output view, which keeps very large Homebrew logs responsive.
+- Launch-at-login settings now use direct state bindings and clear failed registration alerts through the same presentation state used by the settings window.
+
+### Known limitations
+
+- This release is not signed with an Apple Developer ID and is not notarized. macOS still requires the user to allow its first launch in Privacy & Security.
+- Users on 0.1.0 Beta 3 or the affected 0.2.0 build must install 0.2.2 manually. Version 0.2.1 can update to this release from inside BrewPulse.
+- Scheduling and background Homebrew update notifications are not included.
+- Cask installers may require interaction in another window or administrator approval.
+
 ## 0.2.1 - 2026-08-24
 
 ### Fixed

@@ -16,6 +16,7 @@
 		A10000000000000000000006 /* CommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* CommandRunner.swift */; };
 		A10000000000000000000007 /* ProcessCommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* ProcessCommandRunner.swift */; };
 		A10000000000000000000008 /* SerializedCommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* SerializedCommandRunner.swift */; };
+		AA100000000000000000001 /* CommandOutputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000001 /* CommandOutputTextView.swift */; };
 		B10000000000000000000001 /* ProcessCommandRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* ProcessCommandRunnerTests.swift */; };
 		B10000000000000000000002 /* SerializedCommandRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* SerializedCommandRunnerTests.swift */; };
 		C10000000000000000000001 /* HomebrewPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000001 /* HomebrewPackage.swift */; };
@@ -120,6 +121,7 @@
 		A20000000000000000000008 /* CommandRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandRunner.swift; sourceTree = "<group>"; };
 		A20000000000000000000009 /* ProcessCommandRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessCommandRunner.swift; sourceTree = "<group>"; };
 		A20000000000000000000010 /* SerializedCommandRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializedCommandRunner.swift; sourceTree = "<group>"; };
+		AA200000000000000000001 /* CommandOutputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandOutputTextView.swift; sourceTree = "<group>"; };
 		B20000000000000000000001 /* ProcessCommandRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessCommandRunnerTests.swift; sourceTree = "<group>"; };
 		B20000000000000000000002 /* SerializedCommandRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializedCommandRunnerTests.swift; sourceTree = "<group>"; };
 		B20000000000000000000003 /* BrewPulseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BrewPulseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -403,6 +405,7 @@
 				T20000000000000000000002 /* PackageOperationProgressBanner.swift */,
 				U20000000000000000000002 /* PackageOperationOutputBanner.swift */,
 				U20000000000000000000003 /* PackageOperationOutputDetails.swift */,
+				AA200000000000000000001 /* CommandOutputTextView.swift */,
 			);
 			path = StatusMenu;
 			sourceTree = "<group>";
@@ -583,6 +586,7 @@
 				T10000000000000000000002 /* PackageOperationProgressBanner.swift in Sources */,
 				U10000000000000000000002 /* PackageOperationOutputBanner.swift in Sources */,
 				U10000000000000000000003 /* PackageOperationOutputDetails.swift in Sources */,
+				AA100000000000000000001 /* CommandOutputTextView.swift in Sources */,
 				A10000000000000000000004 /* HomebrewService.swift in Sources */,
 				A10000000000000000000005 /* PackageStore.swift in Sources */,
 				A10000000000000000000006 /* CommandRunner.swift in Sources */,
@@ -761,7 +765,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -771,7 +775,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.2.1;
+				MARKETING_VERSION = 0.2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chrisrodstar.BrewPulse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -788,7 +792,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -798,7 +802,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.2.1;
+				MARKETING_VERSION = 0.2.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chrisrodstar.BrewPulse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

@@ -249,20 +249,13 @@ private struct RefreshCommandOutputSection: View {
             Text(title)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
-            ScrollView([.horizontal, .vertical]) {
-                Text(content.isEmpty ? emptyMessage : content)
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundStyle(content.isEmpty ? .secondary : .primary)
-                    .textSelection(.enabled)
-                    .fixedSize(horizontal: true, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .topLeading)
-                    .padding(8)
-            }
+            CommandOutputTextView(
+                text: content.isEmpty ? emptyMessage : content,
+                usesSecondaryColor: content.isEmpty,
+                accessibilityLabel: title
+            )
             .frame(maxWidth: .infinity, minHeight: 90, idealHeight: 120)
             .background(.quaternary.opacity(0.25), in: .rect(cornerRadius: 6))
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(title)
-            .accessibilityValue(content.isEmpty ? emptyMessage : content)
         }
     }
 }

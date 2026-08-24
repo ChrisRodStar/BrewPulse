@@ -6,9 +6,11 @@ struct GeneralSettingsView: View {
     @EnvironmentObject private var updater: AppUpdater
 
     var body: some View {
+        @Bindable var settings = settings
+
         Form {
             Section("General") {
-                Toggle(isOn: launchAtLoginBinding) {
+                Toggle(isOn: $settings.launchesAtLogin) {
                     VStack(alignment: .leading, spacing: 3) {
                         Text("Launch BrewPulse at login")
                         Text("Keep update status available from the menu bar after you sign in.")
@@ -57,32 +59,12 @@ struct GeneralSettingsView: View {
         }
         .alert(
             "Unable to Change Login Setting",
-            isPresented: launchAtLoginErrorBinding
+            isPresented: $settings.isShowingLaunchAtLoginError
         ) {
-            Button("OK", role: .cancel) {
-                settings.dismissLaunchAtLoginError()
-            }
+            Button("OK", role: .cancel) {}
         } message: {
             Text(settings.launchAtLoginErrorMessage ?? "Please try again.")
         }
-    }
-
-    private var launchAtLoginBinding: Binding<Bool> {
-        Binding(
-            get: { settings.launchesAtLogin },
-            set: settings.setLaunchesAtLogin
-        )
-    }
-
-    private var launchAtLoginErrorBinding: Binding<Bool> {
-        Binding(
-            get: { settings.launchAtLoginErrorMessage != nil },
-            set: { isPresented in
-                if !isPresented {
-                    settings.dismissLaunchAtLoginError()
-                }
-            }
-        )
     }
 
     private var launchAtLoginAccessibilityHint: String {

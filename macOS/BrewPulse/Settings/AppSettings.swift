@@ -9,11 +9,23 @@ final class AppSettings {
     private(set) var launchAtLoginErrorMessage: String?
 
     var launchesAtLogin: Bool {
-        switch launchAtLoginStatus {
-        case .enabled, .requiresApproval:
-            true
-        case .disabled, .unavailable:
-            false
+        get {
+            switch launchAtLoginStatus {
+            case .enabled, .requiresApproval:
+                true
+            case .disabled, .unavailable:
+                false
+            }
+        }
+        set { setLaunchesAtLogin(newValue) }
+    }
+
+    var isShowingLaunchAtLoginError: Bool {
+        get { launchAtLoginErrorMessage != nil }
+        set {
+            if !newValue {
+                launchAtLoginErrorMessage = nil
+            }
         }
     }
 
@@ -29,7 +41,7 @@ final class AppSettings {
         launchAtLoginStatus = launchAtLoginService.status()
     }
 
-    func setLaunchesAtLogin(_ isEnabled: Bool) {
+    private func setLaunchesAtLogin(_ isEnabled: Bool) {
         launchAtLoginErrorMessage = nil
 
         do {
@@ -43,9 +55,5 @@ final class AppSettings {
 
     func openLoginItemSettings() {
         launchAtLoginService.openSystemSettings()
-    }
-
-    func dismissLaunchAtLoginError() {
-        launchAtLoginErrorMessage = nil
     }
 }

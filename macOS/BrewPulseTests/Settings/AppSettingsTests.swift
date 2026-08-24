@@ -19,12 +19,35 @@ struct AppSettingsTests {
         let service = StubLaunchAtLoginService(status: .disabled)
         let settings = AppSettings(launchAtLoginService: service)
 
-        settings.setLaunchesAtLogin(true)
-        settings.setLaunchesAtLogin(false)
+        settings.launchesAtLogin = true
+        settings.launchesAtLogin = false
 
         #expect(service.requests == [true, false])
         #expect(settings.launchAtLoginStatus == .disabled)
         #expect(!settings.launchesAtLogin)
+    }
+
+    @Test("Dismisses launch at login errors through presentation state")
+    func dismissesRegistrationError() {
+        let expectedError = NSError(
+            domain: "AppSettingsTests",
+            code: 1,
+            userInfo: [NSLocalizedDescriptionKey: "Registration was denied."]
+        )
+        let settings = AppSettings(
+            launchAtLoginService: StubLaunchAtLoginService(
+                status: .disabled,
+                error: expectedError
+            )
+        )
+
+        settings.launchesAtLogin = true
+        #expect(settings.isShowingLaunchAtLoginError)
+
+        settings.isShowingLaunchAtLoginError = false
+
+        #expect(!settings.isShowingLaunchAtLoginError)
+        #expect(settings.launchAtLoginErrorMessage == nil)
     }
 
     @Test("Keeps the system status and exposes registration failures")
@@ -40,7 +63,7 @@ struct AppSettingsTests {
         )
         let settings = AppSettings(launchAtLoginService: service)
 
-        settings.setLaunchesAtLogin(true)
+        settings.launchesAtLogin = true
 
         #expect(settings.launchAtLoginStatus == .disabled)
         #expect(!settings.launchesAtLogin)
