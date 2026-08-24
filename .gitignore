@@ -1,5 +1,6 @@
 # Xcode & macOS
 .DS_Store
+.impeccable/review/
 build/
 artifacts/
 DerivedData/

@@ -1,14 +1,13 @@
 import SwiftUI
 
 struct StatusMenuContent: View {
-    @State private var selectedSection = StatusMenuSection.status
-
+    @Binding var selectedSection: StatusMenuSection
     let state: PackageStore.State
     let packageActionsDisabled: Bool
     let onRefresh: () -> Void
     let onShowRefreshFailureDetails: (PackageStore.Failure) -> Void
     let onUpdate: (HomebrewPackage.ID) -> Void
-    let onUninstall: (HomebrewPackage.ID) -> Void
+    let onUpdateAll: () -> Void
 
     var body: some View {
         if let report = state.report {
@@ -19,7 +18,7 @@ struct StatusMenuContent: View {
                 packageActionsDisabled: packageActionsDisabled,
                 onShowRefreshFailureDetails: onShowRefreshFailureDetails,
                 onUpdate: onUpdate,
-                onUninstall: onUninstall
+                onUpdateAll: onUpdateAll
             )
         } else {
             InitialPackageContent(
@@ -65,17 +64,10 @@ private struct RetainedPackageContent: View {
     let packageActionsDisabled: Bool
     let onShowRefreshFailureDetails: (PackageStore.Failure) -> Void
     let onUpdate: (HomebrewPackage.ID) -> Void
-    let onUninstall: (HomebrewPackage.ID) -> Void
+    let onUpdateAll: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
-            StatusMenuSectionPicker(
-                selection: $selectedSection,
-                inventory: report.inventory
-            )
-            .padding(12)
-
-            Divider()
             RefreshStatus(
                 state: state,
                 retainedAt: report.refreshedAt,
@@ -83,23 +75,17 @@ private struct RetainedPackageContent: View {
             )
 
             switch selectedSection {
-            case .status:
-                HomebrewStatusView(report: report)
-            case .casks:
-                PackageInventoryList(
-                    category: .casks,
-                    packages: report.inventory.applications,
-                    packageActionsDisabled: packageActionsDisabled,
-                    onUpdate: onUpdate,
-                    onUninstall: onUninstall
+            case .overview:
+                HomebrewStatusView(
+                    report: report,
+                    onViewUpdates: { selectedSection = .updates }
                 )
-            case .formulae:
-                PackageInventoryList(
-                    category: .formulae,
-                    packages: report.inventory.formulae,
+            case .updates:
+                AvailableUpdatesList(
+                    packages: report.inventory.actionableUpdates,
                     packageActionsDisabled: packageActionsDisabled,
                     onUpdate: onUpdate,
-                    onUninstall: onUninstall
+                    onUpdateAll: onUpdateAll
                 )
             }
         }
@@ -113,19 +99,13 @@ private struct RefreshStatus: View {
 
     var body: some View {
         switch state {
-        case .refreshing:
-            ProgressView()
-                .progressViewStyle(.linear)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .accessibilityLabel("Refreshing package information")
         case .failed(let failure, previousReport: .some):
             RefreshFailureBanner(
                 failure: failure,
                 retainedAt: retainedAt,
                 onShowDetails: { onShowRefreshFailureDetails(failure) }
             )
-        case .idle, .loading, .loaded, .failed(_, previousReport: nil):
+        case .idle, .loading, .refreshing, .loaded, .failed(_, previousReport: nil):
             EmptyView()
         }
     }
@@ -167,12 +147,13 @@ private enum StatusMenuContentPreviewData {
 private extension StatusMenuContent {
     static func preview(state: PackageStore.State) -> StatusMenuContent {
         StatusMenuContent(
+            selectedSection: .constant(.overview),
             state: state,
             packageActionsDisabled: false,
             onRefresh: {},
             onShowRefreshFailureDetails: { _ in },
             onUpdate: { _ in },
-            onUninstall: { _ in }
+            onUpdateAll: {}
         )
     }
 }

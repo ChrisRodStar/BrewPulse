@@ -1,27 +1,27 @@
 nonisolated enum HomebrewPackageOperationState: Equatable, Sendable {
     case idle
-    case confirmed(HomebrewPackageOperationPlan)
-    case running(HomebrewPackageOperationPlan)
-    case cancelling(HomebrewPackageOperationPlan)
-    case completed(HomebrewPackageOperationPlan, CommandResult)
+    case confirmed(HomebrewOperationPlan)
+    case running(HomebrewOperationPlan)
+    case cancelling(HomebrewOperationPlan)
+    case completed(HomebrewOperationPlan, CommandResult)
     case failed(
-        HomebrewPackageOperationPlan,
+        HomebrewOperationPlan,
         message: String,
         result: CommandResult?
     )
-    case cancelled(HomebrewPackageOperationPlan, result: CommandResult?)
+    case cancelled(HomebrewOperationPlan, result: CommandResult?)
 
-    var confirmedPlan: HomebrewPackageOperationPlan? {
+    var confirmedPlan: HomebrewOperationPlan? {
         guard case .confirmed(let plan) = self else { return nil }
         return plan
     }
 
-    var runningPlan: HomebrewPackageOperationPlan? {
+    var runningPlan: HomebrewOperationPlan? {
         guard case .running(let plan) = self else { return nil }
         return plan
     }
 
-    var activePlan: HomebrewPackageOperationPlan? {
+    var activePlan: HomebrewOperationPlan? {
         switch self {
         case .running(let plan), .cancelling(let plan):
             plan

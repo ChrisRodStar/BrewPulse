@@ -1,42 +1,15 @@
 {
-  "color-space-for-untagged-svg-colors": "display-p3",
   "fill-specializations": [
     {
       "appearance": "light",
       "value": {
-        "linear-gradient": [
-          "display-p3:1.000,0.650,0.080,1.000",
-          "display-p3:0.920,0.300,0.010,1.000"
-        ],
-        "orientation": {
-          "start": {
-            "x": 0.38,
-            "y": 0.08
-          },
-          "stop": {
-            "x": 0.62,
-            "y": 0.94
-          }
-        }
+        "automatic-gradient": "display-p3:0.945,0.950,0.965,1.000"
       }
     },
     {
       "appearance": "dark",
       "value": {
-        "linear-gradient": [
-          "display-p3:0.520,0.150,0.010,1.000",
-          "display-p3:0.120,0.035,0.010,1.000"
-        ],
-        "orientation": {
-          "start": {
-            "x": 0.4,
-            "y": 0.06
-          },
-          "stop": {
-            "x": 0.6,
-            "y": 0.96
-          }
-        }
+        "automatic-gradient": "display-p3:0.160,0.145,0.380,1.000"
       }
     },
     {
@@ -46,7 +19,7 @@
   ],
   "groups": [
     {
-      "blur": 0.08,
+      "blur": 0.03,
       "layers": [
         {
           "glass-specializations": [
@@ -63,59 +36,19 @@
               "value": true
             }
           ],
-          "image-name": "brewpulse-foreground.png",
-          "name": "BrewPulse mug and pulse"
+          "image-name": "brewpulse-mug.png",
+          "name": "Compact graphite mug"
         }
       ],
       "lighting": "combined",
       "shadow": {
-        "kind": "layer-color",
-        "kind-specializations": [
-          {
-            "appearance": "dark",
-            "value": "neutral"
-          },
-          {
-            "appearance": "tinted",
-            "value": "neutral"
-          }
-        ],
-        "opacity": 0.42,
-        "opacity-specializations": [
-          {
-            "appearance": "dark",
-            "value": 0.68
-          },
-          {
-            "appearance": "tinted",
-            "value": 0.48
-          }
-        ]
+        "kind": "neutral",
+        "opacity": 0.34
       },
       "specular": true,
       "translucency": {
         "enabled": false,
-        "enabled-specializations": [
-          {
-            "appearance": "dark",
-            "value": false
-          },
-          {
-            "appearance": "tinted",
-            "value": true
-          }
-        ],
-        "value": 0.0,
-        "value-specializations": [
-          {
-            "appearance": "dark",
-            "value": 0.0
-          },
-          {
-            "appearance": "tinted",
-            "value": 0.35
-          }
-        ]
+        "value": 0.0
       }
     }
   ],

@@ -24,11 +24,10 @@ struct BrewPulseSettingsView: View {
 private struct SettingsIdentityHeader: View {
     var body: some View {
         HStack(spacing: 14) {
-            Image(systemName: "mug.fill")
-                .font(.title2)
-                .foregroundStyle(.white)
+            Image("BrewPulseAppIcon")
+                .resizable()
+                .scaledToFit()
                 .frame(width: 44, height: 44)
-                .background(.tint, in: .rect(cornerRadius: 12))
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {

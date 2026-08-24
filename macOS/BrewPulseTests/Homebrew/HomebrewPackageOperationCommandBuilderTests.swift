@@ -51,6 +51,24 @@ struct HomebrewPackageOperationCommandBuilderTests {
         ))
     }
 
+    @Test("Builds Update All from exactly the reviewed packages")
+    func buildsReviewedUpdateAll() throws {
+        let packages = [
+            package(name: "git", kind: .formula),
+            package(name: "visual-studio-code", kind: .cask)
+        ]
+
+        let request = try builder.updateAllRequest(
+            executableURL: brewURL,
+            packages: packages
+        )
+
+        #expect(request == CommandRequest(
+            executableURL: brewURL,
+            arguments: ["upgrade", "--", "git", "visual-studio-code"]
+        ))
+    }
+
     @Test("Rejects unavailable upgrades and invalid package names")
     func rejectsUnsafeRequests() {
         let unavailablePackage = HomebrewPackage(

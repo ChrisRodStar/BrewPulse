@@ -104,19 +104,27 @@ private struct PackageOperationOutcomeSummary: View {
     }
 
     private var title: String {
-        switch (output.plan.kind, output.status) {
+        if output.plan.isUpdateAll {
+            return switch output.status {
+            case .succeeded: "Updates completed"
+            case .failed: "Couldn’t update all packages"
+            case .cancelled: "Cancelled Update All"
+            }
+        }
+        let packageName = output.plan.package?.name ?? "package"
+        return switch (output.plan.kind, output.status) {
         case (.update, .succeeded):
-            "Updated \(output.plan.package.name)"
+            "Updated \(packageName)"
         case (.update, .failed):
-            "Couldn’t update \(output.plan.package.name)"
+            "Couldn’t update \(packageName)"
         case (.update, .cancelled):
-            "Cancelled \(output.plan.package.name) update"
+            "Cancelled \(packageName) update"
         case (.uninstall, .succeeded):
-            "Uninstalled \(output.plan.package.name)"
+            "Uninstalled \(packageName)"
         case (.uninstall, .failed):
-            "Couldn’t uninstall \(output.plan.package.name)"
+            "Couldn’t uninstall \(packageName)"
         case (.uninstall, .cancelled):
-            "Cancelled \(output.plan.package.name) uninstall"
+            "Cancelled \(packageName) uninstall"
         }
     }
 
@@ -356,10 +364,12 @@ extension HomebrewPackageOperationOutput {
             terminationStatus = 130
         }
         return HomebrewPackageOperationOutput(
-            plan: HomebrewPackageOperationPlan(
-                kind: .update,
-                package: package,
-                command: request
+            plan: .package(
+                HomebrewPackageOperationPlan(
+                    kind: .update,
+                    package: package,
+                    command: request
+                )
             ),
             status: status,
             result: CommandResult(

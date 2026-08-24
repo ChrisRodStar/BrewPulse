@@ -31,13 +31,13 @@ struct HomebrewPackageOperationOutputTests {
         )
 
         #expect(HomebrewPackageOperationState.idle.terminalOutput == nil)
-        #expect(HomebrewPackageOperationState.running(plan).terminalOutput == nil)
+        #expect(HomebrewPackageOperationState.running(.package(plan)).terminalOutput == nil)
 
         let output = try #require(
-            HomebrewPackageOperationState.completed(plan, result).terminalOutput
+            HomebrewPackageOperationState.completed(.package(plan), result).terminalOutput
         )
         #expect(output.id == package.id)
-        #expect(output.plan == plan)
+        #expect(output.plan == .package(plan))
         #expect(output.status == .succeeded)
         #expect(output.result == result)
         #expect(output.result?.standardOutput == "updated git\n")
@@ -99,10 +99,12 @@ struct HomebrewPackageOperationOutputTests {
             arguments: ["upgrade", "--formula", "--", package.name]
         )
         return HomebrewPackageOperationOutput(
-            plan: HomebrewPackageOperationPlan(
-                kind: .update,
-                package: package,
-                command: request
+            plan: .package(
+                HomebrewPackageOperationPlan(
+                    kind: .update,
+                    package: package,
+                    command: request
+                )
             ),
             status: .succeeded,
             result: .testResult(

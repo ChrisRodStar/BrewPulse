@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PackageOperationProgressBanner: View {
-    let plan: HomebrewPackageOperationPlan
+    let plan: HomebrewOperationPlan
     let isCancelling: Bool
     let onCancel: () -> Void
 
@@ -14,7 +14,7 @@ struct PackageOperationProgressBanner: View {
                 Text(progressTitle)
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                Text(plan.package.name)
+                Text(plan.displayName)
                     .font(.headline)
                     .lineLimit(1)
                     .truncationMode(.middle)
@@ -36,12 +36,15 @@ struct PackageOperationProgressBanner: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("\(progressTitle): \(plan.package.name)")
+        .accessibilityLabel("\(progressTitle): \(plan.displayName)")
     }
 
     private var progressTitle: String {
         if isCancelling {
             return "Cancelling operation…"
+        }
+        if plan.isUpdateAll {
+            return "Updating all available packages"
         }
         return switch plan.kind {
         case .update: "Updating"
@@ -58,12 +61,14 @@ struct PackageOperationProgressBanner: View {
         kind: .cask
     )
     PackageOperationProgressBanner(
-        plan: HomebrewPackageOperationPlan(
-            kind: .uninstall,
-            package: package,
-            command: CommandRequest(
-                executableURL: URL(fileURLWithPath: "/opt/homebrew/bin/brew"),
-                arguments: ["uninstall", "--cask", "--", package.name]
+        plan: .package(
+            HomebrewPackageOperationPlan(
+                kind: .uninstall,
+                package: package,
+                command: CommandRequest(
+                    executableURL: URL(fileURLWithPath: "/opt/homebrew/bin/brew"),
+                    arguments: ["uninstall", "--cask", "--", package.name]
+                )
             )
         ),
         isCancelling: false,

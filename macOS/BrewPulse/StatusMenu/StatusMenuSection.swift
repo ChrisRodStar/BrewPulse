@@ -3,31 +3,26 @@ import Foundation
 nonisolated enum StatusMenuSection: CaseIterable, Hashable, Identifiable,
     Sendable
 {
-    case status
-    case casks
-    case formulae
+    case overview
+    case updates
 
     var id: Self { self }
 
     var title: String {
         switch self {
-        case .status:
-            "Status"
-        case .casks:
-            "Casks"
-        case .formulae:
-            "Formulae"
+        case .overview:
+            "Overview"
+        case .updates:
+            "Updates"
         }
     }
 
     var systemImage: String {
         switch self {
-        case .status:
+        case .overview:
             "gauge.with.dots.needle.50percent"
-        case .casks:
-            "macwindow"
-        case .formulae:
-            "shippingbox"
+        case .updates:
+            "arrow.down.circle"
         }
     }
 }

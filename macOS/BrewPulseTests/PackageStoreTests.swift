@@ -370,6 +370,79 @@ struct PackageStoreTests {
         #expect(store.confirmedOperationPlan == plan)
     }
 
+    @Test("Builds, confirms, and runs Update All as one reviewed command")
+    @MainActor
+    func runsConfirmedUpdateAll() async throws {
+        let runner = RecordingCommandRunner { request in
+            if request.arguments == ["upgrade", "--", "git"] {
+                return .testResult(
+                    for: request,
+                    standardOutput: "Upgraded all eligible packages\n"
+                )
+            }
+            return try Self.successfulRefreshResult(for: request)
+        }
+        let store = PackageStore(
+            state: .loaded(Self.sampleReport),
+            homebrewService: HomebrewService(
+                commandRunner: runner,
+                executableURL: brewURL
+            )
+        )
+
+        let plan = try store.updateAllOperationPlan()
+        guard case .updateAll(let updateAllPlan) = plan else {
+            Issue.record("Expected an Update All plan")
+            return
+        }
+        #expect(updateAllPlan.packages.map(\.name) == ["git"])
+        #expect(updateAllPlan.command.arguments == ["upgrade", "--", "git"])
+
+        try store.confirmOperation(plan)
+        #expect(store.confirmedUpdateAllPlan == updateAllPlan)
+
+        await store.runConfirmedOperation()
+
+        guard case .completed(let completedPlan, let result) = store.operationState else {
+            Issue.record("Expected Update All to complete")
+            return
+        }
+        #expect(completedPlan == plan)
+        #expect(result.request.arguments == ["upgrade", "--", "git"])
+        #expect(result.standardOutput == "Upgraded all eligible packages\n")
+        #expect(runner.requests.first?.arguments == ["upgrade", "--", "git"])
+    }
+
+    @Test("Rejects Update All without a fresh actionable report")
+    @MainActor
+    func rejectsUnavailableUpdateAllPlans() {
+        let emptyReport = HomebrewInventoryReport(
+            inventory: HomebrewInventory(applications: [], formulae: []),
+            commandResults: [],
+            refreshedAt: .now
+        )
+        let failedStore = PackageStore(
+            state: .failed(
+                PackageStore.Failure(
+                    unexpectedError: CocoaError(.fileReadUnknown)
+                ),
+                previousReport: Self.sampleReport
+            ),
+            homebrewService: HomebrewService(executableURL: brewURL)
+        )
+        let emptyStore = PackageStore(
+            state: .loaded(emptyReport),
+            homebrewService: HomebrewService(executableURL: brewURL)
+        )
+
+        #expect(throws: (any Error).self) {
+            try failedStore.updateAllOperationPlan()
+        }
+        #expect(throws: (any Error).self) {
+            try emptyStore.updateAllOperationPlan()
+        }
+    }
+
     @Test("Identifies the package while its confirmed update is running")
     @MainActor
     func tracksRunningUpdate() async throws {
@@ -395,11 +468,11 @@ struct PackageStoreTests {
         try store.confirmOperation(plan)
 
         let update = Task { await store.runConfirmedOperation() }
-        for _ in 0..<100 where store.operationState.runningPlan != plan {
+        for _ in 0..<100 where store.operationState.runningPlan != .package(plan) {
             await Task.yield()
         }
 
-        #expect(store.operationState == .running(plan))
+        #expect(store.operationState == .running(.package(plan)))
         #expect(store.isPerformingHomebrewWork)
         #expect(throws: HomebrewPackageOperationConfirmationError.operationInProgress(plan.id)) {
             try store.operationPlan(for: plan.id, kind: .uninstall)
@@ -415,7 +488,7 @@ struct PackageStoreTests {
             Issue.record("Expected the update to complete")
             return
         }
-        #expect(completedPlan == plan)
+        #expect(completedPlan == .package(plan))
         #expect(result.request == plan.command)
         #expect(result.standardOutput == expectedOutput)
         #expect(store.operationState.terminalOutput?.status == .succeeded)
@@ -469,7 +542,7 @@ struct PackageStoreTests {
             Issue.record("Expected the package action to remain successful")
             return
         }
-        #expect(completedPlan == plan)
+        #expect(completedPlan == .package(plan))
         #expect(operationResult.standardOutput == "git was upgraded\n")
         #expect(store.operationFollowUpRefreshFailure?.kind == .connectivityFailure)
 
@@ -521,7 +594,7 @@ struct PackageStoreTests {
             Issue.record("Expected the update to fail")
             return
         }
-        #expect(failedPlan == plan)
+        #expect(failedPlan == .package(plan))
         #expect(message == "permission denied")
         #expect(result?.standardOutput == "partial update\n")
         #expect(result?.standardError == "permission denied\n")
@@ -574,7 +647,7 @@ struct PackageStoreTests {
             Issue.record("Expected the uninstall to complete")
             return
         }
-        #expect(completedPlan == plan)
+        #expect(completedPlan == .package(plan))
         #expect(result.standardOutput == "Uninstalling /test/git...\n")
         #expect(store.state.report?.inventory.count == 0)
         #expect(store.operationState.terminalOutput?.plan.kind == .uninstall)
@@ -609,13 +682,13 @@ struct PackageStoreTests {
         try store.confirmOperation(plan)
 
         let update = Task { await store.runConfirmedOperation() }
-        for _ in 0..<100 where store.operationState.runningPlan != plan {
+        for _ in 0..<100 where store.operationState.runningPlan != .package(plan) {
             await Task.yield()
         }
 
         store.cancelOperation()
 
-        #expect(store.operationState == .cancelling(plan))
+        #expect(store.operationState == .cancelling(.package(plan)))
         #expect(store.isPerformingHomebrewWork)
         #expect(runner.cancellationRequested)
 
@@ -629,7 +702,7 @@ struct PackageStoreTests {
             Issue.record("Expected the update to be cancelled")
             return
         }
-        #expect(cancelledPlan == plan)
+        #expect(cancelledPlan == .package(plan))
         #expect(result?.standardOutput == "partial update before cancellation\n")
         #expect(result?.standardError == "interrupted\n")
         #expect(store.state.report?.inventory.formulae.map(\.name) == ["git"])

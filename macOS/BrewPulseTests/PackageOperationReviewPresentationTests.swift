@@ -14,12 +14,12 @@ struct PackageOperationReviewPresentationTests {
         #expect(presentation.plan == nil)
 
         presentation.present(firstPlan)
-        #expect(presentation.plan == firstPlan)
+        #expect(presentation.plan == .package(firstPlan))
 
-        presentation.clear(secondPlan)
-        #expect(presentation.plan == firstPlan)
+        presentation.clear(.package(secondPlan))
+        #expect(presentation.plan == .package(firstPlan))
 
-        presentation.clear(firstPlan)
+        presentation.clear(.package(firstPlan))
         #expect(presentation.plan == nil)
     }
 

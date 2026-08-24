@@ -39,7 +39,7 @@ private struct PackageSummary: View {
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             Image(systemName: package.kind == .cask ? "app.dashed" : "shippingbox")
-                .foregroundStyle(.secondary)
+                .foregroundStyle(CivicSignalTheme.brand)
                 .frame(width: 18)
                 .padding(.top, 1)
                 .accessibilityHidden(true)
@@ -62,7 +62,7 @@ private struct PackageSummary: View {
                     }
                 }
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(CivicSignalTheme.secondaryText)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityElement(children: .ignore)

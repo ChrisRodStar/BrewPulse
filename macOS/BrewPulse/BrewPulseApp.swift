@@ -14,14 +14,7 @@ struct BrewPulseApp: App {
                 .environment(presentation)
                 .environment(operationReviewPresentation)
         } label: {
-            BrewPulseMenuBarLabel(
-                updateCount: store.state.availableUpdateCount
-            )
-            .task {
-                if case .idle = store.state {
-                    await store.refresh()
-                }
-            }
+            BrewPulseMenuBarLabel(updateCount: store.state.availableUpdateCount)
         }
         .menuBarExtraStyle(.window)
 

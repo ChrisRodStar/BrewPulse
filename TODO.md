@@ -2,7 +2,7 @@
 
 BrewPulse is the public macOS client and the shared Homebrew implementation used by every future BrewPulse product.
 
-> **Current priority:** collect feedback on the published unsigned 0.1.0 preview, then use that feedback and the remaining manual matrix to prepare a signed beta. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
+> **Current priority:** collect feedback on the published unsigned 0.1.0 Beta 3 preview, then use that feedback and the remaining manual matrix to prepare a signed beta. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
 
 ## Current state
 
@@ -38,20 +38,21 @@ Work through these areas in order. Keep each code change small enough to review 
 
 - [x] Apply a five-minute timeout to each read-only refresh command. Do not time out update or uninstall automatically.
 - [x] Test stalled refresh commands and likely connectivity failures with deterministic runners.
-- [ ] Test cancellation with a real cask installer that launches child processes.
-- [x] Run each command in its own process group so Cancel and timeout stop child work before returning.
+- [ ] Remove the in-progress Cancel action from package updates and uninstalls. Keep Cancel in command review, before anything runs.
+- [ ] Once confirmed, let a package action run to completion and preserve Homebrew output if it fails or the app exits unexpectedly.
+- [x] Run read-only refresh commands in their own process groups so a timeout stops child work before returning.
 - [x] Show a successful package action and a failed follow-up refresh as separate outcomes so stale inventory is never mistaken for current state.
-- [ ] Verify relaunch behavior after an interrupted operation.
+- [ ] Verify relaunch behavior after an operation is interrupted by a crash or forced quit.
 - [x] Keep very large command output usable without constructing one unbounded SwiftUI `Text` view.
 
 ### 3. UI and accessibility finish work
 
 - [x] Make long and multi-line installed or available versions readable without breaking row actions.
 - [x] Add `Command-R` for refresh. Keep the existing default, cancel, and Settings shortcuts working.
-- [ ] Verify keyboard-only navigation through section selection, package actions, command review, cancellation, output details, and Settings.
+- [ ] Verify keyboard-only navigation through section selection, package actions, command review, output details, and Settings.
 - [ ] Verify VoiceOver labels, values, focus order, grouping, and disabled states for the same workflow.
 - [ ] Verify larger accessibility text sizes do not hide commands, versions, warnings, or destructive confirmations.
-- [x] Add previews for loading, failure, empty inventory, failed operation, and cancelled operation states.
+- [x] Add previews for loading, failure, empty inventory, and failed operation states.
 - [ ] Review copy with someone who uses Homebrew but does not work in Terminal every day.
 
 ### 4. Remaining quality matrix
@@ -71,7 +72,7 @@ These checks improve the preview and remain required for the later signed beta. 
 
 - [x] Add and validate a production Icon Composer app icon with light, dark, and tinted appearances.
 - [x] Enable hardened runtime in Debug and Release configurations.
-- [x] Add a repeatable credential-free universal archive and packaging dry run.
+- [x] Add a repeatable credential-free Apple Silicon and Intel DMG packaging dry run.
 - [x] Document an explicitly labeled unsigned preview without presenting it as the signed public beta.
 - [x] Add a release mode that requires a clean tagged commit and dated changelog for a published unsigned preview.
 - [ ] Verify the Developer ID archive and signing process with the production identity.
@@ -87,7 +88,7 @@ These checks improve the preview and remain required for the later signed beta. 
 
 The 0.1.0 beta preview is ready when:
 
-- [x] A version-checked universal ZIP and SHA-256 checksum are published in a GitHub prerelease.
+- [x] Version-checked Apple Silicon and Intel DMGs with SHA-256 checksums are published in a GitHub prerelease.
 - [x] The unsigned and unnotarized status appears before every download link.
 - [x] The install guide explains Apple's Open Anyway flow without disabling Gatekeeper or removing quarantine.
 - [x] The GitHub prerelease and website point to the exact artifact and checksum.
@@ -97,9 +98,10 @@ The 0.1.0 beta preview is ready when:
 
 The later signed beta is ready when:
 
+- [ ] Apple Silicon and Intel DMGs are published, and the website selects the matching installer with a manual fallback.
 - [ ] A new user can install, open, and remove the signed app using the published instructions.
 - [ ] Missing Homebrew, a healthy installation, no packages, current packages, outdated packages, and refresh failures are understandable.
-- [ ] An individual formula or cask can be reviewed, updated, or uninstalled without hidden commands.
+- [ ] An individual formula or cask update and Update All can be reviewed without hidden commands.
 - [ ] Failures and cancellations preserve enough original Homebrew output to troubleshoot them.
 - [ ] The archived build passes automated checks and the manual beta matrix.
 - [ ] The website has an accurate download, source, license, security, support, and privacy path.
@@ -109,7 +111,7 @@ The later signed beta is ready when:
 - [ ] Triage crash, command-safety, data-loss, cancellation, and major accessibility reports before cosmetic requests.
 - [ ] Add regression fixtures for Homebrew output that the beta encounters in the wild.
 - [ ] Decide which beta findings block 1.0 and record them here.
-- [ ] Tag Free 1.0 only when the individual package-maintenance workflow is stable enough to recommend outside the project.
+- [ ] Tag Free 1.0 only when individual updates and reviewed Update All are stable enough to recommend outside the project.
 
 ## Completed foundation
 
@@ -119,9 +121,9 @@ The later signed beta is ready when:
 - [x] Parse installed casks, formulae, versions, metadata, and structured outdated data.
 - [x] Model pinned and otherwise non-upgradable packages.
 - [x] Show installed and available versions, update counts, refresh progress, retained data, and last refresh time.
-- [x] Review the exact typed formula or cask command before an update or uninstall.
+- [x] Review the exact typed formula or cask command before an update. The command layer retains standard uninstall support for future product review.
 - [x] Require explicit confirmation and keep destructive uninstall separate.
-- [x] Preserve operation output across success, failure, interruption, and cancellation.
+- [x] Preserve operation output across success, failure, and unexpected interruption.
 - [x] Refresh inventory after package actions.
 - [x] Add Settings and launch-at-login support.
 - [x] Add CI, a Release build check, static analysis, fixtures, command tests, and thirteen focused `PackageStore` state tests.
@@ -131,7 +133,7 @@ The later signed beta is ready when:
 
 These are product rules, not unchecked beta tasks:
 
-- Homebrew discovery, parsing, command construction, execution safety, and individual Free actions remain public.
+- Homebrew discovery, parsing, command construction, execution safety, individual updates, and reviewed Update All remain public.
 - BrewPulse Free must keep building without Commercial, Web, or Cloud.
 - Private modules extend the public core; they do not copy it or replace its safety rules.
 - Add commercial interfaces only when a real private implementation needs them.
@@ -148,4 +150,4 @@ Extract the shared engine into a Swift package or framework when `BrewPulse-Comm
 
 ## Definition of done for BrewPulse Free
 
-A normal Homebrew user can install BrewPulse, understand what is outdated, safely update or remove one package at a time, recover from common failures, and verify that the app never performs hidden package-manager work.
+A normal Homebrew user can install BrewPulse, understand what needs attention, safely review one update or all available updates, recover from common failures, and verify that the app never performs hidden package-manager work.

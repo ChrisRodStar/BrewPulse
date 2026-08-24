@@ -111,8 +111,27 @@ struct HomebrewService: Sendable {
         )
     }
 
+    nonisolated func updateAllCommand(
+        for packages: [HomebrewPackage]
+    ) throws -> CommandRequest {
+        try HomebrewPackageOperationCommandBuilder().updateAllRequest(
+            executableURL: executableURL(),
+            packages: packages
+        )
+    }
+
     nonisolated func runOperation(
         _ plan: HomebrewPackageOperationPlan
+    ) throws -> CommandResult {
+        let result = try commandRunner.run(plan.command)
+        guard result.terminationStatus == 0 else {
+            throw HomebrewError.commandFailed(results: [result])
+        }
+        return result
+    }
+
+    nonisolated func runOperation(
+        _ plan: HomebrewOperationPlan
     ) throws -> CommandResult {
         let result = try commandRunner.run(plan.command)
         guard result.terminationStatus == 0 else {

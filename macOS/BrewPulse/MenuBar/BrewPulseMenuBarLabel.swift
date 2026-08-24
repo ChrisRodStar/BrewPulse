@@ -8,16 +8,15 @@ struct BrewPulseMenuBarLabel: View {
             updateCount: updateCount
         )
 
-        HStack(spacing: 4) {
-            Image(systemName: "mug.fill")
-            if let updateCount {
-                Text(updateCount, format: .number)
-                    .monospacedDigit()
-            }
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(presentation.accessibilityLabel)
-        .help(presentation.accessibilityLabel)
+        Image("BrewPulseMenuBarMark")
+            .resizable()
+            .renderingMode(.template)
+            .scaledToFit()
+            .frame(width: 13, height: 13)
+            .fixedSize()
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(presentation.accessibilityLabel)
+            .help(presentation.accessibilityLabel)
     }
 }
 

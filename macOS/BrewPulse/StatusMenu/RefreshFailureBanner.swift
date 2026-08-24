@@ -11,7 +11,7 @@ struct InitialRefreshFailureView: View {
             VStack(spacing: 14) {
                 Image(systemName: failure.systemImage)
                     .font(.system(size: 34))
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(CivicSignalTheme.update)
                     .accessibilityHidden(true)
 
                 Text(failure.title)
@@ -53,7 +53,7 @@ struct RefreshFailureBanner: View {
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             Image(systemName: failure.systemImage)
-                .foregroundStyle(.orange)
+                .foregroundStyle(CivicSignalTheme.update)
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
@@ -80,7 +80,7 @@ struct RefreshFailureBanner: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.orange.opacity(0.08))
+        .background(CivicSignalTheme.updateSurface)
     }
 }
 

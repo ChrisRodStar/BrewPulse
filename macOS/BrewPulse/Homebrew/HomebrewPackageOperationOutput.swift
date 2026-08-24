@@ -5,7 +5,7 @@ nonisolated struct HomebrewPackageOperationOutput: Equatable, Identifiable, Send
         case cancelled
     }
 
-    let plan: HomebrewPackageOperationPlan
+    let plan: HomebrewOperationPlan
     let status: Status
     let result: CommandResult?
 

@@ -22,6 +22,7 @@ version="${BREWPULSE_VERSION:-$(awk -F ' = ' '/MARKETING_VERSION =/ { gsub(/;/, 
 project_build_number="$(awk -F ' = ' '/CURRENT_PROJECT_VERSION =/ { gsub(/;/, "", $2); print $2; exit }' "$project_path/project.pbxproj")"
 build_number="${BREWPULSE_BUILD_NUMBER:-$project_build_number}"
 artifact_directory="${BREWPULSE_ARTIFACT_DIRECTORY:-$repository_root/artifacts}"
+architecture_specs=("arm64:arm64" "x86_64:x64")
 
 if ! xcodebuild -version >/dev/null 2>&1; then
     echo "Select a full Xcode installation with xcode-select or set DEVELOPER_DIR, then try again." >&2
@@ -43,14 +44,14 @@ fi
 
 case "$mode" in
     unsigned|unsigned-preview)
-        artifact_name="BrewPulse-$version-macos-unsigned"
+        artifact_suffix="-unsigned"
         signing_arguments=(
             CODE_SIGNING_ALLOWED=NO
             CODE_SIGNING_REQUIRED=NO
         )
         ;;
     signed)
-        artifact_name="BrewPulse-$version-macos-signed-unnotarized"
+        artifact_suffix="-signed-unnotarized"
         : "${BREWPULSE_SIGNING_IDENTITY:?Set BREWPULSE_SIGNING_IDENTITY to a Developer ID Application identity}"
         : "${BREWPULSE_DEVELOPMENT_TEAM:?Set BREWPULSE_DEVELOPMENT_TEAM to the Apple Developer team ID}"
         signing_arguments=(
@@ -61,7 +62,7 @@ case "$mode" in
         )
         ;;
     notarized)
-        artifact_name="BrewPulse-$version-macos"
+        artifact_suffix=""
         : "${BREWPULSE_SIGNING_IDENTITY:?Set BREWPULSE_SIGNING_IDENTITY to a Developer ID Application identity}"
         : "${BREWPULSE_DEVELOPMENT_TEAM:?Set BREWPULSE_DEVELOPMENT_TEAM to the Apple Developer team ID}"
         signing_arguments=(
@@ -101,66 +102,31 @@ fi
 
 mkdir -p "$artifact_directory"
 artifact_directory="$(cd "$artifact_directory" && pwd)"
-output_archive="$artifact_directory/$artifact_name.xcarchive"
-output_zip="$artifact_directory/$artifact_name.zip"
-output_checksum="$artifact_directory/$artifact_name.zip.sha256"
 
-if [[ -e "$output_archive" || -e "$output_zip" || -e "$output_checksum" ]]; then
-    echo "Refusing to overwrite an existing release artifact for $artifact_name" >&2
-    exit 1
-fi
+for architecture_spec in "${architecture_specs[@]}"; do
+    asset_architecture="${architecture_spec#*:}"
+    artifact_name="BrewPulse-$version-macos-$asset_architecture$artifact_suffix"
+    output_dmg="$artifact_directory/$artifact_name.dmg"
+    output_checksum="$artifact_directory/$artifact_name.dmg.sha256"
+    if [[ -e "$output_dmg" || -e "$output_checksum" ]]; then
+        echo "Refusing to overwrite an existing release artifact for $artifact_name" >&2
+        exit 1
+    fi
+done
 
 temporary_directory="$(mktemp -d "${TMPDIR:-/tmp}/BrewPulse-release.XXXXXX")"
 staging_directory="$(mktemp -d "$artifact_directory/.BrewPulse-release.XXXXXX")"
-archive_path="$staging_directory/$artifact_name.xcarchive"
-staged_zip="$staging_directory/$artifact_name.zip"
-staged_checksum="$staging_directory/$artifact_name.zip.sha256"
 derived_data_path="$temporary_directory/DerivedData"
-app_path="$archive_path/Products/Applications/BrewPulse.app"
-binary_path="$app_path/Contents/MacOS/BrewPulse"
+mounted_volume=""
 
 cleanup() {
+    if [[ -n "$mounted_volume" && -d "$mounted_volume" ]]; then
+        hdiutil detach -quiet "$mounted_volume" >/dev/null 2>&1 || true
+    fi
     /bin/rm -rf "$temporary_directory"
     /bin/rm -rf "$staging_directory"
 }
 trap cleanup EXIT
-
-xcodebuild \
-    -project "$project_path" \
-    -scheme BrewPulse \
-    -configuration Release \
-    -destination "generic/platform=macOS" \
-    -archivePath "$archive_path" \
-    -derivedDataPath "$derived_data_path" \
-    "MARKETING_VERSION=$version" \
-    "CURRENT_PROJECT_VERSION=$build_number" \
-    ARCHS="arm64 x86_64" \
-    ONLY_ACTIVE_ARCH=NO \
-    COMPILER_INDEX_STORE_ENABLE=NO \
-    "${signing_arguments[@]}" \
-    archive
-
-if [[ ! -d "$app_path" ]]; then
-    echo "Archive succeeded but BrewPulse.app was not found." >&2
-    exit 1
-fi
-
-bundle_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app_path/Contents/Info.plist")"
-if [[ "$bundle_version" != "$version" ]]; then
-    echo "Artifact version $bundle_version does not match requested version $version." >&2
-    exit 1
-fi
-bundle_build_number="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$app_path/Contents/Info.plist")"
-if [[ "$bundle_build_number" != "$build_number" ]]; then
-    echo "Artifact build $bundle_build_number does not match requested build $build_number." >&2
-    exit 1
-fi
-
-architectures="$(lipo -archs "$binary_path")"
-if [[ "$architectures" != *arm64* || "$architectures" != *x86_64* ]]; then
-    echo "Expected a universal binary, found: $architectures" >&2
-    exit 1
-fi
 
 verify_developer_id_signature() {
     local target_app="$1"
@@ -189,71 +155,154 @@ verify_developer_id_signature() {
     fi
 }
 
-if [[ "$mode" != "unsigned" && "$mode" != "unsigned-preview" ]]; then
-    verify_developer_id_signature "$app_path"
-fi
+verify_app_bundle() {
+    local target_app="$1"
+    local expected_architecture="$2"
+    local target_binary="$target_app/Contents/MacOS/BrewPulse"
+    local bundle_version
+    local bundle_build_number
+    local architectures
 
-ditto -c -k --sequesterRsrc --keepParent "$app_path" "$staged_zip"
+    if [[ ! -d "$target_app" ]]; then
+        echo "BrewPulse.app was not found at $target_app" >&2
+        exit 1
+    fi
 
-if [[ "$mode" == "notarized" ]]; then
-    notary_profile="${BREWPULSE_NOTARY_PROFILE:-BrewPulse}"
-    xcrun notarytool submit "$staged_zip" \
-        --keychain-profile "$notary_profile" \
-        --wait
-    xcrun stapler staple "$app_path"
-    xcrun stapler validate "$app_path"
-    spctl --assess --type execute --verbose=2 "$app_path"
-    /bin/rm -f "$staged_zip"
-    ditto -c -k --sequesterRsrc --keepParent "$app_path" "$staged_zip"
-fi
+    bundle_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$target_app/Contents/Info.plist")"
+    if [[ "$bundle_version" != "$version" ]]; then
+        echo "Artifact version $bundle_version does not match requested version $version." >&2
+        exit 1
+    fi
 
-unzip -tq "$staged_zip"
-validation_directory="$temporary_directory/zip-validation"
-mkdir -p "$validation_directory"
-ditto -x -k "$staged_zip" "$validation_directory"
-extracted_app="$validation_directory/BrewPulse.app"
-extracted_binary="$extracted_app/Contents/MacOS/BrewPulse"
+    bundle_build_number="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$target_app/Contents/Info.plist")"
+    if [[ "$bundle_build_number" != "$build_number" ]]; then
+        echo "Artifact build $bundle_build_number does not match requested build $build_number." >&2
+        exit 1
+    fi
 
-if [[ ! -d "$extracted_app" ]]; then
-    echo "The packaged ZIP does not contain BrewPulse.app at its root." >&2
-    exit 1
-fi
+    architectures="$(lipo -archs "$target_binary")"
+    if [[ "$architectures" != "$expected_architecture" ]]; then
+        echo "Expected a $expected_architecture binary, found: $architectures" >&2
+        exit 1
+    fi
+}
 
-extracted_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$extracted_app/Contents/Info.plist")"
-if [[ "$extracted_version" != "$version" ]]; then
-    echo "Packaged app version $extracted_version does not match requested version $version." >&2
-    exit 1
-fi
-extracted_build_number="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$extracted_app/Contents/Info.plist")"
-if [[ "$extracted_build_number" != "$build_number" ]]; then
-    echo "Packaged app build $extracted_build_number does not match requested build $build_number." >&2
-    exit 1
-fi
+build_disk_image() {
+    local build_architecture="$1"
+    local asset_architecture="$2"
+    local artifact_name="BrewPulse-$version-macos-$asset_architecture$artifact_suffix"
+    local archive_path="$temporary_directory/$artifact_name.xcarchive"
+    local app_path="$archive_path/Products/Applications/BrewPulse.app"
+    local image_root="$temporary_directory/$artifact_name-image"
+    local staged_dmg="$staging_directory/$artifact_name.dmg"
+    local staged_checksum="$staging_directory/$artifact_name.dmg.sha256"
+    local output_dmg="$artifact_directory/$artifact_name.dmg"
+    local output_checksum="$artifact_directory/$artifact_name.dmg.sha256"
+    local mount_point="$temporary_directory/$artifact_name-mounted"
+    local mounted_app
+    local checksum
 
-extracted_architectures="$(lipo -archs "$extracted_binary")"
-if [[ "$extracted_architectures" != *arm64* || "$extracted_architectures" != *x86_64* ]]; then
-    echo "Packaged app is not universal: $extracted_architectures" >&2
-    exit 1
-fi
+    xcodebuild \
+        -project "$project_path" \
+        -scheme BrewPulse \
+        -configuration Release \
+        -destination "generic/platform=macOS" \
+        -archivePath "$archive_path" \
+        -derivedDataPath "$derived_data_path" \
+        "MARKETING_VERSION=$version" \
+        "CURRENT_PROJECT_VERSION=$build_number" \
+        "ARCHS=$build_architecture" \
+        ONLY_ACTIVE_ARCH=NO \
+        COMPILER_INDEX_STORE_ENABLE=NO \
+        "${signing_arguments[@]}" \
+        archive
 
-if [[ "$mode" != "unsigned" && "$mode" != "unsigned-preview" ]]; then
-    verify_developer_id_signature "$extracted_app"
-fi
-if [[ "$mode" == "notarized" ]]; then
-    xcrun stapler validate "$extracted_app"
-    spctl --assess --type execute --verbose=2 "$extracted_app"
-fi
+    verify_app_bundle "$app_path" "$build_architecture"
+    if [[ "$mode" != "unsigned" && "$mode" != "unsigned-preview" ]]; then
+        verify_developer_id_signature "$app_path"
+    fi
 
-checksum="$(shasum -a 256 "$staged_zip" | awk '{ print $1 }')"
-print -r -- "$checksum  $(basename "$output_zip")" > "$staged_checksum"
+    mkdir -p "$image_root"
+    ditto "$app_path" "$image_root/BrewPulse.app"
+    ln -s /Applications "$image_root/Applications"
 
-mv "$archive_path" "$output_archive"
-mv "$staged_zip" "$output_zip"
-mv "$staged_checksum" "$output_checksum"
+    hdiutil create \
+        -quiet \
+        -volname "BrewPulse" \
+        -srcfolder "$image_root" \
+        -format UDZO \
+        "$staged_dmg"
 
-echo "Created $output_archive"
-echo "Created $output_zip"
-echo "Created $output_checksum"
+    if [[ "$mode" != "unsigned" && "$mode" != "unsigned-preview" ]]; then
+        codesign \
+            --force \
+            --sign "$BREWPULSE_SIGNING_IDENTITY" \
+            --timestamp \
+            "$staged_dmg"
+        codesign --verify --strict --verbose=2 "$staged_dmg"
+    fi
+
+    if [[ "$mode" == "notarized" ]]; then
+        local notary_profile="${BREWPULSE_NOTARY_PROFILE:-BrewPulse}"
+        xcrun notarytool submit "$staged_dmg" \
+            --keychain-profile "$notary_profile" \
+            --wait
+        xcrun stapler staple "$staged_dmg"
+        xcrun stapler validate "$staged_dmg"
+        spctl --assess \
+            --type open \
+            --context context:primary-signature \
+            --verbose=2 \
+            "$staged_dmg"
+    fi
+
+    mkdir -p "$mount_point"
+    hdiutil attach \
+        -quiet \
+        -nobrowse \
+        -readonly \
+        -mountpoint "$mount_point" \
+        "$staged_dmg"
+    mounted_volume="$mount_point"
+    mounted_app="$mount_point/BrewPulse.app"
+
+    verify_app_bundle "$mounted_app" "$build_architecture"
+    if [[ ! -L "$mount_point/Applications" || "$(readlink "$mount_point/Applications")" != "/Applications" ]]; then
+        echo "The disk image does not contain an Applications shortcut." >&2
+        exit 1
+    fi
+    if [[ "$mode" != "unsigned" && "$mode" != "unsigned-preview" ]]; then
+        verify_developer_id_signature "$mounted_app"
+    fi
+    if [[ "$mode" == "notarized" ]]; then
+        spctl --assess \
+            --type execute \
+            --verbose=2 \
+            "$mounted_app"
+    fi
+
+    hdiutil detach -quiet "$mount_point"
+    mounted_volume=""
+
+    checksum="$(shasum -a 256 "$staged_dmg" | awk '{ print $1 }')"
+    print -r -- "$checksum  $(basename "$output_dmg")" > "$staged_checksum"
+
+    echo "Prepared $staged_dmg"
+    echo "Prepared $staged_checksum"
+    echo "Architecture: $build_architecture"
+}
+
+for architecture_spec in "${architecture_specs[@]}"; do
+    build_architecture="${architecture_spec%%:*}"
+    asset_architecture="${architecture_spec#*:}"
+    build_disk_image "$build_architecture" "$asset_architecture"
+done
+
+for staged_artifact in "$staging_directory"/*; do
+    output_artifact="$artifact_directory/$(basename "$staged_artifact")"
+    mv "$staged_artifact" "$output_artifact"
+    echo "Created $output_artifact"
+done
+
 echo "Version: $version"
 echo "Build: $build_number"
-echo "Architectures: $architectures"

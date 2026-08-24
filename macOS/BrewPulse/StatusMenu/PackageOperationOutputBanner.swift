@@ -15,14 +15,14 @@ struct PackageOperationOutputBanner: View {
                 Text(title)
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                Text(output.plan.package.name)
+                Text(output.plan.displayName)
                     .font(.headline)
                     .lineLimit(1)
                     .truncationMode(.middle)
                 if followUpRefreshFailure != nil {
                     Text("Package list refresh failed; older results remain visible")
                         .font(.caption)
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(CivicSignalTheme.update)
                         .lineLimit(2)
                 }
             }
@@ -40,7 +40,14 @@ struct PackageOperationOutputBanner: View {
     }
 
     private var title: String {
-        switch (output.plan.kind, output.status) {
+        if output.plan.isUpdateAll {
+            return switch output.status {
+            case .succeeded: "Updates completed"
+            case .failed: "Update All failed"
+            case .cancelled: "Update All cancelled"
+            }
+        }
+        return switch (output.plan.kind, output.status) {
         case (.update, .succeeded): "Updated successfully"
         case (.update, .failed): "Update failed"
         case (.update, .cancelled): "Update cancelled"
@@ -60,14 +67,14 @@ struct PackageOperationOutputBanner: View {
 
     private var tint: Color {
         switch output.status {
-        case .succeeded: .green
-        case .failed: .red
-        case .cancelled: .orange
+        case .succeeded: CivicSignalTheme.success
+        case .failed: CivicSignalTheme.danger
+        case .cancelled: CivicSignalTheme.update
         }
     }
 
     private var accessibilityLabel: String {
-        let operationLabel = "\(title): \(output.plan.package.name)"
+        let operationLabel = "\(title): \(output.plan.displayName)"
         guard followUpRefreshFailure != nil else { return operationLabel }
         return operationLabel
             + ". Package list refresh failed; older results remain visible."

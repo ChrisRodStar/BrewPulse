@@ -12,13 +12,13 @@ The beta is verified against Homebrew 6.0.18. BrewPulse relies on Homebrew's str
 
 ## Install
 
-The 0.1.0 beta 1 download is an unsigned preview. It has no Apple Developer ID signature and has not passed Apple's notarization service. macOS will block its first launch because it cannot verify the developer or check the app for known malicious software.
+The 0.1.0 Beta 3 download is an unsigned preview. It has no Apple Developer ID signature and has not passed Apple's notarization service. macOS will block its first launch because it cannot verify the developer or check the app for known malicious software.
 
-Only download the preview from the [official GitHub release](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.1.0-beta.1). If you do not want to override Gatekeeper for an unsigned app, build from source or wait for the signed beta.
+Only download the preview from the [official GitHub release](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.1.0-beta.3). If you do not want to override Gatekeeper for an unsigned app, build from source or wait for the signed beta.
 
-1. Download `BrewPulse-0.1.0-macos-unsigned.zip` and its `.sha256` file from the release.
-2. In Terminal, change to the download directory and run `shasum -a 256 -c BrewPulse-0.1.0-macos-unsigned.zip.sha256`. Continue only if it reports `OK`.
-3. Open the ZIP and move `BrewPulse.app` to Applications.
+1. Download the Apple Silicon or Intel DMG for your Mac and its matching `.sha256` file from the release.
+2. In Terminal, change to the download directory and run the matching command. Use `shasum -a 256 -c BrewPulse-0.1.0-macos-arm64-unsigned.dmg.sha256` for Apple Silicon or `shasum -a 256 -c BrewPulse-0.1.0-macos-x64-unsigned.dmg.sha256` for Intel. Continue only if it reports `OK`.
+3. Open the verified DMG and drag `BrewPulse.app` to the Applications shortcut.
 4. Try to open BrewPulse from Applications. macOS will block it.
 5. Open System Settings, choose Privacy & Security, scroll to Security, and select Open Anyway for BrewPulse. Confirm the warning and authenticate if macOS asks.
 6. Open BrewPulse. Its mug appears in the menu bar.
@@ -26,7 +26,7 @@ Only download the preview from the [official GitHub release](https://github.com/
 
 Apple documents this override in [Safely open apps on your Mac](https://support.apple.com/en-us/102445). Never disable Gatekeeper globally or remove quarantine attributes to install BrewPulse.
 
-The checksum confirms that the downloaded ZIP matches the official GitHub asset. It does not provide a Developer ID identity or replace Apple's notarization and malware checks.
+The checksum confirms that the downloaded DMG matches the official GitHub asset. It does not provide a Developer ID identity or replace Apple's notarization and malware checks.
 
 ## Remove
 
@@ -38,14 +38,14 @@ BrewPulse does not install a privileged helper, background daemon, browser exten
 
 ## Updates
 
-The first beta does not update itself. New versions are announced on the BrewPulse website and published through GitHub Releases. Download the newer ZIP and replace the existing app in Applications.
+The beta does not update itself. New versions are announced on the BrewPulse website and published through GitHub Releases. Download the newer DMG for your Mac and replace the existing app in Applications.
 
 ## Known limitations
 
-- The 0.1.0 beta 1 artifact is unsigned and not notarized. The later signed beta will replace it.
-- BrewPulse works on one package at a time. It does not include Update All or scheduling.
+- The 0.1.0 Beta 3 installers are unsigned and not notarized. A later signed beta will replace them.
+- BrewPulse can review one update or all currently actionable updates. It does not include scheduling.
 - Cask operations may open another installer or ask macOS for administrator approval.
-- Cancelling asks the entire Homebrew process group to stop, but Homebrew or an external installer may take a few seconds to exit.
+- Cancelling an active action asks the entire Homebrew process group to stop, but Homebrew or an external installer may take a few seconds to exit.
 - A failed refresh keeps the last complete package snapshot and labels it with its original time.
 - The beta has no crash reporting or analytics. Include copied Homebrew output when filing a reproducible issue.
 

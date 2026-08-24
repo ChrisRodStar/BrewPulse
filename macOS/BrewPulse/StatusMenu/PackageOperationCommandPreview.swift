@@ -6,22 +6,26 @@ struct PackageOperationCommandPreview: View {
     @State private var confirmationErrorMessage = ""
     @State private var isShowingConfirmationError = false
 
-    let plan: HomebrewPackageOperationPlan
+    let plan: HomebrewOperationPlan
 
     var body: some View {
         let presentation = PackageOperationPresentation(kind: plan.kind)
         let commandText = CommandTextFormatter().string(for: plan.command)
 
         VStack(alignment: .leading, spacing: 16) {
-            Label(presentation.reviewTitle, systemImage: "terminal")
+            Label(presentation.reviewTitle(plan: plan), systemImage: "terminal")
                 .font(.title2.bold())
 
-            Text(presentation.reviewMessage(packageName: plan.package.name))
+            Text(presentation.reviewMessage(plan: plan))
 
-            PackageVersionSummary(
-                package: plan.package,
-                showsAvailableVersion: plan.kind == .update
-            )
+            if let package = plan.package {
+                PackageVersionSummary(
+                    package: package,
+                    showsAvailableVersion: plan.kind == .update
+                )
+            } else {
+                UpdateAllPackageSummary(packages: plan.packages)
+            }
 
             GroupBox("Exact Homebrew command") {
                 ScrollView(.horizontal) {
@@ -69,14 +73,14 @@ struct PackageOperationCommandPreview: View {
         presentation: PackageOperationPresentation
     ) -> some View {
         if plan.kind == .uninstall {
-            Button(presentation.confirmationTitle, role: .destructive) {
+            Button(presentation.confirmationTitle(plan: plan), role: .destructive) {
                 confirmOperation()
             }
             .buttonStyle(.borderedProminent)
             .tint(.red)
             .accessibilityHint("Approves this exact Homebrew uninstall command.")
         } else {
-            Button(presentation.confirmationTitle) {
+            Button(presentation.confirmationTitle(plan: plan)) {
                 confirmOperation()
             }
             .buttonStyle(.borderedProminent)
@@ -125,6 +129,45 @@ private struct PackageVersionSummary: View {
     }
 }
 
+private struct UpdateAllPackageSummary: View {
+    let packages: [HomebrewPackage]
+
+    var body: some View {
+        GroupBox("Requested updates") {
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 7) {
+                    ForEach(packages) { package in
+                        HStack(spacing: 8) {
+                            Image(
+                                systemName: package.kind == .cask
+                                    ? "macwindow"
+                                    : "shippingbox"
+                            )
+                            .foregroundStyle(CivicSignalTheme.brand)
+                            .frame(width: 18)
+
+                            Text(package.name)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+
+                            Spacer()
+
+                            if let available = package.versions.available {
+                                Text(available)
+                                    .monospacedDigit()
+                                    .foregroundStyle(CivicSignalTheme.secondaryText)
+                            }
+                        }
+                    }
+                }
+                .padding(8)
+            }
+            .frame(maxHeight: 130)
+        }
+        .accessibilityElement(children: .contain)
+    }
+}
+
 private struct ReviewVersionValue: View {
     let title: LocalizedStringKey
     let value: String
@@ -144,25 +187,32 @@ private struct ReviewVersionValue: View {
 }
 
 private struct PackageOperationNotice: View {
-    let plan: HomebrewPackageOperationPlan
+    let plan: HomebrewOperationPlan
 
     var body: some View {
-        switch plan.kind {
-        case .update where plan.package.kind == .cask:
+        switch (plan.kind, plan.package?.kind) {
+        case (.update, .cask):
             Label(
                 "This app update may open an installer or ask macOS for administrator approval.",
                 systemImage: "person.badge.key"
             )
             .font(.callout)
             .foregroundStyle(.secondary)
-        case .uninstall:
+        case (.uninstall, _):
             Label(
                 "This standard uninstall does not use --zap or remove additional preference files.",
                 systemImage: "trash.slash"
             )
             .font(.callout)
             .foregroundStyle(.secondary)
-        case .update:
+        case (.update, nil):
+            Label(
+                "Homebrew may also update required dependencies or repair dependents when it runs this command.",
+                systemImage: "arrow.triangle.2.circlepath"
+            )
+            .font(.callout)
+            .foregroundStyle(.secondary)
+        case (.update, .formula):
             EmptyView()
         }
     }
@@ -171,15 +221,17 @@ private struct PackageOperationNotice: View {
 nonisolated private struct PackageOperationPresentation {
     let kind: HomebrewPackageOperationKind
 
-    var reviewTitle: String {
-        switch kind {
+    func reviewTitle(plan: HomebrewOperationPlan) -> String {
+        if plan.isUpdateAll { return "Review Update All" }
+        return switch kind {
         case .update: "Review Update"
         case .uninstall: "Review Uninstall"
         }
     }
 
-    var confirmationTitle: String {
-        switch kind {
+    func confirmationTitle(plan: HomebrewOperationPlan) -> String {
+        if plan.isUpdateAll { return "Confirm All Updates" }
+        return switch kind {
         case .update: "Confirm Update"
         case .uninstall: "Confirm Uninstall"
         }
@@ -192,8 +244,12 @@ nonisolated private struct PackageOperationPresentation {
         }
     }
 
-    func reviewMessage(packageName: String) -> String {
-        switch kind {
+    func reviewMessage(plan: HomebrewOperationPlan) -> String {
+        if plan.isUpdateAll {
+            return "Review the requested packages and exact Homebrew command before updating everything available."
+        }
+        let packageName = plan.package?.name ?? "this package"
+        return switch kind {
         case .update:
             "Review this command before approving the update for \(packageName)."
         case .uninstall:
@@ -212,12 +268,14 @@ nonisolated private struct PackageOperationPresentation {
     let executableURL = URL(fileURLWithPath: "/opt/homebrew/bin/brew")
 
     PackageOperationCommandPreview(
-        plan: HomebrewPackageOperationPlan(
-            kind: .uninstall,
-            package: package,
-            command: CommandRequest(
-                executableURL: executableURL,
-                arguments: ["uninstall", "--cask", "--", package.name]
+        plan: .package(
+            HomebrewPackageOperationPlan(
+                kind: .uninstall,
+                package: package,
+                command: CommandRequest(
+                    executableURL: executableURL,
+                    arguments: ["uninstall", "--cask", "--", package.name]
+                )
             )
         )
     )

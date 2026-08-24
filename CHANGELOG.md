@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.1.0 beta 3 - 2026-08-23
+
+### Added
+
+- A new Overview screen shows the installed package total, Homebrew version, update status, and last refresh time without exposing the full inventory by default.
+- The Updates screen lists only actionable updates and supports reviewing one update or all available updates before anything runs.
+- Separate Apple Silicon and Intel DMG installers include an Applications shortcut and individual SHA-256 checksums.
+
+### Changed
+
+- Replaced the previous interface and branding with the new BrewPulse mug, compact section switcher, clearer status treatment, and footer refresh indicator.
+- The package-action review window now closes when no action is selected.
+- The menu bar shows only the correctly sized mug. Update counts remain inside the app.
+
+### Known limitations
+
+- This preview is unsigned and not notarized. macOS blocks its first launch until the user explicitly allows it in Privacy & Security settings.
+- Scheduling, background notifications, and automatic app updates are not included.
+- Cask installers may require interaction in another window or administrator approval.
+- Intel packaging is verified, but hands-on Intel runtime testing and the full keyboard, VoiceOver, and larger-text passes are not complete.
+- The beta does not collect crash reports or analytics.
+
 ## 0.1.0 beta 2 - 2026-08-22
 
 ### Fixed

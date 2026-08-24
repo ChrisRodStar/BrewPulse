@@ -50,6 +50,29 @@ nonisolated struct HomebrewPackageOperationCommandBuilder: Sendable {
         )
     }
 
+    func updateAllRequest(
+        executableURL: URL,
+        packages: [HomebrewPackage]
+    ) throws -> CommandRequest {
+        for package in packages {
+            guard package.isStandardUpgradeAvailable else {
+                throw HomebrewPackageOperationCommandError.upgradeUnavailable(
+                    package.id
+                )
+            }
+            guard Self.isValidPackageName(package.name) else {
+                throw HomebrewPackageOperationCommandError.invalidPackageName(
+                    package.name
+                )
+            }
+        }
+
+        return CommandRequest(
+            executableURL: executableURL,
+            arguments: ["upgrade", "--"] + packages.map(\.name)
+        )
+    }
+
     private static func isValidPackageName(_ name: String) -> Bool {
         let components = name.split(
             separator: "/",

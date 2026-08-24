@@ -114,11 +114,26 @@ final class PackageStore {
     private let homebrewService: HomebrewService
 
     var confirmedOperationPlan: HomebrewPackageOperationPlan? {
-        operationState.confirmedPlan
+        guard case .package(let plan) = operationState.confirmedPlan else {
+            return nil
+        }
+        return plan
+    }
+
+    var confirmedUpdateAllPlan: HomebrewUpdateAllPlan? {
+        guard case .updateAll(let plan) = operationState.confirmedPlan else {
+            return nil
+        }
+        return plan
     }
 
     var isPerformingHomebrewWork: Bool {
         state.isLoading || operationState.isActive
+    }
+
+    var packageActionsDisabled: Bool {
+        guard case .loaded = state else { return true }
+        return isPerformingHomebrewWork
     }
 
     init(
@@ -141,6 +156,10 @@ final class PackageStore {
             )
         }
 
+        guard case .loaded = state else {
+            throw HomebrewPackageOperationConfirmationError.planChanged(packageID)
+        }
+
         guard let package = state.report?.inventory.package(withID: packageID) else {
             throw HomebrewPackageOperationConfirmationError.planChanged(packageID)
         }
@@ -155,8 +174,52 @@ final class PackageStore {
         )
     }
 
+    func updateAllOperationPlan() throws -> HomebrewOperationPlan {
+        if let runningPlan = operationState.activePlan {
+            throw HomebrewPackageOperationConfirmationError.operationInProgress(
+                runningPlan.id
+            )
+        }
+
+        guard case .loaded(let report) = state else {
+            throw HomebrewPackageOperationConfirmationError.planChanged(
+                HomebrewPackage.ID(kind: .formula, name: "__brewpulse_update_all__")
+            )
+        }
+
+        let packages = report.inventory.actionableUpdates
+        guard !packages.isEmpty else {
+            throw HomebrewPackageOperationConfirmationError.planChanged(
+                HomebrewPackage.ID(kind: .formula, name: "__brewpulse_update_all__")
+            )
+        }
+
+        return .updateAll(
+            HomebrewUpdateAllPlan(
+                packages: packages,
+                command: try homebrewService.updateAllCommand(for: packages)
+            )
+        )
+    }
+
     func confirmOperation(_ plan: HomebrewPackageOperationPlan) throws {
-        let currentPlan = try operationPlan(for: plan.id, kind: plan.kind)
+        try confirmOperation(.package(plan))
+    }
+
+    func confirmOperation(_ plan: HomebrewOperationPlan) throws {
+        let currentPlan: HomebrewOperationPlan
+        switch plan {
+        case .package(let packagePlan):
+            currentPlan = .package(
+                try operationPlan(
+                    for: packagePlan.id,
+                    kind: packagePlan.kind
+                )
+            )
+        case .updateAll:
+            currentPlan = try updateAllOperationPlan()
+        }
+
         guard currentPlan == plan else {
             throw HomebrewPackageOperationConfirmationError.planChanged(plan.id)
         }

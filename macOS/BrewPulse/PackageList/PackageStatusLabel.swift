@@ -28,7 +28,7 @@ struct PackageStatusLabel: View {
             .lineLimit(1)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
-            .background(color.opacity(0.12), in: Capsule())
+            .background(surfaceColor, in: Capsule())
             .accessibilityHidden(true)
     }
 
@@ -53,9 +53,18 @@ struct PackageStatusLabel: View {
     private var color: Color {
         switch status {
         case .current:
-            .gray
+            CivicSignalTheme.success
         case .updateAvailable:
-            .orange
+            CivicSignalTheme.update
+        }
+    }
+
+    private var surfaceColor: Color {
+        switch status {
+        case .current:
+            CivicSignalTheme.successSurface
+        case .updateAvailable:
+            CivicSignalTheme.updateSurface
         }
     }
 }

@@ -7,19 +7,24 @@ import SwiftUI
 final class PackageOperationReviewPresentation {
     static let windowID = "package-operation-review"
 
-    private(set) var plan: HomebrewPackageOperationPlan?
+    private(set) var plan: HomebrewOperationPlan?
 
     func present(_ plan: HomebrewPackageOperationPlan) {
+        self.plan = .package(plan)
+    }
+
+    func present(_ plan: HomebrewOperationPlan) {
         self.plan = plan
     }
 
-    func clear(_ plan: HomebrewPackageOperationPlan) {
+    func clear(_ plan: HomebrewOperationPlan) {
         guard self.plan == plan else { return }
         self.plan = nil
     }
 }
 
 struct PackageOperationReviewWindow: View {
+    @Environment(\.dismissWindow) private var dismissWindow
     @Environment(PackageOperationReviewPresentation.self)
     private var presentation
 
@@ -31,23 +36,24 @@ struct PackageOperationReviewWindow: View {
                         presentation.clear(plan)
                     }
             } else {
-                ContentUnavailableView(
-                    "No Package Action Selected",
-                    systemImage: "shippingbox",
-                    description: Text("Choose an action from BrewPulse.")
-                )
-                .frame(width: 560, height: 300)
+                Color.clear
+                    .frame(width: 0, height: 0)
+                    .accessibilityHidden(true)
             }
         }
         .background {
             PackageOperationReviewWindowConfigurator(plan: presentation.plan)
                 .frame(width: 0, height: 0)
         }
+        .onChange(of: presentation.plan, initial: true) { _, plan in
+            guard plan == nil else { return }
+            dismissWindow(id: PackageOperationReviewPresentation.windowID)
+        }
     }
 }
 
 private struct PackageOperationReviewWindowConfigurator: NSViewRepresentable {
-    let plan: HomebrewPackageOperationPlan?
+    let plan: HomebrewOperationPlan?
 
     func makeNSView(context: Context) -> WindowAttachmentView {
         WindowAttachmentView()

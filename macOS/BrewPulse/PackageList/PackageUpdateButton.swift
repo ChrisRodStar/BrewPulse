@@ -9,11 +9,11 @@ struct PackageUpdateButton: View {
         Button(action: action) {
             Label("Update available", systemImage: "arrow.down.circle.fill")
                 .font(.caption2.weight(.medium))
-                .foregroundStyle(.orange)
+                .foregroundStyle(CivicSignalTheme.update)
                 .lineLimit(1)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
-                .background(.orange.opacity(0.12), in: Capsule())
+                .background(CivicSignalTheme.updateSurface, in: Capsule())
         }
         .buttonStyle(.plain)
         .fixedSize()

@@ -1,6 +1,6 @@
 # Release process
 
-The ordinary public beta is distributed as a notarized ZIP containing `BrewPulse.app`. A prerelease may be distributed as an explicitly labeled unsigned preview. Both builds are universal and contain Apple Silicon and Intel code.
+The ordinary public beta is distributed as two notarized disk images: one for Apple Silicon and one for Intel. Each DMG contains `BrewPulse.app` and an Applications shortcut. A prerelease may use the same format as an explicitly labeled unsigned preview.
 
 ## Build prerequisite
 
@@ -31,13 +31,13 @@ Do not commit certificate exports, passwords, API keys, or notarization credenti
 
 ## Validate without credentials
 
-This builds a universal unsigned archive and ZIP:
+This builds unsigned Apple Silicon and Intel disk images:
 
 ```text
 ./scripts/release.sh --unsigned
 ```
 
-The output filename contains `unsigned` so it cannot be confused with the signed public artifact. The script builds in isolated temporary directories, verifies the app version and both architectures, tests the ZIP, and writes a SHA-256 checksum before publishing the artifacts to `artifacts/`.
+The output filenames contain `unsigned` so they cannot be confused with signed public artifacts. The script builds in isolated temporary directories, verifies each app version and architecture, mounts each DMG to verify its contents, and writes a SHA-256 checksum before moving the artifacts to `artifacts/`.
 
 ## Publish an unsigned preview
 
@@ -47,9 +47,9 @@ Unsigned previews are GitHub prereleases for early testers who accept the Gateke
 2. Create a prerelease tag such as `v0.1.0-beta.1` on that commit.
 3. Set `BREWPULSE_RELEASE_TAG` to the preview tag and `BREWPULSE_BUILD_NUMBER` to a positive integer.
 4. Run `./scripts/release.sh --unsigned-preview`.
-5. Verify the ZIP checksum and confirm the packaged app contains `arm64` and `x86_64`.
+5. Verify both DMG checksums and confirm the Apple Silicon image contains `arm64` while the Intel image contains `x86_64`.
 6. Create a GitHub prerelease. Put `Unsigned` in its title and opening warning.
-7. Attach only the unsigned ZIP and checksum. Keep the `.xcarchive` private.
+7. Attach the two unsigned DMGs and their checksums.
 8. Link the website to the exact prerelease and repeat the download and checksum test.
 
 For the first preview:
@@ -60,7 +60,7 @@ export BREWPULSE_BUILD_NUMBER="1"
 ./scripts/release.sh --unsigned-preview
 ```
 
-The release and website must tell users that macOS cannot verify the developer or notarization status. Link to Apple's [Gatekeeper override instructions](https://support.apple.com/en-us/102445). The checksum only confirms that the ZIP matches the GitHub asset; it does not replace signing or notarization. Do not recommend disabling Gatekeeper or removing quarantine attributes.
+The release and website must tell users that macOS cannot verify the developer or notarization status. Link to Apple's [Gatekeeper override instructions](https://support.apple.com/en-us/102445). A checksum only confirms that a DMG matches the GitHub asset; it does not replace signing or notarization. Do not recommend disabling Gatekeeper or removing quarantine attributes.
 
 ## Create the signed public artifact
 
@@ -74,35 +74,37 @@ export BREWPULSE_BUILD_NUMBER="1"
 
 Use a positive integer for `BREWPULSE_BUILD_NUMBER` and increase it for every release build. The script writes it to `CFBundleVersion` and checks the archived and packaged copies.
 
-The script:
+For each architecture, the script:
 
-1. creates a universal Release archive;
-2. confirms the bundle and filename versions match;
-3. checks that the executable contains `arm64` and `x86_64`;
-4. verifies the Developer ID authority, team, hardened runtime, and timestamp;
-5. submits the staged ZIP to Apple's notarization service and waits for the result;
-6. staples and validates the ticket;
-7. asks Gatekeeper to assess the app;
-8. recreates and extracts the ZIP, then checks the packaged copy again;
-9. writes a SHA-256 checksum and moves only verified artifacts into `artifacts/`.
+1. creates a Release archive containing only the requested architecture;
+2. confirms the bundle version, build number, and executable architecture;
+3. verifies the Developer ID authority, team, hardened runtime, and timestamp;
+4. creates a DMG containing `BrewPulse.app` and an Applications shortcut;
+5. signs the DMG, submits it to Apple's notarization service, and waits for the result;
+6. staples and validates the DMG ticket;
+7. asks Gatekeeper to assess the disk image;
+8. mounts the DMG read-only, verifies the packaged app again, and asks Gatekeeper to assess the app;
+9. writes a SHA-256 checksum;
+10. moves both architectures and both checksums into `artifacts/` only after the complete set passes.
 
 Successful output is written to `artifacts/`:
 
-- `BrewPulse-VERSION-macos.xcarchive`
-- `BrewPulse-VERSION-macos.zip`
-- `BrewPulse-VERSION-macos.zip.sha256`
+- `BrewPulse-VERSION-macos-arm64.dmg`
+- `BrewPulse-VERSION-macos-arm64.dmg.sha256`
+- `BrewPulse-VERSION-macos-x64.dmg`
+- `BrewPulse-VERSION-macos-x64.dmg.sha256`
 
 The script refuses to overwrite an existing artifact. Move a prior build elsewhere or change the version before rebuilding.
 
-Verify the downloaded ZIP from the directory containing both files:
+Verify a downloaded DMG from the directory containing it and its checksum:
 
 ```text
-shasum -a 256 -c BrewPulse-VERSION-macos.zip.sha256
+shasum -a 256 -c BrewPulse-VERSION-macos-arm64.dmg.sha256
 ```
 
 ## Signed diagnostic build
 
-`./scripts/release.sh --skip-notarization` creates an explicitly named `signed-unnotarized` artifact. Use it only to diagnose signing. Never publish it.
+`./scripts/release.sh --skip-notarization` creates explicitly named Apple Silicon and Intel `signed-unnotarized` disk images. Use them only to diagnose signing. Never publish them.
 
 ## Release checklist
 
@@ -112,6 +114,6 @@ shasum -a 256 -c BrewPulse-VERSION-macos.zip.sha256
 4. Create and push the matching `vVERSION` tag on that clean commit.
 5. Run the notarized release command from the tag.
 6. Confirm the packaged-copy signature, stapler validation, Gatekeeper assessment, and checksum all pass.
-7. Repeat the install, open, launch-at-login, package update, package uninstall, quit, and app removal smoke tests using the exact notarized ZIP.
-8. Create the GitHub release and attach the ZIP and its `.sha256` file. Keep the `.xcarchive` private.
-9. Update the website download link to that release.
+7. Repeat the install, open, launch-at-login, individual update, Update All, quit, and app removal smoke tests with both notarized disk images on matching Macs.
+8. Create the GitHub release and attach both DMGs and both `.sha256` files.
+9. Confirm the website detects a supported architecture where the browser exposes it, chooses the matching DMG, and keeps the manual Apple Silicon/Intel switch available.
