@@ -6,6 +6,26 @@
         <description>Signed BrewPulse updates</description>
         <language>en</language>
         <item>
+            <title>0.2.1</title>
+            <pubDate>Mon, 24 Aug 2026 03:05:29 -0400</pubDate>
+            <sparkle:version>5</sparkle:version>
+            <sparkle:shortVersionString>0.2.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[
+### Fixed
+
+- Unsigned release apps now receive a complete ad-hoc bundle signature after Sparkle is embedded, so macOS no longer reports a verified download as damaged.
+- The release process now checks the full signature and resource seal in both the archive and the finished DMG before publishing any artifact.
+
+### Known limitations
+
+- This release is not signed with an Apple Developer ID and is not notarized. macOS still requires the user to allow its first launch in Privacy & Security.
+- Anyone who downloaded the affected 0.2.0 installer must replace it with 0.2.1 manually because the damaged app cannot run its updater.
+
+]]></description>
+            <enclosure url="https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.1/BrewPulse-0.2.1-macos-universal-unsigned.dmg" length="5596371" type="application/octet-stream" sparkle:edSignature="EZuw/Nc+bWH5sVP9LVQ5ZUqHyUnDmzW2/gE2YCjMJw0eDdGlISIRNsmy40Feh+PFiczguDTrnuC7uT8cHY/YBA=="/>
+        </item>
+        <item>
             <title>0.2.0</title>
             <pubDate>Mon, 24 Aug 2026 02:35:53 -0400</pubDate>
             <sparkle:version>4</sparkle:version>
@@ -34,6 +54,6 @@
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: 0tL6vFK77aMaR96DDvt9Y/Zb8STC+sw952OJJXvEZdXRyq7FsWU540UfffMX4Zwu4hKzpKJYq7/GEvdaGNNTAw==
-length: 2252
+edSignature: SU4acfabrTOq89eR77vtYDrCLKC/CXH7gVXAAVBH5ulOAjDplLPBhrmL73GU7wPcCFgzQ7CEtdbFt6yRkTdxCA==
+length: 3593
 -->
