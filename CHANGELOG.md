@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 - Unreleased
+## 0.2.0 - 2026-08-24
 
 ### Added
 
@@ -8,6 +8,15 @@
 - Settings includes a manual "Check for Updates…" action and shows the installed BrewPulse version.
 - Update archives and the appcast feed are signed with a dedicated EdDSA key. The release process produces a universal update archive for Apple Silicon and Intel Macs.
 - Disk images now open as a compact BrewPulse-branded install window with a clear drag-to-Applications layout.
+
+### Known limitations
+
+- This release is unsigned and not notarized. macOS blocks its first launch until the user explicitly allows it in Privacy & Security settings.
+- Users on 0.1.0 Beta 3 must install 0.2.0 manually once. BrewPulse can offer later releases from inside the app.
+- Scheduling and background Homebrew update notifications are not included.
+- Cask installers may require interaction in another window or administrator approval.
+- Intel packaging is verified, but hands-on Intel runtime testing and the full keyboard, VoiceOver, and larger-text passes are not complete.
+- BrewPulse does not collect crash reports or analytics.
 
 ## 0.1.0 beta 3 - 2026-08-23
 

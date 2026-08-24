@@ -32,9 +32,9 @@ BrewPulse can already:
 - Keep Homebrew's stdout and stderr available when something goes wrong.
 - Handle running, completed, failed, interrupted, and cancelled operations.
 
-An [unsigned 0.1.0 Beta 3 preview](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.1.0-beta.3) is available for early testing. macOS will block it on first launch because it has no Apple Developer ID signature or notarization ticket. Read the [beta guide](docs/BETA.md) before installing it. Signing, notarization, and the hands-on beta matrix still gate the ordinary public beta. The current checklist is in [TODO.md](TODO.md).
+The current release is [BrewPulse 0.2.0](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.2.0). It is unsigned by Apple and not notarized, so macOS will block it on first launch. Read the [beta guide](docs/BETA.md) before installing it. Apple Developer ID signing and notarization remain deferred; the current checklist is in [TODO.md](TODO.md).
 
-Development on `main` is now version 0.2.0. It adds signed in-app updates, a manual update check in Settings, and a redesigned drag-to-Applications installer. The downloadable 0.1.0 Beta 3 does not contain the updater, so installing 0.2.0 will require one final manual download when that release is published.
+Version 0.2.0 adds Sparkle-signed in-app updates, a manual update check in Settings, and a redesigned drag-to-Applications installer. Users on 0.1.0 Beta 3 need one final manual download to install 0.2.0. After that, BrewPulse can offer later releases from inside the app.
 
 ## Safety and transparency
 
@@ -58,15 +58,15 @@ I want someone to be able to use the free app without feeling like the useful pa
 - Homebrew installed locally
 - Apple Silicon or Intel Mac
 
-## Download the unsigned preview
+## Download 0.2.0
 
-This build is intentionally unsigned. macOS cannot verify its developer or check it through Apple's notarization service, so Gatekeeper will block the first launch. The [beta guide](docs/BETA.md) explains the warning, checksum verification, installation, and removal steps. If you do not want to override Gatekeeper for an unsigned app, build from source or wait for the signed beta.
+This build is intentionally unsigned. macOS cannot verify its developer or check it through Apple's notarization service, so Gatekeeper will block the first launch. The [beta guide](docs/BETA.md) explains the warning, checksum verification, installation, and removal steps. If you do not want to override Gatekeeper for an unsigned app, build from source.
 
-- [Download for Apple Silicon](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.1.0-beta.3/BrewPulse-0.1.0-macos-arm64-unsigned.dmg)
-- [Apple Silicon SHA-256 checksum](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.1.0-beta.3/BrewPulse-0.1.0-macos-arm64-unsigned.dmg.sha256)
-- [Download for Intel](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.1.0-beta.3/BrewPulse-0.1.0-macos-x64-unsigned.dmg)
-- [Intel SHA-256 checksum](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.1.0-beta.3/BrewPulse-0.1.0-macos-x64-unsigned.dmg.sha256)
-- [Read the complete release notes](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.1.0-beta.3)
+- [Download for Apple Silicon](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.0/BrewPulse-0.2.0-macos-arm64-unsigned.dmg)
+- [Apple Silicon SHA-256 checksum](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.0/BrewPulse-0.2.0-macos-arm64-unsigned.dmg.sha256)
+- [Download for Intel](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.0/BrewPulse-0.2.0-macos-x64-unsigned.dmg)
+- [Intel SHA-256 checksum](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.0/BrewPulse-0.2.0-macos-x64-unsigned.dmg.sha256)
+- [Read the complete release notes](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.2.0)
 
 ## Building from source
 
@@ -95,7 +95,7 @@ BrewPulse/
 
 [TODO.md](TODO.md) is the working roadmap.
 
-Right now the focus is finishing the free app properly before spending time on payments or Pro-only automation. The unsigned preview lets early testers try the current build, while accessibility, real-package testing, Developer ID signing, and notarization remain on the path to the ordinary public beta.
+Right now the focus is finishing the free app properly before spending time on payments or Pro-only automation. The unsigned 0.2.0 release lets early testers use the updater-enabled build while accessibility and real-package testing continue. Developer ID signing and notarization are deferred.
 
 Beta installation, privacy, support, and release details live in [`docs/`](docs/):
 

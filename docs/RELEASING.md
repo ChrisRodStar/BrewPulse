@@ -1,6 +1,6 @@
 # Release process
 
-The ordinary public beta has separate notarized disk images for Apple Silicon and Intel, plus a universal DMG used by the in-app updater. Each DMG contains `BrewPulse.app` and an Applications shortcut. A prerelease may use the two architecture-specific images as an explicitly labeled unsigned preview.
+Every release has separate disk images for Apple Silicon and Intel, plus a universal DMG used by the in-app updater. Each DMG contains `BrewPulse.app` and an Applications shortcut. Until Developer ID signing is available, published builds must be explicitly labeled unsigned and not notarized.
 
 ## Build prerequisite
 
@@ -8,14 +8,15 @@ The ordinary public beta has separate notarized disk images for Apple Silicon an
 
 The scripts use the Xcode selected for command-line tools. Set `DEVELOPER_DIR` on the command if the required Xcode is installed in a nonstandard location.
 
-An unsigned preview does not require Apple signing or notarization credentials.
+An unsigned release does not require Apple signing or notarization credentials.
+
+Every published release, including an unsigned one, requires the BrewPulse Sparkle EdDSA private key in the login keychain under the `ed25519` account. This key signs the update archive and appcast; it is separate from Apple Developer ID signing.
 
 ## Signed-release prerequisites
 
 - a valid `Developer ID Application` identity in the login keychain
 - an Apple Developer team ID
 - a `notarytool` keychain profile named `BrewPulse`, or a different name supplied through `BREWPULSE_NOTARY_PROFILE`
-- the BrewPulse Sparkle EdDSA private key in the login keychain under the `ed25519` account
 
 A published build must come from a clean checkout. Its release tag must point to the checked-out commit, and the version heading in `CHANGELOG.md` must end with a release date instead of `unreleased`.
 
@@ -42,24 +43,25 @@ This builds unsigned Apple Silicon and Intel disk images plus the universal arch
 
 The output filenames contain `unsigned` so they cannot be confused with signed public artifacts. The script builds in isolated temporary directories, verifies each app version and architecture, mounts each DMG to verify its contents, and writes a SHA-256 checksum before moving the artifacts to `artifacts/`.
 
-## Publish an unsigned preview
+## Publish an unsigned release
 
-Unsigned previews are GitHub prereleases for early testers who accept the Gatekeeper warning. They are not the signed public beta.
+Unsigned releases are GitHub prereleases for testers who accept the Gatekeeper warning. Sparkle signs the universal update archive and appcast with the separate EdDSA key; this does not sign or notarize the app with Apple.
 
-1. Use a clean commit whose changelog names the preview and its limitations.
-2. Create a prerelease tag such as `v0.1.0-beta.1` on that commit.
-3. Set `BREWPULSE_RELEASE_TAG` to the preview tag and `BREWPULSE_BUILD_NUMBER` to a positive integer.
+1. Use a clean commit whose changelog names the release and its limitations.
+2. Create a release tag such as `v0.2.0` on that commit.
+3. Set `BREWPULSE_RELEASE_TAG` to the tag and `BREWPULSE_BUILD_NUMBER` to a positive integer.
 4. Run `./scripts/release.sh --unsigned-preview`.
-5. Verify both DMG checksums and confirm the Apple Silicon image contains `arm64` while the Intel image contains `x86_64`.
+5. Verify all three DMG checksums. Confirm the Apple Silicon image contains `arm64`, the Intel image contains `x86_64`, and the universal image contains both architectures.
 6. Create a GitHub prerelease. Put `Unsigned` in its title and opening warning.
-7. Attach the two unsigned DMGs and their checksums.
-8. Link the website to the exact prerelease and repeat the download and checksum test.
+7. Attach all three unsigned DMGs and their checksums. The universal DMG serves the appcast; the website links to the smaller architecture-specific downloads.
+8. Confirm the universal DMG URL in `appcast.xml` matches the release, then commit and push the updated feed to `main`.
+9. Link the website to the exact prerelease and repeat the download and checksum test.
 
-For the first preview:
+For version 0.2.0:
 
 ```text
-export BREWPULSE_RELEASE_TAG="v0.1.0-beta.1"
-export BREWPULSE_BUILD_NUMBER="1"
+export BREWPULSE_RELEASE_TAG="v0.2.0"
+export BREWPULSE_BUILD_NUMBER="4"
 ./scripts/release.sh --unsigned-preview
 ```
 

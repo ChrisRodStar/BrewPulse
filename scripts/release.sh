@@ -85,9 +85,7 @@ case "$mode" in
         ;;
 esac
 
-if [[ "$mode" != "unsigned-preview" ]]; then
-    architecture_specs+=("arm64 x86_64:universal")
-fi
+architecture_specs+=("arm64 x86_64:universal")
 
 if [[ "$mode" == "notarized" || "$mode" == "unsigned-preview" ]]; then
     if [[ -n "$(git -C "$repository_root" status --porcelain --untracked-files=normal)" ]]; then
@@ -410,7 +408,7 @@ for architecture_spec in "${architecture_specs[@]}"; do
     build_disk_image "$build_architecture" "$asset_architecture"
 done
 
-if [[ "$mode" == "notarized" ]]; then
+if [[ "$mode" == "notarized" || "$mode" == "unsigned-preview" ]]; then
     generate_update_feed
 fi
 
