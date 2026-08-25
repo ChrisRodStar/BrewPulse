@@ -27,7 +27,7 @@ artifact_directory="${BREWPULSE_ARTIFACT_DIRECTORY:-$repository_root/artifacts}"
 architecture_specs=("arm64:arm64" "x86_64:x64")
 installer_background="$repository_root/macOS/Packaging/BrewPulseInstallerBackground.png"
 installer_background_2x="$repository_root/macOS/Packaging/BrewPulseInstallerBackground@2x.png"
-installer_layout_script="$repository_root/scripts/configure-dmg.applescript"
+installer_layout_template="$repository_root/macOS/Packaging/BrewPulseInstallerDSStore"
 
 if ! xcodebuild -version >/dev/null 2>&1; then
     echo "Select a full Xcode installation with xcode-select or set DEVELOPER_DIR, then try again." >&2
@@ -46,8 +46,8 @@ if [[ ! -f "$installer_background" || ! -f "$installer_background_2x" ]]; then
     echo "The BrewPulse installer background assets are missing." >&2
     exit 1
 fi
-if [[ ! -f "$installer_layout_script" ]]; then
-    echo "The BrewPulse installer layout script is missing." >&2
+if [[ ! -f "$installer_layout_template" ]]; then
+    echo "The BrewPulse installer layout template is missing." >&2
     exit 1
 fi
 if [[ "$mode" != "unsigned" && -z "${BREWPULSE_BUILD_NUMBER:-}" ]]; then
@@ -322,6 +322,7 @@ build_disk_image() {
         "$installer_background" \
         "$installer_background_2x" \
         -out "$image_root/.background/BrewPulseInstallerBackground.tiff"
+    cp "$installer_layout_template" "$image_root/.DS_Store"
     hdiutil create \
         -quiet \
         -volname "BrewPulse" \
@@ -329,34 +330,6 @@ build_disk_image() {
         -fs HFS+ \
         -format UDRW \
         "$writable_dmg"
-
-    mkdir -p "$mount_point"
-    hdiutil attach \
-        -quiet \
-        -nobrowse \
-        -noautoopen \
-        -readwrite \
-        -mountpoint "$mount_point" \
-        "$writable_dmg"
-    mounted_volume="$mount_point"
-
-    osascript \
-        "$installer_layout_script" \
-        "$(basename "$mount_point")" \
-        "$mount_point"
-
-    local layout_attempt
-    for layout_attempt in {1..10}; do
-        [[ -f "$mount_point/.DS_Store" ]] && break
-        sleep 1
-    done
-    if [[ ! -f "$mount_point/.DS_Store" ]]; then
-        echo "Finder did not save the disk image layout." >&2
-        exit 1
-    fi
-
-    hdiutil detach -quiet "$mount_point"
-    mounted_volume=""
 
     hdiutil convert \
         -quiet \
