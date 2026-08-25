@@ -18,8 +18,8 @@ The core workflow is implemented and locally verified. On August 25, 2026, all 9
 | Accessibility and UI edge cases | In progress |
 | Signed in-app updates | Complete |
 | Unsigned 0.2.3 release | Complete |
-| Unsigned 0.2.4 BrewPulse Cloud analytics release | Preparing |
-| Anonymous product analytics | Production receives first-observed and launch events from the Release app; complete archived flow pending |
+| Unsigned 0.2.4 BrewPulse Cloud analytics release | Complete |
+| Anonymous product analytics | Production received a launch event from the packaged 0.2.4 app; complete archived flow pending |
 | Restore the existing Sparkle private key and publish the signed 0.2.3 updater feed | Complete |
 
 Only the **Now** section should drive the next code task. The later sections record release gates and boundaries without pretending they are active work.
