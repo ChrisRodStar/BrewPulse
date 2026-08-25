@@ -17,4 +17,4 @@ Analytics delivery is silent by design. If you report missing anonymous events, 
 
 ## Scope of the beta
 
-The public 0.2.3 release covers Homebrew discovery, the Overview and Updates interface, individual updates, reviewed Update All, cancellation, failure recovery, user-approved in-app updates, and anonymous product analytics with an in-app opt-out. Requests for paid automation, accounts, fleet management, or hosted services are outside BrewPulse Free.
+The public 0.2.4 release covers Homebrew discovery, the Overview and Updates interface, individual updates, reviewed Update All, cancellation, failure recovery, user-approved in-app updates, and anonymous product analytics with an in-app opt-out. Requests for paid automation, accounts, fleet management, or hosted services are outside BrewPulse Free.

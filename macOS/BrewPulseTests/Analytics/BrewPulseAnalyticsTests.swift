@@ -150,7 +150,7 @@ struct BrewPulseAnalyticsTests {
 
     private var testMetadata: AnalyticsClientMetadata {
         AnalyticsClientMetadata(
-            appVersion: "0.2.3",
+            appVersion: "0.2.4",
             macOSMajorVersion: 27,
             architecture: "arm64"
         )

@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.4 - 2026-08-25
+
+### Changed
+
+- Anonymous product analytics now go directly to BrewPulse Cloud instead of TelemetryDeck.
+- Analytics delivery now uses a bounded on-device queue, stable retry identifiers, batching, and backoff without delaying app work.
+- Turning off anonymous usage statistics now removes the queued events and anonymous installation identifier stored by BrewPulse.
+
+### Known limitations
+
+- This release is not signed with an Apple Developer ID and is not notarized. macOS still requires the user to allow its first launch in Privacy & Security.
+- Users on 0.1.0 Beta 3 or the affected 0.2.0 build must install 0.2.4 manually. Versions 0.2.1 through 0.2.3 can update to this release from inside BrewPulse.
+- Scheduling and background Homebrew update notifications are not included.
+- Cask installers may require interaction in another window or administrator approval.
+
 ## 0.2.3 - 2026-08-24
 
 ### Added
