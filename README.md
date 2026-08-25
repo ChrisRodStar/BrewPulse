@@ -97,8 +97,9 @@ BrewPulse/
 
 Right now the focus is finishing the free app properly before spending time on payments or Pro-only automation. The unsigned 0.2.3 release lets early testers use the analytics-enabled, updater-enabled build while accessibility and real-package testing continue. Developer ID signing and notarization are deferred.
 
-Beta installation, privacy, support, and release details live in [`docs/`](docs/):
+Supporting product and release documentation lives in [`docs/`](docs/README.md):
 
+- [Design system](docs/DESIGN_SYSTEM.md)
 - [Beta guide](docs/BETA.md)
 - [Privacy](docs/PRIVACY.md)
 - [Product analytics](docs/ANALYTICS.md)

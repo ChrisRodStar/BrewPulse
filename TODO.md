@@ -2,7 +2,7 @@
 
 BrewPulse is the public macOS client and the shared Homebrew implementation used by every future BrewPulse product.
 
-> **Current priority:** collect product analytics and tester feedback from the unsigned 0.2.3 release, then continue the remaining manual quality matrix. Apple Developer ID signing and notarization are deferred. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
+> **Current priority:** replace the TelemetryDeck transport with the approved BrewPulse Cloud analytics contract, verify that an archived build appears in the owned dashboard without delay, then continue the remaining manual quality matrix. Apple Developer ID signing and notarization are deferred. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
 
 ## Current state
 
@@ -18,7 +18,7 @@ The core workflow is implemented and locally verified. On August 24, 2026, all 8
 | Accessibility and UI edge cases | In progress |
 | Signed in-app updates | Complete |
 | Unsigned 0.2.3 release | Complete |
-| Anonymous product analytics | Complete; archived signal verification pending |
+| Anonymous product analytics | Event contract complete; Convex transport migration pending |
 | Restore the existing Sparkle private key and publish the signed 0.2.3 updater feed | Complete |
 
 Only the **Now** section should drive the next code task. The later sections record release gates and boundaries without pretending they are active work.
@@ -27,7 +27,24 @@ Only the **Now** section should drive the next code task. The later sections rec
 
 Work through these areas in order. Keep each code change small enough to review and verify on its own.
 
-### 1. Missing Homebrew and refresh failures
+### 1. Replace the analytics transport
+
+Do not change the event names or privacy boundary in `docs/ANALYTICS.md` while changing providers. The Cloud repository must publish a versioned request and response contract plus a development endpoint before the app transport changes.
+
+- [ ] Keep the existing `AnalyticsTracking` boundary and replace the TelemetryDeck implementation with a BrewPulse-owned client.
+- [ ] Call the Cloud HTTP endpoint with `URLSession`. Do not add the Convex Swift SDK to the public Free target.
+- [ ] Generate a random installation identifier on the Mac. Do not derive it from hardware, Apple ID, username, package inventory, or another personal identifier.
+- [ ] Give every event a stable idempotency identifier, schema version, occurrence time, app version, macOS major version, and architecture.
+- [ ] Persist a small bounded queue so events survive ordinary network failures and app relaunches. Delete queued events immediately when the user turns analytics off.
+- [ ] Batch delivery, retry transient failures with backoff, and never block launch, menu interaction, refresh, update, or uninstall work on analytics.
+- [ ] Treat unknown server responses and permanent validation failures as dropped analytics, not user-facing app failures.
+- [ ] Keep local and unconfigured source builds offline by requiring an explicit release endpoint configuration.
+- [ ] Add focused tests for opt-out, queue limits, batching, retry, idempotency, relaunch recovery, malformed responses, and unavailable service behavior.
+- [ ] Compare one diagnostic build against TelemetryDeck long enough to confirm event parity, then remove the TelemetryDeck package, app identifier, release configuration, and provider-specific code.
+- [ ] Update `docs/ANALYTICS.md`, `docs/PRIVACY.md`, release checks, and support guidance to describe the BrewPulse-owned service accurately.
+- [ ] Verify install, activation, engagement, operation, and reliability events from an archived production build. Confirm the dashboard shows the last accepted event time and active installation count without a provider-imposed processing delay.
+
+### 2. Missing Homebrew and refresh failures
 
 - [x] Give a missing Homebrew installation its own state instead of presenting it as a generic load failure.
 - [x] Explain where BrewPulse looked for Homebrew and provide a safe link to installation information without running an install command.
@@ -37,7 +54,7 @@ Work through these areas in order. Keep each code change small enough to review 
 - [x] Keep the last complete snapshot after a later refresh fails rather than applying partial inventory, and label the retained snapshot with its timestamp.
 - [x] Add focused tests and self-contained previews for missing Homebrew, initial failure, retained-data failure, and empty inventory.
 
-### 2. Command lifecycle and recovery
+### 3. Command lifecycle and recovery
 
 - [x] Apply a five-minute timeout to each read-only refresh command. Do not time out update or uninstall automatically.
 - [x] Test stalled refresh commands and likely connectivity failures with deterministic runners.
@@ -48,7 +65,7 @@ Work through these areas in order. Keep each code change small enough to review 
 - [ ] Verify relaunch behavior after an operation is interrupted by a crash or forced quit.
 - [x] Keep very large command output usable without constructing one unbounded SwiftUI `Text` view.
 
-### 3. UI and accessibility finish work
+### 4. UI and accessibility finish work
 
 - [x] Make long and multi-line installed or available versions readable without breaking row actions.
 - [x] Add `Command-R` for refresh. Keep the existing default, cancel, and Settings shortcuts working.
@@ -58,7 +75,7 @@ Work through these areas in order. Keep each code change small enough to review 
 - [x] Add previews for loading, failure, empty inventory, and failed operation states.
 - [ ] Review copy with someone who uses Homebrew but does not work in Terminal every day.
 
-### 4. Remaining quality matrix
+### 5. Remaining quality matrix
 
 These checks improve the preview and remain required for the later signed beta. They do not block the explicitly unsigned download.
 
@@ -71,7 +88,7 @@ These checks improve the preview and remain required for the later signed beta. 
 - [ ] Measure idle and refresh CPU, memory, wakeups, and battery impact with the menu closed and open.
 - [ ] Repeat the keyboard, VoiceOver, and larger-text checks on the archived Release build.
 
-### 5. Distribution and public beta
+### 6. Distribution and public beta
 
 - [x] Add and validate a production Icon Composer app icon with light, dark, and tinted appearances.
 - [x] Enable hardened runtime in Debug and Release configurations.
@@ -87,7 +104,6 @@ These checks improve the preview and remain required for the later signed beta. 
 - [x] Decide how Free users learn about BrewPulse updates without requiring a paid account or service.
 - [x] Add signed in-app updates with automatic checks, an approval prompt, and a manual check in Settings.
 - [x] Publish honest release notes, known limitations, support instructions, and a feedback path.
-- [ ] Verify install, activation, engagement, operation, and reliability signals from an archived production build in TelemetryDeck.
 
 ## Unsigned preview gate
 
@@ -150,7 +166,7 @@ Extract the shared engine into a Swift package or framework when `BrewPulse-Comm
 
 - `BrewPulse-Web` owns the public beta website. Its immediate job is accurate product, download, source, support, security, and privacy pages.
 - `BrewPulse-Commercial` stays parked until the Free beta and Pro demand test produce evidence for a paid feature set.
-- `BrewPulse-Cloud` stays parked until a validated paid feature has a server-side requirement.
+- `BrewPulse-Cloud` owns the approved anonymous analytics service. Free remains useful without it, and analytics failure never blocks Homebrew work.
 - Teams and Enterprise stay parked until direct conversations with organizations justify them.
 
 ## Definition of done for BrewPulse Free

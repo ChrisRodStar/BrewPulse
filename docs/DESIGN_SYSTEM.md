@@ -95,7 +95,7 @@ components:
     padding: "5px 10px"
 ---
 
-# Design System: BrewPulse
+# BrewPulse design system
 
 ## Overview
 
