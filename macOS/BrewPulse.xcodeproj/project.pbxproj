@@ -18,8 +18,8 @@
 		A10000000000000000000008 /* SerializedCommandRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* SerializedCommandRunner.swift */; };
 		AN1000000000000000000001 /* AnalyticsEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AN2000000000000000000001 /* AnalyticsEvent.swift */; };
 		AN1000000000000000000002 /* AnalyticsTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = AN2000000000000000000002 /* AnalyticsTracking.swift */; };
-		AN1000000000000000000003 /* TelemetryDeckAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AN2000000000000000000003 /* TelemetryDeckAnalytics.swift */; };
-		AN1000000000000000000004 /* TelemetryDeck in Frameworks */ = {isa = PBXBuildFile; productRef = AN5000000000000000000001 /* TelemetryDeck */; };
+		AN1000000000000000000003 /* BrewPulseAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = AN2000000000000000000003 /* BrewPulseAnalytics.swift */; };
+		AT1000000000000000000001 /* BrewPulseAnalyticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AT2000000000000000000001 /* BrewPulseAnalyticsTests.swift */; };
 		AA100000000000000000001 /* CommandOutputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA200000000000000000001 /* CommandOutputTextView.swift */; };
 		B10000000000000000000001 /* ProcessCommandRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* ProcessCommandRunnerTests.swift */; };
 		B10000000000000000000002 /* SerializedCommandRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* SerializedCommandRunnerTests.swift */; };
@@ -127,7 +127,8 @@
 		A20000000000000000000010 /* SerializedCommandRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializedCommandRunner.swift; sourceTree = "<group>"; };
 		AN2000000000000000000001 /* AnalyticsEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEvent.swift; sourceTree = "<group>"; };
 		AN2000000000000000000002 /* AnalyticsTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsTracking.swift; sourceTree = "<group>"; };
-		AN2000000000000000000003 /* TelemetryDeckAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryDeckAnalytics.swift; sourceTree = "<group>"; };
+		AN2000000000000000000003 /* BrewPulseAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewPulseAnalytics.swift; sourceTree = "<group>"; };
+		AT2000000000000000000001 /* BrewPulseAnalyticsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewPulseAnalyticsTests.swift; sourceTree = "<group>"; };
 		AA200000000000000000001 /* CommandOutputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandOutputTextView.swift; sourceTree = "<group>"; };
 		B20000000000000000000001 /* ProcessCommandRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessCommandRunnerTests.swift; sourceTree = "<group>"; };
 		B20000000000000000000002 /* SerializedCommandRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializedCommandRunnerTests.swift; sourceTree = "<group>"; };
@@ -216,7 +217,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AN1000000000000000000004 /* TelemetryDeck in Frameworks */,
 				D55A2082EC6A4583BC98063E /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -268,7 +268,7 @@
 			children = (
 				AN2000000000000000000001 /* AnalyticsEvent.swift */,
 				AN2000000000000000000002 /* AnalyticsTracking.swift */,
-				AN2000000000000000000003 /* TelemetryDeckAnalytics.swift */,
+				AN2000000000000000000003 /* BrewPulseAnalytics.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -285,6 +285,7 @@
 		B40000000000000000000001 /* BrewPulseTests */ = {
 			isa = PBXGroup;
 			children = (
+				AT4000000000000000000001 /* Analytics */,
 				75E8DF74EA0F4D92B3CCF1F0 /* AppUpdates */,
 				W40000000000000000000002 /* Settings */,
 				C40000000000000000000002 /* Homebrew */,
@@ -298,6 +299,14 @@
 				C40000000000000000000004 /* Support */,
 			);
 			path = BrewPulseTests;
+			sourceTree = "<group>";
+		};
+		AT4000000000000000000001 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				AT2000000000000000000001 /* BrewPulseAnalyticsTests.swift */,
+			);
+			path = Analytics;
 			sourceTree = "<group>";
 		};
 		C40000000000000000000001 /* Homebrew */ = {
@@ -485,7 +494,6 @@
 			);
 			name = BrewPulse;
 			packageProductDependencies = (
-				AN5000000000000000000001 /* TelemetryDeck */,
 				B254318613664F09A6D0440B /* Sparkle */,
 			);
 			productName = BrewPulse;
@@ -539,7 +547,6 @@
 			);
 			mainGroup = A40000000000000000000001;
 			packageReferences = (
-				AN6000000000000000000001 /* XCRemoteSwiftPackageReference "SwiftSDK" */,
 				B2B56F8BA1A54670A54925FA /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			productRefGroup = A40000000000000000000003 /* Products */;
@@ -583,7 +590,7 @@
 				A10000000000000000000001 /* BrewPulseApp.swift in Sources */,
 				AN1000000000000000000001 /* AnalyticsEvent.swift in Sources */,
 				AN1000000000000000000002 /* AnalyticsTracking.swift in Sources */,
-				AN1000000000000000000003 /* TelemetryDeckAnalytics.swift in Sources */,
+				AN1000000000000000000003 /* BrewPulseAnalytics.swift in Sources */,
 				803621068031410091B37BCB /* AppUpdater.swift in Sources */,
 				W10000000000000000000001 /* LaunchAtLoginService.swift in Sources */,
 				W10000000000000000000002 /* AppSettings.swift in Sources */,
@@ -645,6 +652,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AT1000000000000000000001 /* BrewPulseAnalyticsTests.swift in Sources */,
 				966CCECB27E54D1CA25A90C6 /* AppUpdateConfigurationTests.swift in Sources */,
 				W10000000000000000000005 /* AppSettingsTests.swift in Sources */,
 				Y10000000000000000000003 /* ApplicationPresentationControllerTests.swift in Sources */,
@@ -787,7 +795,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = BrewPulse;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				BREWPULSE_TELEMETRY_APP_ID = "621575AF-37BF-44DE-B916-4B94EF4C5DC4";
+				BREWPULSE_ANALYTICS_INGESTION_URL = "";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 7;
@@ -815,7 +823,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = BrewPulse;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				BREWPULSE_TELEMETRY_APP_ID = "621575AF-37BF-44DE-B916-4B94EF4C5DC4";
+				BREWPULSE_ANALYTICS_INGESTION_URL = "https://content-hound-396.convex.site";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 7;
@@ -903,14 +911,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		AN6000000000000000000001 /* XCRemoteSwiftPackageReference "SwiftSDK" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/TelemetryDeck/SwiftSDK";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.14.2;
-			};
-		};
 		B2B56F8BA1A54670A54925FA /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparkle-project/Sparkle";
@@ -922,11 +922,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		AN5000000000000000000001 /* TelemetryDeck */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = AN6000000000000000000001 /* XCRemoteSwiftPackageReference "SwiftSDK" */;
-			productName = TelemetryDeck;
-		};
 		B254318613664F09A6D0440B /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B2B56F8BA1A54670A54925FA /* XCRemoteSwiftPackageReference "Sparkle" */;

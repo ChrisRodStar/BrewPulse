@@ -2,11 +2,11 @@
 
 BrewPulse is the public macOS client and the shared Homebrew implementation used by every future BrewPulse product.
 
-> **Current priority:** replace the TelemetryDeck transport with the approved BrewPulse Cloud analytics contract, verify that an archived build appears in the owned dashboard without delay, then continue the remaining manual quality matrix. Apple Developer ID signing and notarization are deferred. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
+> **Current priority:** verify the BrewPulse Cloud analytics cutover with an archived build, then continue the remaining manual quality matrix. Apple Developer ID signing and notarization are deferred. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
 
 ## Current state
 
-The core workflow is implemented and locally verified. On August 24, 2026, all 87 tests passed with Xcode 27.0, the optimized command-builder regression suite passed, the Release build passed, and static analysis passed.
+The core workflow is implemented and locally verified. On August 25, 2026, all 93 tests passed with Xcode 27.0, the optimized command-builder regression suite passed, the Release build passed, and static analysis passed.
 
 | Area | Status |
 | --- | --- |
@@ -18,7 +18,7 @@ The core workflow is implemented and locally verified. On August 24, 2026, all 8
 | Accessibility and UI edge cases | In progress |
 | Signed in-app updates | Complete |
 | Unsigned 0.2.3 release | Complete |
-| Anonymous product analytics | Event contract complete; Convex transport migration pending |
+| Anonymous product analytics | Production receives first-observed and launch events from the Release app; complete archived flow pending |
 | Restore the existing Sparkle private key and publish the signed 0.2.3 updater feed | Complete |
 
 Only the **Now** section should drive the next code task. The later sections record release gates and boundaries without pretending they are active work.
@@ -31,17 +31,17 @@ Work through these areas in order. Keep each code change small enough to review 
 
 Do not change the event names or privacy boundary in `docs/ANALYTICS.md` while changing providers. The Cloud repository must publish a versioned request and response contract plus a development endpoint before the app transport changes.
 
-- [ ] Keep the existing `AnalyticsTracking` boundary and replace the TelemetryDeck implementation with a BrewPulse-owned client.
-- [ ] Call the Cloud HTTP endpoint with `URLSession`. Do not add the Convex Swift SDK to the public Free target.
-- [ ] Generate a random installation identifier on the Mac. Do not derive it from hardware, Apple ID, username, package inventory, or another personal identifier.
-- [ ] Give every event a stable idempotency identifier, schema version, occurrence time, app version, macOS major version, and architecture.
-- [ ] Persist a small bounded queue so events survive ordinary network failures and app relaunches. Delete queued events immediately when the user turns analytics off.
-- [ ] Batch delivery, retry transient failures with backoff, and never block launch, menu interaction, refresh, update, or uninstall work on analytics.
-- [ ] Treat unknown server responses and permanent validation failures as dropped analytics, not user-facing app failures.
-- [ ] Keep local and unconfigured source builds offline by requiring an explicit release endpoint configuration.
-- [ ] Add focused tests for opt-out, queue limits, batching, retry, idempotency, relaunch recovery, malformed responses, and unavailable service behavior.
-- [ ] Compare one diagnostic build against TelemetryDeck long enough to confirm event parity, then remove the TelemetryDeck package, app identifier, release configuration, and provider-specific code.
-- [ ] Update `docs/ANALYTICS.md`, `docs/PRIVACY.md`, release checks, and support guidance to describe the BrewPulse-owned service accurately.
+- [x] Keep the existing `AnalyticsTracking` boundary and replace the TelemetryDeck implementation with a BrewPulse-owned client.
+- [x] Call the Cloud HTTP endpoint with `URLSession`. Do not add the Convex Swift SDK to the public Free target.
+- [x] Generate a random installation identifier on the Mac. Do not derive it from hardware, Apple ID, username, package inventory, or another personal identifier.
+- [x] Give every event a stable idempotency identifier, schema version, occurrence time, app version, macOS major version, and architecture.
+- [x] Persist a small bounded queue so events survive ordinary network failures and app relaunches. Delete queued events immediately when the user turns analytics off.
+- [x] Batch delivery, retry transient failures with backoff, and never block launch, menu interaction, refresh, update, or uninstall work on analytics.
+- [x] Treat unknown server responses and permanent validation failures as dropped analytics, not user-facing app failures.
+- [x] Keep local and unconfigured source builds offline by requiring an explicit release endpoint configuration.
+- [x] Add focused tests for opt-out, queue limits, batching, retry, idempotency, relaunch recovery, malformed responses, and unavailable service behavior.
+- [x] Confirm event parity against the approved contract, then remove the TelemetryDeck package, app identifier, release configuration, and provider-specific code.
+- [x] Update `docs/ANALYTICS.md`, `docs/PRIVACY.md`, release checks, and support guidance to describe the BrewPulse-owned service accurately.
 - [ ] Verify install, activation, engagement, operation, and reliability events from an archived production build. Confirm the dashboard shows the last accepted event time and active installation count without a provider-imposed processing delay.
 
 ### 2. Missing Homebrew and refresh failures

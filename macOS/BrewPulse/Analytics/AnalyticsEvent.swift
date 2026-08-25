@@ -5,22 +5,22 @@ nonisolated struct AnalyticsEvent: Equatable, Sendable {
     let parameters: [String: String]
 
     static let appLaunched = AnalyticsEvent(
-        name: "App.launched",
+        name: "BrewPulse.App.launched",
         parameters: [:]
     )
 
     static let installationFirstObserved = AnalyticsEvent(
-        name: "Installation.firstObserved",
+        name: "BrewPulse.Installation.firstObserved",
         parameters: [:]
     )
 
     static let activationCompleted = AnalyticsEvent(
-        name: "Activation.completed",
+        name: "BrewPulse.Activation.completed",
         parameters: [:]
     )
 
     static let menuOpened = AnalyticsEvent(
-        name: "Engagement.menuOpened",
+        name: "BrewPulse.Engagement.menuOpened",
         parameters: [:]
     )
 
@@ -37,7 +37,7 @@ nonisolated struct AnalyticsEvent: Equatable, Sendable {
             parameters["failure_kind"] = failureKind
         }
         return AnalyticsEvent(
-            name: "HomebrewRefresh.completed",
+            name: "BrewPulse.HomebrewRefresh.completed",
             parameters: parameters
         )
     }
@@ -48,7 +48,7 @@ nonisolated struct AnalyticsEvent: Equatable, Sendable {
         packageKind: String?
     ) -> AnalyticsEvent {
         packageOperationEvent(
-            name: "PackageOperation.confirmed",
+            name: "BrewPulse.PackageOperation.confirmed",
             kind: kind,
             scope: scope,
             packageKind: packageKind,
@@ -63,7 +63,7 @@ nonisolated struct AnalyticsEvent: Equatable, Sendable {
         outcome: AnalyticsOutcome
     ) -> AnalyticsEvent {
         packageOperationEvent(
-            name: "PackageOperation.completed",
+            name: "BrewPulse.PackageOperation.completed",
             kind: kind,
             scope: scope,
             packageKind: packageKind,

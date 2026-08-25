@@ -2,9 +2,11 @@
 
 BrewPulse Free does not require an account. Homebrew package inventory and command output stay on the Mac unless the user chooses to copy and share them.
 
-BrewPulse can send anonymous usage statistics through TelemetryDeck. Collection is enabled by default and can be turned off in BrewPulse Settings. These statistics measure first-observed installations, app sessions, menu activity, successful activation, Homebrew refresh outcomes, package-action outcomes, app version, macOS version, and Mac architecture.
+BrewPulse can send anonymous usage statistics to BrewPulse Cloud. Collection is enabled by default in configured release builds and can be turned off in BrewPulse Settings. These statistics measure first-observed installations, app sessions, menu activity, successful activation, Homebrew refresh outcomes, package-action outcomes, app version, macOS major version, and Mac architecture.
 
-TelemetryDeck receives an anonymized identifier for the app installation, event names, timestamps rounded by the service, and the system and app metadata listed above. BrewPulse analytics do not include package names, the installed package inventory, Homebrew commands or output, file paths, account details, or user-entered text.
+The app creates random installation and event identifiers. BrewPulse Cloud replaces the installation identifier with a keyed digest before storing an event. Stored events contain the event name, occurrence and receipt times, and the approved categorical app and system metadata listed above. Raw events expire after 90 days; longer-lived aggregates contain counts and approved categories. BrewPulse analytics do not include package names or counts, installed package inventory, Homebrew commands or output, file paths, raw errors, account details, hardware identifiers, or user-entered text.
+
+Pending events are stored in a bounded queue on the Mac so temporary network failures do not affect app work. Turning analytics off deletes that queue and the random installation identifier immediately and stops new delivery.
 
 BrewPulse runs Homebrew commands on the Mac. Homebrew may access its own servers and third-party package sources while checking, updating, or uninstalling packages. Homebrew's behavior and data practices are separate from BrewPulse.
 

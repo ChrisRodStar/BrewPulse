@@ -1,8 +1,8 @@
 # Product analytics
 
-BrewPulse measures the acquisition, activation, engagement, retention, and reliability signals needed to understand whether the product is growing and delivering value. The app uses TelemetryDeck for anonymous macOS analytics. The website uses Vercel Web Analytics and Speed Insights, while GitHub provides release-asset download counts.
+BrewPulse measures the acquisition, activation, engagement, retention, and reliability signals needed to understand whether the product is growing and delivering value. The app sends anonymous macOS events to BrewPulse Cloud. The website uses Vercel Web Analytics and Speed Insights, while GitHub provides release-asset download counts.
 
-Analytics are enabled by default in configured release builds. A user can turn app analytics off under **Settings → Privacy → Share anonymous usage statistics**. Local and unconfigured source builds do not send TelemetryDeck events because they do not contain a TelemetryDeck app identifier.
+Analytics are enabled by default in configured release builds. A user can turn app analytics off under **Settings → Privacy → Share anonymous usage statistics**. Debug and unconfigured source builds do not send events because they do not contain an ingestion URL.
 
 ## Investor metrics
 
@@ -13,12 +13,12 @@ Analytics are enabled by default in configured release builds. A user can turn a
 | Release downloads | Downloads of architecture-specific DMG assets | GitHub Releases API |
 | First-observed installations | Unique anonymous installations that first run an instrumented build | `BrewPulse.Installation.firstObserved` |
 | Activated installations | Unique installations that complete a successful Homebrew refresh | `BrewPulse.Activation.completed` |
-| Weekly/monthly active installations | Unique installations with a session, menu open, or refresh in 7/30 days | TelemetryDeck sessions and engagement events |
-| 7-day/30-day retention | Activated installations observed again after 7/30 days | TelemetryDeck cohorts |
+| Weekly/monthly active installations | Unique installations with a session, menu open, or refresh in 7/30 days | BrewPulse Cloud installation activity |
+| 7-day/30-day retention | Activated installations observed again after 7/30 days | BrewPulse Cloud installation cohorts |
 | Core-action conversion | Unique installations confirming a package action compared with successful completions | `BrewPulse.PackageOperation.confirmed` and `.completed` |
 | Refresh reliability | Successful refreshes divided by completed refresh attempts | `BrewPulse.HomebrewRefresh.completed` |
 | Package-action reliability | Successful package actions divided by completed package actions | `BrewPulse.PackageOperation.completed` |
-| Version adoption | Active installations grouped by BrewPulse version | TelemetryDeck automatic app metadata |
+| Version adoption | Active installations grouped by BrewPulse version | BrewPulse Cloud event metadata |
 
 These numbers represent anonymous app installations, not verified individual people. Reinstalling the app, clearing its local data, or using BrewPulse on multiple Macs can create more than one installation identifier. Existing users first appear when they run an instrumented release.
 
@@ -42,4 +42,8 @@ Allowed parameter values are fixed categories defined in source. Never add packa
 
 ## Release configuration
 
-The public TelemetryDeck application identifier is checked into the BrewPulse target as the `BREWPULSE_TELEMETRY_APP_ID` Xcode build setting. It is substituted into `BrewPulseTelemetryAppID` in the processed app `Info.plist`, and the release script verifies the packaged value. An explicit environment value can override it for diagnostic builds. If the setting is absent, the analytics client remains disabled.
+The production BrewPulse Cloud base URL is checked into the Release configuration as `BREWPULSE_ANALYTICS_INGESTION_URL`. Xcode substitutes it into `BrewPulseAnalyticsIngestionURL` in the processed app `Info.plist`, and the release script verifies the packaged value. `BREWPULSE_ANALYTICS_INGESTION_URL` can override it for a diagnostic build. The Debug configuration is empty, so ordinary local builds remain offline.
+
+The client calls `POST /v1/analytics/events/batch` with `URLSession`. It keeps at most 500 pending events, batches at most 50 events or 64 KiB, and retries transient failures without blocking app work. Each event retains the same random event ID and occurrence time across retries. Turning analytics off removes the queue and random installation ID immediately.
+
+BrewPulse Cloud validates the fixed schema before storage, replaces the installation UUID with a keyed digest, and uses the installation digest plus event ID for idempotency. Raw categorical events expire after 90 days. Longer-lived daily aggregates contain approved categories and counts only.

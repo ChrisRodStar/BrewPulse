@@ -9,7 +9,7 @@ struct BrewPulseApp: App {
     @State private var operationReviewPresentation = PackageOperationReviewPresentation()
 
     init() {
-        let analytics = TelemetryDeckAnalytics()
+        let analytics = BrewPulseAnalytics()
         _store = State(initialValue: PackageStore(analytics: analytics))
         _settings = State(initialValue: AppSettings(analytics: analytics))
     }

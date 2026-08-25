@@ -5,7 +5,7 @@ Every release has separate disk images for Apple Silicon and Intel, plus a unive
 ## Build prerequisite
 
 - the Xcode version pinned in `.github/workflows/macos-ci.yml`
-- the checked-in TelemetryDeck application ID in the BrewPulse target build settings
+- the checked-in BrewPulse Cloud ingestion URL in the BrewPulse target's Release build settings
 
 The scripts use the Xcode selected for command-line tools. Set `DEVELOPER_DIR` on the command if the required Xcode is installed in a nonstandard location.
 
@@ -83,7 +83,7 @@ Use a positive integer for `BREWPULSE_BUILD_NUMBER` and increase it for every re
 For each release variant, the script:
 
 1. creates a Release archive containing only the requested architecture;
-2. confirms the bundle version, build number, analytics app ID, and executable architecture;
+2. confirms the bundle version, build number, analytics ingestion URL, and executable architecture;
 3. verifies the Developer ID authority, team, hardened runtime, and timestamp;
 4. creates a compact branded DMG containing `BrewPulse.app`, an Applications shortcut, and a saved Finder layout;
 5. signs the DMG, submits it to Apple's notarization service, and waits for the result;
@@ -117,7 +117,7 @@ shasum -a 256 -c BrewPulse-VERSION-macos-arm64.dmg.sha256
 
 ## Release checklist
 
-1. Confirm the release candidate passed `./scripts/validate.sh`. If it uses a pull request, confirm that its current head also passed `macOS Validation`. Confirm the TelemetryDeck app ID is present and receives test signals from the archived build.
+1. Confirm the release candidate passed `./scripts/validate.sh`. If it uses a pull request, confirm that its current head also passed `macOS Validation`. Confirm the BrewPulse Cloud ingestion URL is present and the archived build appears in ingestion status immediately.
 2. Run the full manual beta matrix in [TODO.md](../TODO.md) against its archived app.
 3. Update [CHANGELOG.md](../CHANGELOG.md) with the final date and known limitations, then merge the release commit.
 4. Create and push the matching `vVERSION` tag on that clean commit.

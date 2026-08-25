@@ -13,6 +13,8 @@ Before opening an issue:
 
 Do not post suspected security vulnerabilities publicly. Follow [SECURITY.md](../SECURITY.md) instead.
 
+Analytics delivery is silent by design. If you report missing anonymous events, include the BrewPulse version and whether **Settings → Privacy → Share anonymous usage statistics** is enabled. Do not post installation IDs, queued event data, backend exports, or service credentials.
+
 ## Scope of the beta
 
 The public 0.2.3 release covers Homebrew discovery, the Overview and Updates interface, individual updates, reviewed Update All, cancellation, failure recovery, user-approved in-app updates, and anonymous product analytics with an in-app opt-out. Requests for paid automation, accounts, fleet management, or hosted services are outside BrewPulse Free.
