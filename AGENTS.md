@@ -62,6 +62,13 @@ files may add instructions for their own directories.
 
 ## Git and Pull Requests
 
+- When the maintainer asks to release, ship, or put out a version, complete the
+  full publication workflow: finalize release metadata, commit and push it,
+  create and push the version tag, build and verify the public artifacts,
+  publish the GitHub release with those artifacts, update and push the appcast
+  and public download references, and verify the live URLs. Do not stop at a
+  prepared build unless the maintainer explicitly asks for preparation only.
+
 - Maintainer-owned work may go directly to `main` when the user explicitly
   authorizes the push. Do not create a pull request by default for routine
   documentation, release administration, or a coherent change the maintainer

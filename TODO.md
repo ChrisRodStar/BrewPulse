@@ -2,7 +2,7 @@
 
 BrewPulse is the public macOS client and the shared Homebrew implementation used by every future BrewPulse product.
 
-> **Current priority:** publish and collect feedback on the unsigned 0.2.2 updater release, then continue the remaining manual quality matrix. Apple Developer ID signing and notarization are deferred. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
+> **Current priority:** collect product analytics and tester feedback from the unsigned 0.2.3 release, then continue the remaining manual quality matrix. Apple Developer ID signing and notarization are deferred. Do not start Pro, licensing, accounts, or fleet management to make the workspace look complete.
 
 ## Current state
 
@@ -17,7 +17,7 @@ The core workflow is implemented and locally verified. On August 24, 2026, all 8
 | Failure recovery and command lifecycle | In progress |
 | Accessibility and UI edge cases | In progress |
 | Signed in-app updates | Complete |
-| Unsigned 0.2.2 release | Complete |
+| Unsigned 0.2.3 release | Complete |
 | Anonymous product analytics | Complete; archived signal verification pending |
 
 Only the **Now** section should drive the next code task. The later sections record release gates and boundaries without pretending they are active work.

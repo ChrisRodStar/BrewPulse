@@ -49,7 +49,7 @@ The output filenames contain `unsigned` so they cannot be confused with signed p
 Unsigned releases are GitHub releases for testers who accept the Gatekeeper warning. Sparkle signs the universal update archive and appcast with the separate EdDSA key; this does not sign or notarize the app with Apple. The app bundle also receives a free ad-hoc signature so macOS can verify its internal integrity, but that signature does not identify the developer.
 
 1. Use a clean commit whose changelog names the release and its limitations.
-2. Create a release tag such as `v0.2.2` on that commit.
+2. Create a release tag such as `v0.2.3` on that commit.
 3. Set `BREWPULSE_RELEASE_TAG` to the tag and `BREWPULSE_BUILD_NUMBER` to a positive integer.
 4. Run `./scripts/release.sh --unsigned-preview`.
 5. Verify all three DMG checksums. Confirm the Apple Silicon image contains `arm64`, the Intel image contains `x86_64`, and the universal image contains both architectures.
@@ -58,11 +58,11 @@ Unsigned releases are GitHub releases for testers who accept the Gatekeeper warn
 8. Confirm the universal DMG URL in `appcast.xml` matches the release, then commit and push the updated feed to `main`.
 9. Link the website to the exact release and repeat the download and checksum test.
 
-For version 0.2.2:
+For version 0.2.3:
 
 ```text
-export BREWPULSE_RELEASE_TAG="v0.2.2"
-export BREWPULSE_BUILD_NUMBER="6"
+export BREWPULSE_RELEASE_TAG="v0.2.3"
+export BREWPULSE_BUILD_NUMBER="7"
 ./scripts/release.sh --unsigned-preview
 ```
 

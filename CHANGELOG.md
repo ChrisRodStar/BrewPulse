@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.3 - unreleased
+## 0.2.3 - 2026-08-24
 
 ### Added
 
@@ -12,6 +12,13 @@
 
 - Published builds verify that the production TelemetryDeck application identifier is embedded in the packaged app.
 - Privacy and release documentation now describe the analytics event contract and investor-facing metric definitions.
+
+### Known limitations
+
+- This release is not signed with an Apple Developer ID and is not notarized. macOS still requires the user to allow its first launch in Privacy & Security.
+- Users on 0.1.0 Beta 3 or the affected 0.2.0 build must install 0.2.3 manually. Version 0.2.1 or later can update to this release from inside BrewPulse.
+- Scheduling and background Homebrew update notifications are not included.
+- Cask installers may require interaction in another window or administrator approval.
 
 ## 0.2.2 - 2026-08-24
 
