@@ -38,7 +38,7 @@ BrewPulse does not install a privileged helper, background daemon, browser exten
 
 ## Updates
 
-Users on 0.1.0 Beta 3 must install 0.2.3 manually because that older build does not contain the updater. Anyone who installed the affected 0.2.0 build must also replace it manually because it cannot launch to run its updater. Version 0.2.1 or later can update to 0.2.3 from inside BrewPulse. BrewPulse checks for new versions when it opens and at least once per day, shows the release notes, and waits for approval before downloading or installing an update.
+Version 0.2.3 currently requires a manual install because the existing Sparkle update-signing key is unavailable. The updater feed remains safely on 0.2.2 until that original key is restored; rotating it would break trust for installed builds. Once the feed is restored, BrewPulse will continue checking for new versions when it opens and at least once per day, showing release notes, and waiting for approval before downloading or installing an update.
 
 Apple Developer ID signing and Sparkle update signing are separate. The app has only an ad-hoc integrity signature, but BrewPulse verifies update downloads with its embedded Sparkle EdDSA public key before installing them.
 

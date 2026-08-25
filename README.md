@@ -34,7 +34,7 @@ BrewPulse can already:
 
 The current release is [BrewPulse 0.2.3](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.2.3). It is unsigned by Apple and not notarized, so macOS will block it on first launch. Read the [beta guide](docs/BETA.md) before installing it. Apple Developer ID signing and notarization remain deferred; the current checklist is in [TODO.md](TODO.md).
 
-Version 0.2.3 adds anonymous product analytics for installations, activation, engagement, retention, and reliability, with an opt-out in Settings. Users on 0.1.0 Beta 3 or the affected 0.2.0 build need one final manual download; users on 0.2.1 or later can update from inside BrewPulse.
+Version 0.2.3 adds anonymous product analytics for installations, activation, engagement, retention, and reliability, with an opt-out in Settings. This version currently requires a manual download because the existing Sparkle update-signing key must be restored before the updater feed can safely offer it.
 
 ## Safety and transparency
 
