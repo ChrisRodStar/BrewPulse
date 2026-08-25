@@ -1,10 +1,37 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><!-- sparkle-sign-warning:
+IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires re-signing this file with generate_appcast or sign_update! The signed signature will be embedded at the end of this file.
+--><rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
     <channel>
         <title>BrewPulse updates</title>
         <link>https://github.com/ChrisRodStar/BrewPulse</link>
         <description>Signed BrewPulse updates</description>
         <language>en</language>
+        <item>
+            <title>0.2.3</title>
+            <pubDate>Mon, 24 Aug 2026 21:10:49 -0400</pubDate>
+            <sparkle:version>7</sparkle:version>
+            <sparkle:shortVersionString>0.2.3</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[### Added
+
+- Anonymous product analytics now measure first-observed installations, activation, engagement, package-action conversion, retention, and operation reliability through TelemetryDeck.
+- Settings includes a Privacy control for turning anonymous usage statistics on or off.
+- The website records installer selection and download intent through Vercel Analytics.
+
+### Changed
+
+- Published builds verify that the production TelemetryDeck application identifier is embedded in the packaged app.
+- Privacy and release documentation now describe the analytics event contract and investor-facing metric definitions.
+
+### Known limitations
+
+- This release is not signed with an Apple Developer ID and is not notarized. macOS still requires the user to allow its first launch in Privacy & Security.
+- Users on 0.1.0 Beta 3 or the affected 0.2.0 build must install 0.2.3 manually. Versions 0.2.1 and 0.2.2 can update to this release from inside BrewPulse.
+- Scheduling and background Homebrew update notifications are not included.
+- Cask installers may require interaction in another window or administrator approval.
+]]></description>
+            <enclosure url="https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.3/BrewPulse-0.2.3-macos-universal-unsigned.dmg" length="5725339" type="application/octet-stream" sparkle:edSignature="vz2tSHS3Dv3iHrFat5ZFckaT1tsCdooRBRyOxHGSkPdhh2b732tFuacoFBY7LIXLT/SG6C6gccXynsXVLtwIBg=="></enclosure>
+        </item>
         <item>
             <title>0.2.2</title>
             <pubDate>Mon, 24 Aug 2026 15:32:40 -0400</pubDate>
@@ -25,7 +52,7 @@
 - Cask installers may require interaction in another window or administrator approval.
 
 ]]></description>
-            <enclosure url="https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.2/BrewPulse-0.2.2-macos-universal-unsigned.dmg" length="5592275" type="application/octet-stream" sparkle:edSignature="YGIUPH2BAv7mxCdGdKmFI1jciiDaKYKVkaiQHl3mPItdA7ZZlGQ6whlCjMzSNvR1VkIBDoteisWUgjsD1pV0AA=="/>
+            <enclosure url="https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.2/BrewPulse-0.2.2-macos-universal-unsigned.dmg" length="5592275" type="application/octet-stream" sparkle:edSignature="YGIUPH2BAv7mxCdGdKmFI1jciiDaKYKVkaiQHl3mPItdA7ZZlGQ6whlCjMzSNvR1VkIBDoteisWUgjsD1pV0AA=="></enclosure>
         </item>
         <item>
             <title>0.2.1</title>
@@ -45,7 +72,7 @@
 - Anyone who downloaded the affected 0.2.0 installer must replace it with 0.2.1 manually because the damaged app cannot run its updater.
 
 ]]></description>
-            <enclosure url="https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.1/BrewPulse-0.2.1-macos-universal-unsigned.dmg" length="5596371" type="application/octet-stream" sparkle:edSignature="EZuw/Nc+bWH5sVP9LVQ5ZUqHyUnDmzW2/gE2YCjMJw0eDdGlISIRNsmy40Feh+PFiczguDTrnuC7uT8cHY/YBA=="/>
+            <enclosure url="https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.1/BrewPulse-0.2.1-macos-universal-unsigned.dmg" length="5596371" type="application/octet-stream" sparkle:edSignature="EZuw/Nc+bWH5sVP9LVQ5ZUqHyUnDmzW2/gE2YCjMJw0eDdGlISIRNsmy40Feh+PFiczguDTrnuC7uT8cHY/YBA=="></enclosure>
         </item>
         <item>
             <title>0.2.0</title>
@@ -70,11 +97,10 @@
 - Intel packaging is verified, but hands-on Intel runtime testing and the full keyboard, VoiceOver, and larger-text passes are not complete.
 
 ]]></description>
-            <enclosure url="https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.0/BrewPulse-0.2.0-macos-universal-unsigned.dmg" length="5598035" type="application/octet-stream" sparkle:edSignature="kx7dQ3QbBD1t/ijZHRbfj/IRhh6JBLrUuCpScyEeNPAQ/7wmX0OcvyNKLTVxgRqoi/k8bgpuNH9gQ3ybZCN4Cg=="/>
+            <enclosure url="https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.0/BrewPulse-0.2.0-macos-universal-unsigned.dmg" length="5598035" type="application/octet-stream" sparkle:edSignature="kx7dQ3QbBD1t/ijZHRbfj/IRhh6JBLrUuCpScyEeNPAQ/7wmX0OcvyNKLTVxgRqoi/k8bgpuNH9gQ3ybZCN4Cg=="></enclosure>
         </item>
     </channel>
-</rss>
-<!-- sparkle-signatures:
-edSignature: y5g98xf7MC7koweJJq1sWVgWGpfHEGHYVIKTX/5BL2CXOfikNkgpOYSRzAMxukrryg2Cc0Wl/pkPYYOQ7kUAAQ==
-length: 5114
+</rss><!-- sparkle-signatures:
+edSignature: x9oeMJ5tK1SqUjCtEnIB8J3dxlMpUiPr6wBt0EoZ+eB/4/FeDlev3eDjg7kq6pmVmTBqnwb3ODyww3i79ojJDw==
+length: 7163
 -->

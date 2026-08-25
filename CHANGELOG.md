@@ -16,7 +16,7 @@
 ### Known limitations
 
 - This release is not signed with an Apple Developer ID and is not notarized. macOS still requires the user to allow its first launch in Privacy & Security.
-- Version 0.2.3 must currently be installed manually because the existing Sparkle update-signing key is unavailable. The updater feed remains on 0.2.2 until that original key is restored.
+- Users on 0.1.0 Beta 3 or the affected 0.2.0 build must install 0.2.3 manually. Versions 0.2.1 and 0.2.2 can update to this release from inside BrewPulse.
 - Scheduling and background Homebrew update notifications are not included.
 - Cask installers may require interaction in another window or administrator approval.
 

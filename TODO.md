@@ -19,7 +19,7 @@ The core workflow is implemented and locally verified. On August 24, 2026, all 8
 | Signed in-app updates | Complete |
 | Unsigned 0.2.3 release | Complete |
 | Anonymous product analytics | Complete; archived signal verification pending |
-| Restore the existing Sparkle private key and publish the signed 0.2.3 updater feed | Pending |
+| Restore the existing Sparkle private key and publish the signed 0.2.3 updater feed | Complete |
 
 Only the **Now** section should drive the next code task. The later sections record release gates and boundaries without pretending they are active work.
 
