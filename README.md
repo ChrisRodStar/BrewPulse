@@ -101,6 +101,7 @@ Beta installation, privacy, support, and release details live in [`docs/`](docs/
 
 - [Beta guide](docs/BETA.md)
 - [Privacy](docs/PRIVACY.md)
+- [Product analytics](docs/ANALYTICS.md)
 - [Support](docs/SUPPORT.md)
 - [Release process](docs/RELEASING.md)
 - [Release notes](CHANGELOG.md)

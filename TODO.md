@@ -18,6 +18,7 @@ The core workflow is implemented and locally verified. On August 24, 2026, all 8
 | Accessibility and UI edge cases | In progress |
 | Signed in-app updates | Complete |
 | Unsigned 0.2.2 release | Complete |
+| Anonymous product analytics | Complete; archived signal verification pending |
 
 Only the **Now** section should drive the next code task. The later sections record release gates and boundaries without pretending they are active work.
 
@@ -85,6 +86,7 @@ These checks improve the preview and remain required for the later signed beta. 
 - [x] Decide how Free users learn about BrewPulse updates without requiring a paid account or service.
 - [x] Add signed in-app updates with automatic checks, an approval prompt, and a manual check in Settings.
 - [x] Publish honest release notes, known limitations, support instructions, and a feedback path.
+- [ ] Verify install, activation, engagement, operation, and reliability signals from an archived production build in TelemetryDeck.
 
 ## Unsigned preview gate
 

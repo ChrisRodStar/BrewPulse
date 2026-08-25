@@ -93,8 +93,9 @@ struct StatusMenuView: View {
         .foregroundStyle(CivicSignalTheme.primaryText)
         .tint(CivicSignalTheme.brand)
         .task {
+            store.recordMenuOpened()
             if case .idle = store.state {
-                await store.refresh()
+                await store.refresh(trigger: .appOpen)
             }
         }
         .sheet(item: $presentedSheet) { sheet in

@@ -112,6 +112,7 @@ final class PackageStore {
     private(set) var operationState: HomebrewPackageOperationState
     private(set) var operationFollowUpRefreshFailure: Failure?
     private let homebrewService: HomebrewService
+    private let analytics: any AnalyticsTracking
 
     var confirmedOperationPlan: HomebrewPackageOperationPlan? {
         guard case .package(let plan) = operationState.confirmedPlan else {
@@ -138,12 +139,14 @@ final class PackageStore {
 
     init(
         state: State = .idle,
-        homebrewService: HomebrewService = HomebrewService()
+        homebrewService: HomebrewService = HomebrewService(),
+        analytics: any AnalyticsTracking = NoOpAnalyticsTracker.shared
     ) {
         self.state = state
         operationState = .idle
         operationFollowUpRefreshFailure = nil
         self.homebrewService = homebrewService
+        self.analytics = analytics
     }
 
     func operationPlan(
@@ -225,6 +228,7 @@ final class PackageStore {
         }
 
         operationState = .confirmed(plan)
+        analytics.track(operationEvent(for: plan, outcome: nil))
     }
 
     func runConfirmedOperation() async {
@@ -271,7 +275,14 @@ final class PackageStore {
             false
         }
 
-        await refresh()
+        analytics.track(
+            operationEvent(
+                for: plan,
+                outcome: operationAnalyticsOutcome
+            )
+        )
+
+        await refresh(trigger: .operationFollowUp)
         if operationSucceeded,
            case .failed(let failure, previousReport: _) = state {
             operationFollowUpRefreshFailure = failure
@@ -285,7 +296,11 @@ final class PackageStore {
         homebrewService.cancelCurrentCommand()
     }
 
-    func refresh() async {
+    func recordMenuOpened() {
+        analytics.track(.menuOpened)
+    }
+
+    func refresh(trigger: AnalyticsRefreshTrigger = .manual) async {
         guard !isPerformingHomebrewWork else { return }
 
         if case .confirmed = operationState {
@@ -300,16 +315,103 @@ final class PackageStore {
             }.value
             state = .loaded(report)
             operationFollowUpRefreshFailure = nil
+            analytics.trackActivationIfNeeded()
+            analytics.track(
+                .refreshCompleted(trigger: trigger, outcome: .succeeded)
+            )
         } catch let error as HomebrewError {
+            let failure = Failure(homebrewError: error)
             state = .failed(
-                Failure(homebrewError: error),
+                failure,
                 previousReport: previousReport
+            )
+            analytics.track(
+                .refreshCompleted(
+                    trigger: trigger,
+                    outcome: .failed,
+                    failureKind: failure.analyticsName
+                )
             )
         } catch {
+            let failure = Failure(unexpectedError: error)
             state = .failed(
-                Failure(unexpectedError: error),
+                failure,
                 previousReport: previousReport
             )
+            analytics.track(
+                .refreshCompleted(
+                    trigger: trigger,
+                    outcome: .failed,
+                    failureKind: failure.analyticsName
+                )
+            )
+        }
+    }
+
+    private var operationAnalyticsOutcome: AnalyticsOutcome {
+        switch operationState {
+        case .completed:
+            .succeeded
+        case .cancelled:
+            .cancelled
+        case .failed, .idle, .confirmed, .running, .cancelling:
+            .failed
+        }
+    }
+
+    private func operationEvent(
+        for plan: HomebrewOperationPlan,
+        outcome: AnalyticsOutcome?
+    ) -> AnalyticsEvent {
+        let kind = switch plan.kind {
+        case .update:
+            "update"
+        case .uninstall:
+            "uninstall"
+        }
+        let scope = plan.isUpdateAll ? "all" : "single"
+        let packageKind = plan.package.map { package in
+            switch package.kind {
+            case .formula:
+                "formula"
+            case .cask:
+                "cask"
+            }
+        }
+
+        if let outcome {
+            return .packageOperationCompleted(
+                kind: kind,
+                scope: scope,
+                packageKind: packageKind,
+                outcome: outcome
+            )
+        }
+        return .packageOperationConfirmed(
+            kind: kind,
+            scope: scope,
+            packageKind: packageKind
+        )
+    }
+}
+
+private extension PackageStore.Failure {
+    var analyticsName: String {
+        switch kind {
+        case .homebrewNotInstalled:
+            "homebrew_not_installed"
+        case .commandFailed:
+            "command_failed"
+        case .commandTimedOut:
+            "command_timed_out"
+        case .connectivityFailure:
+            "connectivity_failure"
+        case .unreadableOutdatedData:
+            "unreadable_outdated_data"
+        case .unreadablePackageMetadata:
+            "unreadable_package_metadata"
+        case .unexpected:
+            "unexpected"
         }
     }
 }

@@ -710,6 +710,81 @@ struct PackageStoreTests {
         #expect(!store.isPerformingHomebrewWork)
     }
 
+    @Test("Records activation and refresh reliability without inventory details")
+    @MainActor
+    func recordsRefreshAnalytics() async {
+        let analytics = RecordingAnalyticsTracker()
+        let runner = RecordingCommandRunner { request in
+            try Self.successfulRefreshResult(for: request)
+        }
+        let store = PackageStore(
+            homebrewService: HomebrewService(
+                commandRunner: runner,
+                executableURL: brewURL
+            ),
+            analytics: analytics
+        )
+
+        await store.refresh(trigger: .appOpen)
+
+        #expect(analytics.activationRequestCount == 1)
+        #expect(analytics.events == [
+            .refreshCompleted(trigger: .appOpen, outcome: .succeeded)
+        ])
+        #expect(analytics.events.allSatisfy { event in
+            !event.parameters.keys.contains("package_name")
+                && !event.parameters.keys.contains("command_output")
+        })
+    }
+
+    @Test("Records the package-action conversion and outcome")
+    @MainActor
+    func recordsPackageOperationAnalytics() async throws {
+        let analytics = RecordingAnalyticsTracker()
+        let runner = RecordingCommandRunner { request in
+            if request.arguments == ["upgrade", "--formula", "--", "git"] {
+                return .testResult(for: request, standardOutput: "Updated git\n")
+            }
+            return try Self.successfulRefreshResult(for: request)
+        }
+        let store = PackageStore(
+            state: .loaded(Self.sampleReport),
+            homebrewService: HomebrewService(
+                commandRunner: runner,
+                executableURL: brewURL
+            ),
+            analytics: analytics
+        )
+        let package = try #require(Self.sampleReport.inventory.formulae.first)
+        let plan = try store.operationPlan(for: package.id, kind: .update)
+
+        try store.confirmOperation(plan)
+        await store.runConfirmedOperation()
+
+        #expect(analytics.events.contains(
+            .packageOperationConfirmed(
+                kind: "update",
+                scope: "single",
+                packageKind: "formula"
+            )
+        ))
+        #expect(analytics.events.contains(
+            .packageOperationCompleted(
+                kind: "update",
+                scope: "single",
+                packageKind: "formula",
+                outcome: .succeeded
+            )
+        ))
+        #expect(analytics.events.contains(
+            .refreshCompleted(trigger: .operationFollowUp, outcome: .succeeded)
+        ))
+        #expect(analytics.events.allSatisfy { event in
+            !event.parameters.values.contains("git")
+                && !event.parameters.values.contains("Updated git\n")
+        })
+    }
+
     nonisolated private static func successfulRefreshResult(
         for request: CommandRequest
     ) throws -> CommandResult {
@@ -749,4 +824,22 @@ struct PackageStoreTests {
         commandResults: [],
         refreshedAt: Date(timeIntervalSinceReferenceDate: 800_000_000)
     )
+}
+
+@MainActor
+private final class RecordingAnalyticsTracker: AnalyticsTracking {
+    let isConfigured = true
+    private(set) var events: [AnalyticsEvent] = []
+    private(set) var activationRequestCount = 0
+
+    func start(isEnabled: Bool) {}
+    func setCollectionEnabled(_ isEnabled: Bool) {}
+
+    func track(_ event: AnalyticsEvent) {
+        events.append(event)
+    }
+
+    func trackActivationIfNeeded() {
+        activationRequestCount += 1
+    }
 }

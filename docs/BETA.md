@@ -49,6 +49,6 @@ Apple Developer ID signing and Sparkle update signing are separate. The app has 
 - Cask operations may open another installer or ask macOS for administrator approval.
 - Cancelling an active action asks the entire Homebrew process group to stop, but Homebrew or an external installer may take a few seconds to exit.
 - A failed refresh keeps the last complete package snapshot and labels it with its original time.
-- The beta has no crash reporting or analytics. Include copied Homebrew output when filing a reproducible issue.
+- Include copied Homebrew output when filing a reproducible issue.
 
 See [SUPPORT.md](SUPPORT.md) for help and [PRIVACY.md](PRIVACY.md) for the data policy.

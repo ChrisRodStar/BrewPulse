@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.3 - unreleased
+
+### Added
+
+- Anonymous product analytics now measure first-observed installations, activation, engagement, package-action conversion, retention, and operation reliability through TelemetryDeck.
+- Settings includes a Privacy control for turning anonymous usage statistics on or off.
+- The website records installer selection and download intent through Vercel Analytics.
+
+### Changed
+
+- Published builds verify that the production TelemetryDeck application identifier is embedded in the packaged app.
+- Privacy and release documentation now describe the analytics event contract and investor-facing metric definitions.
+
 ## 0.2.2 - 2026-08-24
 
 ### Changed
@@ -42,7 +55,6 @@
 - Scheduling and background Homebrew update notifications are not included.
 - Cask installers may require interaction in another window or administrator approval.
 - Intel packaging is verified, but hands-on Intel runtime testing and the full keyboard, VoiceOver, and larger-text passes are not complete.
-- BrewPulse does not collect crash reports or analytics.
 
 ## 0.1.0 beta 3 - 2026-08-23
 
@@ -64,7 +76,6 @@
 - Scheduling, background notifications, and automatic app updates are not included.
 - Cask installers may require interaction in another window or administrator approval.
 - Intel packaging is verified, but hands-on Intel runtime testing and the full keyboard, VoiceOver, and larger-text passes are not complete.
-- The beta does not collect crash reports or analytics.
 
 ## 0.1.0 beta 2 - 2026-08-22
 
@@ -83,7 +94,6 @@
 - No Update All, scheduling, background notifications, or automatic app updater.
 - Cask installers may require interaction in another window or administrator approval.
 - Intel runtime verification, installer-driven cask testing, uninstall testing, and the full accessibility pass are not complete.
-- The beta does not collect crash reports or analytics.
 
 ## 0.1.0 beta 1 - 2026-08-22
 
@@ -103,4 +113,3 @@
 - No Update All, scheduling, background notifications, or automatic app updater.
 - Cask installers may require interaction in another window or administrator approval.
 - Intel runtime verification, real-package testing, and the full accessibility pass are not complete.
-- The beta does not collect crash reports or analytics.

@@ -81,6 +81,73 @@ struct AppSettingsTests {
         #expect(settings.launchAtLoginStatus == .enabled)
         #expect(settings.launchesAtLogin)
     }
+
+    @Test("Enables anonymous analytics by default and persists opt-out")
+    func managesAnalyticsPreference() throws {
+        let suiteName = "AppSettingsTests.analytics.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let analytics = StubAnalyticsTracker()
+        let settings = AppSettings(
+            launchAtLoginService: StubLaunchAtLoginService(status: .disabled),
+            analytics: analytics,
+            userDefaults: defaults
+        )
+
+        #expect(settings.sharesAnonymousUsageStatistics)
+        #expect(settings.isAnalyticsAvailable)
+        #expect(analytics.startRequests == [true])
+
+        settings.setSharesAnonymousUsageStatistics(false)
+
+        #expect(!settings.sharesAnonymousUsageStatistics)
+        #expect(defaults.object(forKey: AppSettings.analyticsEnabledKey) as? Bool == false)
+        #expect(analytics.collectionRequests == [false])
+    }
+
+    @Test("Keeps analytics disabled when the build is not configured")
+    func disablesUnconfiguredAnalytics() throws {
+        let suiteName = "AppSettingsTests.unconfiguredAnalytics.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let analytics = StubAnalyticsTracker(isConfigured: false)
+        let settings = AppSettings(
+            launchAtLoginService: StubLaunchAtLoginService(status: .disabled),
+            analytics: analytics,
+            userDefaults: defaults
+        )
+
+        #expect(!settings.isAnalyticsAvailable)
+        #expect(!settings.sharesAnonymousUsageStatistics)
+        #expect(analytics.startRequests == [false])
+
+        settings.setSharesAnonymousUsageStatistics(true)
+
+        #expect(!settings.sharesAnonymousUsageStatistics)
+        #expect(analytics.collectionRequests == [false])
+    }
+}
+
+@MainActor
+private final class StubAnalyticsTracker: AnalyticsTracking {
+    let isConfigured: Bool
+    private(set) var startRequests: [Bool] = []
+    private(set) var collectionRequests: [Bool] = []
+
+    init(isConfigured: Bool = true) {
+        self.isConfigured = isConfigured
+    }
+
+    func start(isEnabled: Bool) {
+        startRequests.append(isEnabled)
+    }
+
+    func setCollectionEnabled(_ isEnabled: Bool) {
+        collectionRequests.append(isEnabled)
+    }
+
+    func track(_ event: AnalyticsEvent) {}
+    func trackActivationIfNeeded() {}
 }
 
 @MainActor

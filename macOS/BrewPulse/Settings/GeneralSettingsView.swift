@@ -46,6 +46,33 @@ struct GeneralSettingsView: View {
                 }
                 .accessibilityElement(children: .contain)
             }
+
+            Section("Privacy") {
+                Toggle(
+                    isOn: Binding(
+                        get: { settings.sharesAnonymousUsageStatistics },
+                        set: settings.setSharesAnonymousUsageStatistics
+                    )
+                ) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Share anonymous usage statistics")
+                        Text(
+                            settings.isAnalyticsAvailable
+                                ? "Help improve BrewPulse by sharing app activity, "
+                                    + "version, macOS version, and operation outcomes. "
+                                    + "Package names and command output are never included."
+                                : "Anonymous usage statistics are unavailable in this build."
+                        )
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    }
+                }
+                .toggleStyle(.switch)
+                .disabled(!settings.isAnalyticsAvailable)
+                .accessibilityHint(
+                    "Controls whether BrewPulse sends anonymous product analytics."
+                )
+            }
         }
         .formStyle(.grouped)
         .padding(8)

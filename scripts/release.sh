@@ -21,6 +21,8 @@ project_path="$repository_root/macOS/BrewPulse.xcodeproj"
 version="${BREWPULSE_VERSION:-$(awk -F ' = ' '/MARKETING_VERSION =/ { gsub(/;/, "", $2); print $2; exit }' "$project_path/project.pbxproj")}"
 project_build_number="$(awk -F ' = ' '/CURRENT_PROJECT_VERSION =/ { gsub(/;/, "", $2); print $2; exit }' "$project_path/project.pbxproj")"
 build_number="${BREWPULSE_BUILD_NUMBER:-$project_build_number}"
+project_telemetry_app_id="$(awk -F ' = ' '/BREWPULSE_TELEMETRY_APP_ID =/ { gsub(/[";]/, "", $2); print $2; exit }' "$project_path/project.pbxproj")"
+telemetry_app_id="${BREWPULSE_TELEMETRY_APP_ID:-$project_telemetry_app_id}"
 artifact_directory="${BREWPULSE_ARTIFACT_DIRECTORY:-$repository_root/artifacts}"
 architecture_specs=("arm64:arm64" "x86_64:x64")
 installer_background="$repository_root/macOS/Packaging/BrewPulseInstallerBackground.png"
@@ -50,6 +52,10 @@ if [[ ! -f "$installer_layout_script" ]]; then
 fi
 if [[ "$mode" != "unsigned" && -z "${BREWPULSE_BUILD_NUMBER:-}" ]]; then
     echo "Set BREWPULSE_BUILD_NUMBER explicitly for published or signed release builds." >&2
+    exit 1
+fi
+if [[ "$mode" != "unsigned" && -z "$telemetry_app_id" ]]; then
+    echo "Configure BREWPULSE_TELEMETRY_APP_ID for published or signed release builds." >&2
     exit 1
 fi
 
@@ -233,6 +239,7 @@ verify_app_bundle() {
     local target_binary="$target_app/Contents/MacOS/BrewPulse"
     local bundle_version
     local bundle_build_number
+    local bundle_telemetry_app_id
     local architectures
 
     if [[ ! -d "$target_app" ]]; then
@@ -249,6 +256,12 @@ verify_app_bundle() {
     bundle_build_number="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$target_app/Contents/Info.plist")"
     if [[ "$bundle_build_number" != "$build_number" ]]; then
         echo "Artifact build $bundle_build_number does not match requested build $build_number." >&2
+        exit 1
+    fi
+
+    bundle_telemetry_app_id="$(/usr/libexec/PlistBuddy -c 'Print :BrewPulseTelemetryAppID' "$target_app/Contents/Info.plist")"
+    if [[ "$bundle_telemetry_app_id" != "$telemetry_app_id" ]]; then
+        echo "Artifact analytics configuration does not match the requested TelemetryDeck app ID." >&2
         exit 1
     fi
 
@@ -286,6 +299,7 @@ build_disk_image() {
         -clonedSourcePackagesDirPath "$source_packages_path" \
         "MARKETING_VERSION=$version" \
         "CURRENT_PROJECT_VERSION=$build_number" \
+        "BREWPULSE_TELEMETRY_APP_ID=$telemetry_app_id" \
         "ARCHS=$build_architecture" \
         ONLY_ACTIVE_ARCH=NO \
         COMPILER_INDEX_STORE_ENABLE=NO \

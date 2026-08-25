@@ -1,12 +1,22 @@
 import Observation
+import Foundation
 
 @Observable
 @MainActor
 final class AppSettings {
+    static let analyticsEnabledKey = "analytics.isEnabled"
+
     private let launchAtLoginService: any LaunchAtLoginServing
+    private let analytics: any AnalyticsTracking
+    private let userDefaults: UserDefaults
 
     private(set) var launchAtLoginStatus: LaunchAtLoginStatus
     private(set) var launchAtLoginErrorMessage: String?
+    private(set) var sharesAnonymousUsageStatistics: Bool
+
+    var isAnalyticsAvailable: Bool {
+        analytics.isConfigured
+    }
 
     var launchesAtLogin: Bool {
         get {
@@ -31,10 +41,17 @@ final class AppSettings {
 
     init(
         launchAtLoginService: any LaunchAtLoginServing =
-            SystemLaunchAtLoginService()
+            SystemLaunchAtLoginService(),
+        analytics: any AnalyticsTracking = NoOpAnalyticsTracker.shared,
+        userDefaults: UserDefaults = .standard
     ) {
         self.launchAtLoginService = launchAtLoginService
+        self.analytics = analytics
+        self.userDefaults = userDefaults
         launchAtLoginStatus = launchAtLoginService.status()
+        sharesAnonymousUsageStatistics = analytics.isConfigured
+            && (userDefaults.object(forKey: Self.analyticsEnabledKey) as? Bool ?? true)
+        analytics.start(isEnabled: sharesAnonymousUsageStatistics)
     }
 
     func refreshLaunchAtLoginStatus() {
@@ -55,5 +72,12 @@ final class AppSettings {
 
     func openLoginItemSettings() {
         launchAtLoginService.openSystemSettings()
+    }
+
+    func setSharesAnonymousUsageStatistics(_ isEnabled: Bool) {
+        let enabled = analytics.isConfigured && isEnabled
+        sharesAnonymousUsageStatistics = enabled
+        userDefaults.set(enabled, forKey: Self.analyticsEnabledKey)
+        analytics.setCollectionEnabled(enabled)
     }
 }

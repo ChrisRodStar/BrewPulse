@@ -68,7 +68,6 @@
 - Scheduling and background Homebrew update notifications are not included.
 - Cask installers may require interaction in another window or administrator approval.
 - Intel packaging is verified, but hands-on Intel runtime testing and the full keyboard, VoiceOver, and larger-text passes are not complete.
-- BrewPulse does not collect crash reports or analytics.
 
 ]]></description>
             <enclosure url="https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.0/BrewPulse-0.2.0-macos-universal-unsigned.dmg" length="5598035" type="application/octet-stream" sparkle:edSignature="kx7dQ3QbBD1t/ijZHRbfj/IRhh6JBLrUuCpScyEeNPAQ/7wmX0OcvyNKLTVxgRqoi/k8bgpuNH9gQ3ybZCN4Cg=="/>
