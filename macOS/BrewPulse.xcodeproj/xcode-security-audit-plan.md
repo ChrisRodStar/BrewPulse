@@ -29,8 +29,8 @@ Execution completed in Xcode. Pointer authentication is disabled only for the Br
 | Authorization | Pass / not applicable to anonymous ingestion | The public cloud endpoint accepts anonymous product analytics by design. The maintainer overview requires authentication and the `analytics:view` permission, with tests for unauthenticated, forbidden, and authorized access. There is no user-owned row API to test for cross-user access. |
 | Server-side validation | Pass | The cloud endpoint rejects unknown fields and invalid types, categories, timestamps, UUIDs, oversized bodies, and oversized batches before its internal write. |
 | Rate limiting | Pass | Per-installation and per-network token buckets are implemented. Concurrent installation rate-limit coverage now verifies that simultaneous batches cannot exceed the bucket capacity. |
-| Supply chain | Pass for repository controls | Sparkle is lockfile-pinned to 2.9.6, app and cloud CI actions use immutable commit SHAs, dependency audits are clean, and weekly Swift, Bun, and GitHub Actions update automation is configured. |
-| Logging and monitoring | Improved, deployment pending | A read-only health route and free scheduled GitHub Actions monitor are included. They become active after the cloud branch is merged and deployed. Convex usage-threshold alerts still require dashboard configuration. |
+| Supply chain | Pass for repository controls | Sparkle is lockfile-pinned to 2.9.6, app and cloud CI actions use immutable commit SHAs, dependency audits are clean, and weekly Swift and GitHub Actions updates are automated. The cloud runs a weekly Bun vulnerability audit; Bun version updates remain manual because GitHub's updater currently rejects its version 2 text lockfile. |
+| Logging and monitoring | Improved and live | The read-only health route is deployed, and the free scheduled GitHub Actions monitor passed an end-to-end production check. Convex usage-threshold alerts still require dashboard configuration. |
 | Secrets | Pass | Targeted current-tree and full-history scans found no common secret formats. The client contains public configuration only; the cloud development environment file is ignored. |
 | Backups and recovery | Export verified; restore pending | A real development snapshot export was created and its ZIP integrity verified. A destructive restore was not run because no disposable deployment was available; the operations guide now records the exact rehearsal procedure and required evidence. |
 
@@ -40,7 +40,7 @@ These items are findings, not part of the checked Xcode-settings execution:
 
 1. Accepted exception: Developer ID signing and notarization are deferred because the project does not have a paid Apple Developer account. Revisit only if the distribution model changes.
 2. Weekly Swift dependency update automation is included in this app branch.
-3. Cloud dependency automation, immutable CI action pins, rate-limit tests, and free health monitoring are included in the separate cloud branch. A destructive restore rehearsal remains a manual operation against a disposable deployment.
+3. Cloud dependency auditing, GitHub Actions updates, immutable CI action pins, rate-limit tests, and free health monitoring are live on cloud `main`. A destructive restore rehearsal remains a manual operation against a disposable deployment.
 4. Final Xcode security decisions are recorded in `xcode-security-settings.md`, including the narrow Sparkle pointer-authentication exception.
 
 ## Execution result
