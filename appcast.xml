@@ -9,6 +9,33 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
         <description>Signed BrewPulse updates</description>
         <language>en</language>
         <item>
+            <title>0.2.5</title>
+            <pubDate>Fri, 28 Aug 2026 01:25:39 -0400</pubDate>
+            <sparkle:version>9</sparkle:version>
+            <sparkle:shortVersionString>0.2.5</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[
+### Changed
+
+- Analytics delivery now verifies the public BrewPulse Cloud health contract before posting a batch. An unavailable or incompatible service defers the next health check without sending telemetry or incrementing event retry attempts.
+- Release builds now enable Xcode Enhanced Security runtime protections and Hardware Memory Tagging in soft mode.
+- Unsigned release packaging preserves and verifies the Enhanced Security entitlements in every finished app bundle.
+
+### Fixed
+
+- A missing analytics ingestion route is treated as a permanent response and is not retried.
+
+### Known limitations
+
+- This release is not signed with an Apple Developer ID and is not notarized. macOS still requires the user to allow its first launch in Privacy & Security.
+- Users on 0.1.0 Beta 3 or the affected 0.2.0 build must install 0.2.5 manually. Versions 0.2.1 through 0.2.4 can update to this release from inside BrewPulse.
+- Scheduling and background Homebrew update notifications are not included.
+- Cask installers may require interaction in another window or administrator approval.
+
+]]></description>
+            <enclosure url="https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.5/BrewPulse-0.2.5-macos-universal-unsigned.dmg" length="5686218" type="application/octet-stream" sparkle:edSignature="HQbPjKns1sEthaUVAqJDsOXBcS+QU8nmRcmVJFJuMivTUyQQAhoqwW90KNXxm+T6/wW8lVNsSwQ4DO2AQ83GCw=="/>
+        </item>
+        <item>
             <title>0.2.4</title>
             <pubDate>Tue, 25 Aug 2026 00:51:17 -0400</pubDate>
             <sparkle:version>8</sparkle:version>
@@ -57,31 +84,9 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
 ]]></description>
             <enclosure url="https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.3/BrewPulse-0.2.3-macos-universal-unsigned.dmg" length="5725339" type="application/octet-stream" sparkle:edSignature="vz2tSHS3Dv3iHrFat5ZFckaT1tsCdooRBRyOxHGSkPdhh2b732tFuacoFBY7LIXLT/SG6C6gccXynsXVLtwIBg=="/>
         </item>
-        <item>
-            <title>0.2.2</title>
-            <pubDate>Mon, 24 Aug 2026 15:32:40 -0400</pubDate>
-            <sparkle:version>6</sparkle:version>
-            <sparkle:shortVersionString>0.2.2</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <description sparkle:format="markdown"><![CDATA[
-### Changed
-
-- Refresh failures and package-operation details now share one selectable, scrollable output view, which keeps very large Homebrew logs responsive.
-- Launch-at-login settings now use direct state bindings and clear failed registration alerts through the same presentation state used by the settings window.
-
-### Known limitations
-
-- This release is not signed with an Apple Developer ID and is not notarized. macOS still requires the user to allow its first launch in Privacy & Security.
-- Users on 0.1.0 Beta 3 or the affected 0.2.0 build must install 0.2.2 manually. Version 0.2.1 can update to this release from inside BrewPulse.
-- Scheduling and background Homebrew update notifications are not included.
-- Cask installers may require interaction in another window or administrator approval.
-
-]]></description>
-            <enclosure url="https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.2/BrewPulse-0.2.2-macos-universal-unsigned.dmg" length="5592275" type="application/octet-stream" sparkle:edSignature="YGIUPH2BAv7mxCdGdKmFI1jciiDaKYKVkaiQHl3mPItdA7ZZlGQ6whlCjMzSNvR1VkIBDoteisWUgjsD1pV0AA=="/>
-        </item>
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: Nh6DrbbD+DnuUHuTn20woU2j0UnVb7znlByNyupT0ObFFpuSj8POt/I9ZJTvyZ0aF3pmHvenMTufMPz8alx5Bg==
-length: 5544
+edSignature: WELqRTJo70HQN7WvThb1uhXz79f87XWdySH8aovn5f/VUgBkD4xt3Lz5V7cLAFKmwzLfAhSUxOkaBEqyptokBQ==
+length: 5821
 -->

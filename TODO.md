@@ -18,7 +18,7 @@ The core workflow is implemented and locally verified. On August 25, 2026, all 9
 | Accessibility and UI edge cases | In progress |
 | Signed in-app updates | Complete |
 | Unsigned 0.2.3 release | Complete |
-| Unsigned 0.2.5 health-gated analytics release | In progress |
+| Unsigned 0.2.5 health-gated analytics release | Complete |
 | Anonymous product analytics | Production received a launch event from the packaged 0.2.4 app; verify the complete archived 0.2.5 flow after publication |
 | Restore the existing Sparkle private key and publish the signed 0.2.3 updater feed | Complete |
 
