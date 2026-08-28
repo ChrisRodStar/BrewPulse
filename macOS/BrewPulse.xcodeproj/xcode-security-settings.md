@@ -2,8 +2,8 @@
 
 Security build-setting and entitlement decisions for BrewPulse.
 
-**Audit date:** 2026-08-28  
-**Target:** BrewPulse (macOS application)  
+**Audit date:** 2026-08-28
+**Target:** BrewPulse (macOS application)
 **Languages:** Swift app-owned source
 
 ## Enabled settings

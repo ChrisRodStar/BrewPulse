@@ -1,7 +1,7 @@
 # BrewPulse security audit plan
 
-**Project:** BrewPulse  
-**Audit date:** 2026-08-28  
+**Project:** BrewPulse
+**Audit date:** 2026-08-28
 **Scope:** The macOS app in this worktree, plus a read-only review of the separate BrewPulse Cloud repository against the supplied checklist.
 
 ## Baseline
