@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.5 - 2026-08-28
+
+### Changed
+
+- Analytics delivery now verifies the public BrewPulse Cloud health contract before posting a batch. An unavailable or incompatible service defers the next health check without sending telemetry or incrementing event retry attempts.
+- Release builds now enable Xcode Enhanced Security runtime protections and Hardware Memory Tagging in soft mode.
+- Unsigned release packaging preserves and verifies the Enhanced Security entitlements in every finished app bundle.
+
+### Fixed
+
+- A missing analytics ingestion route is treated as a permanent response and is not retried.
+
+### Known limitations
+
+- This release is not signed with an Apple Developer ID and is not notarized. macOS still requires the user to allow its first launch in Privacy & Security.
+- Users on 0.1.0 Beta 3 or the affected 0.2.0 build must install 0.2.5 manually. Versions 0.2.1 through 0.2.4 can update to this release from inside BrewPulse.
+- Scheduling and background Homebrew update notifications are not included.
+- Cask installers may require interaction in another window or administrator approval.
+
 ## 0.2.4 - 2026-08-25
 
 ### Changed

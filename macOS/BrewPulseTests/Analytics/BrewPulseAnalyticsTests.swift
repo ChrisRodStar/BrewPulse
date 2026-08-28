@@ -8,7 +8,7 @@ struct BrewPulseAnalyticsTests {
     @Test("Sends the approved launch events and removes accepted events")
     func sendsApprovedLaunchEvents() async throws {
         let defaults = try testDefaults()
-        let transport = StubAnalyticsTransport(results: [.accepted])
+        let transport = StubAnalyticsTransport(results: [.healthy, .accepted])
         let analytics = makeAnalytics(defaults: defaults, transport: transport)
 
         analytics.start(isEnabled: true)
@@ -17,7 +17,14 @@ struct BrewPulseAnalyticsTests {
         await analytics.flushForTesting()
 
         #expect(analytics.pendingEventCountForTesting == 0)
-        let request = try #require(transport.firstRequest())
+        let requests = transport.allRequests()
+        #expect(requests.count == 2)
+        #expect(requests[0].httpMethod == "GET")
+        #expect(
+            requests[0].url?.absoluteString ==
+                "https://example.com/v1/analytics/health"
+        )
+        let request = requests[1]
         #expect(
             request.url?.absoluteString ==
                 "https://example.com/v1/analytics/events/batch"
@@ -37,7 +44,7 @@ struct BrewPulseAnalyticsTests {
     @Test("Persists stable events after a transient delivery failure")
     func persistsTransientFailures() async throws {
         let defaults = try testDefaults()
-        let transport = StubAnalyticsTransport(results: [.failure])
+        let transport = StubAnalyticsTransport(results: [.healthy, .failure])
         let analytics = makeAnalytics(defaults: defaults, transport: transport)
         analytics.start(isEnabled: true)
 
@@ -54,7 +61,7 @@ struct BrewPulseAnalyticsTests {
     @Test("Opting out deletes queued events and the installation identifier")
     func optOutDeletesLocalState() async throws {
         let defaults = try testDefaults()
-        let transport = StubAnalyticsTransport(results: [.accepted])
+        let transport = StubAnalyticsTransport(results: [.healthy, .accepted])
         let analytics = makeAnalytics(defaults: defaults, transport: transport)
         analytics.start(isEnabled: true)
         await analytics.flushForTesting()
@@ -89,7 +96,9 @@ struct BrewPulseAnalyticsTests {
     @Test("Bounds the persistent queue and batches delivery")
     func boundsAndBatches() async throws {
         let defaults = try testDefaults()
-        let transport = StubAnalyticsTransport(results: [.accepted, .accepted])
+        let transport = StubAnalyticsTransport(
+            results: [.healthy, .accepted, .healthy, .accepted]
+        )
         let analytics = makeAnalytics(defaults: defaults, transport: transport)
         analytics.start(isEnabled: true)
         for _ in 0..<510 {
@@ -101,12 +110,12 @@ struct BrewPulseAnalyticsTests {
         await analytics.flushForTesting()
 
         let requests = transport.allRequests()
-        #expect(requests.count == 2)
+        #expect(requests.count == 4)
         let firstEvents = try #require(
-            requestPayload(requests[0])["events"] as? [[String: Any]]
+            requestPayload(requests[1])["events"] as? [[String: Any]]
         )
         let secondEvents = try #require(
-            requestPayload(requests[1])["events"] as? [[String: Any]]
+            requestPayload(requests[3])["events"] as? [[String: Any]]
         )
         #expect(firstEvents.count == 50)
         #expect(secondEvents.count == 50)
@@ -116,14 +125,16 @@ struct BrewPulseAnalyticsTests {
     @Test("Keeps event identifiers stable for retry and drops malformed responses")
     func stableRetryAndMalformedResponse() async throws {
         let defaults = try testDefaults()
-        let failingTransport = StubAnalyticsTransport(results: [.failure])
+        let failingTransport = StubAnalyticsTransport(
+            results: [.healthy, .failure]
+        )
         let analytics = makeAnalytics(
             defaults: defaults,
             transport: failingTransport
         )
         analytics.start(isEnabled: true)
         await analytics.flushForTesting()
-        let failedRequest = try #require(failingTransport.firstRequest())
+        let failedRequest = try #require(failingTransport.allRequests().last)
         let failedPayload = try requestPayload(failedRequest)
         let sentEvents = try #require(
             failedPayload["events"] as? [[String: Any]]
@@ -139,7 +150,7 @@ struct BrewPulseAnalyticsTests {
 
         let malformed = makeAnalytics(
             defaults: defaults,
-            transport: StubAnalyticsTransport(results: [.malformed])
+            transport: StubAnalyticsTransport(results: [.healthy, .malformed])
         )
         malformed.track(.menuOpened)
         malformed.start(isEnabled: true)
@@ -148,9 +159,43 @@ struct BrewPulseAnalyticsTests {
         #expect(malformed.pendingEventCountForTesting == 2)
     }
 
+    @Test("Defers delivery when the health endpoint is unavailable")
+    func defersWhenHealthIsUnavailable() async throws {
+        let defaults = try testDefaults()
+        let transport = StubAnalyticsTransport(results: [.notFound])
+        let analytics = makeAnalytics(defaults: defaults, transport: transport)
+        analytics.start(isEnabled: true)
+
+        await analytics.flushForTesting()
+
+        #expect(analytics.pendingEventCountForTesting == 2)
+        let requests = transport.allRequests()
+        #expect(requests.count == 1)
+        #expect(requests[0].httpMethod == "GET")
+        #expect(requests[0].url?.path == "/v1/analytics/health")
+
+        await analytics.flushForTesting()
+        #expect(transport.allRequests().count == 1)
+    }
+
+    @Test("Drops an ingestion 404 without retrying it")
+    func dropsIngestionNotFoundWithoutRetry() async throws {
+        let defaults = try testDefaults()
+        let transport = StubAnalyticsTransport(results: [.healthy, .notFound])
+        let analytics = makeAnalytics(defaults: defaults, transport: transport)
+        analytics.start(isEnabled: true)
+
+        await analytics.flushForTesting()
+
+        #expect(analytics.pendingEventCountForTesting == 0)
+        #expect(transport.allRequests().count == 2)
+        await analytics.flushForTesting()
+        #expect(transport.allRequests().count == 2)
+    }
+
     private var testMetadata: AnalyticsClientMetadata {
         AnalyticsClientMetadata(
-            appVersion: "0.2.4",
+            appVersion: "0.2.5",
             macOSMajorVersion: 27,
             architecture: "arm64"
         )
@@ -184,9 +229,11 @@ struct BrewPulseAnalyticsTests {
 }
 
 nonisolated private enum StubAnalyticsResult: Sendable {
+    case healthy
     case accepted
     case failure
     case malformed
+    case notFound
 }
 
 nonisolated private final class StubAnalyticsTransport:
@@ -201,10 +248,6 @@ nonisolated private final class StubAnalyticsTransport:
         self.results = results
     }
 
-    func firstRequest() -> URLRequest? {
-        lock.withLock { requests.first }
-    }
-
     func allRequests() -> [URLRequest] {
         lock.withLock { requests }
     }
@@ -215,6 +258,21 @@ nonisolated private final class StubAnalyticsTransport:
             return results.isEmpty ? .failure : results.removeFirst()
         }
         switch result {
+        case .healthy:
+            let responseBody: [String: Any] = [
+                "status": "ok",
+                "deployment_version": "analytics-v1",
+                "schema_version": 1
+            ]
+            return (
+                try JSONSerialization.data(withJSONObject: responseBody),
+                HTTPURLResponse(
+                    url: request.url!,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: ["Content-Type": "application/json"]
+                )!
+            )
         case .failure:
             throw URLError(.notConnectedToInternet)
         case .malformed:
@@ -248,6 +306,16 @@ nonisolated private final class StubAnalyticsTransport:
             return (
                 try JSONSerialization.data(withJSONObject: responseBody),
                 response
+            )
+        case .notFound:
+            return (
+                Data(),
+                HTTPURLResponse(
+                    url: request.url!,
+                    statusCode: 404,
+                    httpVersion: nil,
+                    headerFields: ["Content-Type": "application/json"]
+                )!
             )
         }
     }

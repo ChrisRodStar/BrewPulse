@@ -6,7 +6,7 @@ BrewPulse can send anonymous usage statistics to BrewPulse Cloud. Collection is 
 
 The app creates random installation and event identifiers. BrewPulse Cloud replaces the installation identifier with a keyed digest before storing an event. Stored events contain the event name, occurrence and receipt times, and the approved categorical app and system metadata listed above. Raw events expire after 90 days; longer-lived aggregates contain counts and approved categories. BrewPulse analytics do not include package names or counts, installed package inventory, Homebrew commands or output, file paths, raw errors, account details, hardware identifiers, or user-entered text.
 
-Pending events are stored in a bounded queue on the Mac so temporary network failures do not affect app work. Turning analytics off deletes that queue and the random installation identifier immediately and stops new delivery.
+Pending events are stored in a bounded queue on the Mac so temporary network failures do not affect app work. BrewPulse verifies the service's read-only health contract before sending a telemetry batch; an unavailable or incompatible service delays the next health check without posting events. Turning analytics off deletes the queue and random installation identifier immediately and stops new delivery.
 
 BrewPulse runs Homebrew commands on the Mac. Homebrew may access its own servers and third-party package sources while checking, updating, or uninstalling packages. Homebrew's behavior and data practices are separate from BrewPulse.
 

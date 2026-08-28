@@ -803,7 +803,7 @@
 				CODE_SIGN_ENTITLEMENTS = BrewPulse/BrewPulse.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_ENHANCED_SECURITY = YES;
@@ -815,7 +815,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.2.4;
+				MARKETING_VERSION = 0.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chrisrodstar.BrewPulse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
@@ -834,7 +834,7 @@
 				CODE_SIGN_ENTITLEMENTS = BrewPulse/BrewPulse.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_ENHANCED_SECURITY = YES;
@@ -846,7 +846,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.2.4;
+				MARKETING_VERSION = 0.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chrisrodstar.BrewPulse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;

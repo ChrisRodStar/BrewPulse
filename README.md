@@ -32,9 +32,9 @@ BrewPulse can already:
 - Keep Homebrew's stdout and stderr available when something goes wrong.
 - Handle running, completed, failed, interrupted, and cancelled operations.
 
-The current release is [BrewPulse 0.2.4](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.2.4). It is unsigned by Apple and not notarized, so macOS will block it on first launch. Read the [beta guide](docs/BETA.md) before installing it. Apple Developer ID signing and notarization remain deferred; the current checklist is in [TODO.md](TODO.md).
+The current release is [BrewPulse 0.2.5](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.2.5). It is unsigned by Apple and not notarized, so macOS will block it on first launch. Read the [beta guide](docs/BETA.md) before installing it. Apple Developer ID signing and notarization remain deferred; the current checklist is in [TODO.md](TODO.md).
 
-Version 0.2.4 sends anonymous product analytics directly to BrewPulse Cloud instead of TelemetryDeck. The in-app opt-out remains available in Settings. Versions 0.2.1 through 0.2.3 can update to this release from inside BrewPulse. Users on 0.1.0 Beta 3 or the affected 0.2.0 build must install it manually because those versions cannot complete the update.
+Version 0.2.5 verifies BrewPulse Cloud's health contract before sending anonymous product analytics and includes the new Enhanced Security runtime protections. The in-app opt-out remains available in Settings. Versions 0.2.1 through 0.2.4 can update to this release from inside BrewPulse. Users on 0.1.0 Beta 3 or the affected 0.2.0 build must install it manually because those versions cannot complete the update.
 
 ## Safety and transparency
 
@@ -58,15 +58,15 @@ I want someone to be able to use the free app without feeling like the useful pa
 - Homebrew installed locally
 - Apple Silicon or Intel Mac
 
-## Download 0.2.4
+## Download 0.2.5
 
 This build has an ad-hoc signature for bundle integrity, but it is not signed with an Apple Developer ID or notarized. Gatekeeper will block the first launch because macOS cannot verify the developer or check the app through Apple's notarization service. The [beta guide](docs/BETA.md) explains the warning, checksum verification, installation, and removal steps. If you do not want to override Gatekeeper for an unsigned app, build from source.
 
-- [Download for Apple Silicon](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.4/BrewPulse-0.2.4-macos-arm64-unsigned.dmg)
-- [Apple Silicon SHA-256 checksum](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.4/BrewPulse-0.2.4-macos-arm64-unsigned.dmg.sha256)
-- [Download for Intel](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.4/BrewPulse-0.2.4-macos-x64-unsigned.dmg)
-- [Intel SHA-256 checksum](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.4/BrewPulse-0.2.4-macos-x64-unsigned.dmg.sha256)
-- [Read the complete release notes](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.2.4)
+- [Download for Apple Silicon](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.5/BrewPulse-0.2.5-macos-arm64-unsigned.dmg)
+- [Apple Silicon SHA-256 checksum](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.5/BrewPulse-0.2.5-macos-arm64-unsigned.dmg.sha256)
+- [Download for Intel](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.5/BrewPulse-0.2.5-macos-x64-unsigned.dmg)
+- [Intel SHA-256 checksum](https://github.com/ChrisRodStar/BrewPulse/releases/download/v0.2.5/BrewPulse-0.2.5-macos-x64-unsigned.dmg.sha256)
+- [Read the complete release notes](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.2.5)
 
 ## Building from source
 
@@ -95,7 +95,7 @@ BrewPulse/
 
 [TODO.md](TODO.md) is the working roadmap.
 
-Right now the focus is finishing the free app properly before spending time on payments or Pro-only automation. The unsigned 0.2.4 release lets early testers use the BrewPulse Cloud analytics and in-app updater while accessibility and real-package testing continue. Developer ID signing and notarization are deferred.
+Right now the focus is finishing the free app properly before spending time on payments or Pro-only automation. The unsigned 0.2.5 release gives early testers health-gated BrewPulse Cloud analytics, Enhanced Security protections, and in-app updates while accessibility and real-package testing continue. Developer ID signing and notarization are deferred.
 
 Supporting product and release documentation lives in [`docs/`](docs/README.md):
 

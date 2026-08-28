@@ -44,6 +44,8 @@ Allowed parameter values are fixed categories defined in source. Never add packa
 
 The production BrewPulse Cloud base URL is checked into the Release configuration as `BREWPULSE_ANALYTICS_INGESTION_URL`. Xcode substitutes it into `BrewPulseAnalyticsIngestionURL` in the processed app `Info.plist`, and the release script verifies the packaged value. `BREWPULSE_ANALYTICS_INGESTION_URL` can override it for a diagnostic build. The Debug configuration is empty, so ordinary local builds remain offline.
 
-The client calls `POST /v1/analytics/events/batch` with `URLSession`. It keeps at most 500 pending events, batches at most 50 events or 64 KiB, and retries transient failures without blocking app work. Each event retains the same random event ID and occurrence time across retries. Turning analytics off removes the queue and random installation ID immediately.
+Before sending a batch, the client calls the public `GET /v1/analytics/health` route and verifies the expected deployment and schema versions. It calls `POST /v1/analytics/events/batch` only while that contract is healthy. An unavailable or incompatible health response keeps the bounded queue and defers the next health check for five minutes without sending telemetry or increasing event retry attempts.
+
+The client keeps at most 500 pending events, batches at most 50 events or 64 KiB, and retries transient ingestion failures without blocking app work. Each event retains the same random event ID and occurrence time across retries. Permanent ingestion responses such as `404` are dropped instead of retried. Turning analytics off removes the queue and random installation ID immediately.
 
 BrewPulse Cloud validates the fixed schema before storage, replaces the installation UUID with a keyed digest, and uses the installation digest plus event ID for idempotency. Raw categorical events expire after 90 days. Longer-lived daily aggregates contain approved categories and counts only.

@@ -87,8 +87,11 @@ final class BrewPulseAnalytics: AnalyticsTracking {
     private static let maximumBatchCount = 50
     private static let maximumRequestBytes = 64 * 1_024
     private static let maximumRetryDelay: TimeInterval = 6 * 60 * 60
+    private static let healthRetryDelay: TimeInterval = 5 * 60
+    private static let healthDeploymentVersion = "analytics-v1"
 
     private let endpoint: URL?
+    private let healthEndpoint: URL?
     private let metadata: AnalyticsClientMetadata
     private let userDefaults: UserDefaults
     private let transport: any AnalyticsHTTPTransport
@@ -127,6 +130,10 @@ final class BrewPulseAnalytics: AnalyticsTracking {
             path: "v1/analytics/events/batch",
             directoryHint: .notDirectory
         )
+        self.healthEndpoint = baseURL?.appending(
+            path: "v1/analytics/health",
+            directoryHint: .notDirectory
+        )
         self.metadata = .current(bundle: bundle)
         self.userDefaults = userDefaults
         self.transport = URLSessionAnalyticsTransport()
@@ -143,6 +150,10 @@ final class BrewPulseAnalytics: AnalyticsTracking {
     ) {
         self.endpoint = endpoint?.appending(
             path: "v1/analytics/events/batch",
+            directoryHint: .notDirectory
+        )
+        self.healthEndpoint = endpoint?.appending(
+            path: "v1/analytics/health",
             directoryHint: .notDirectory
         )
         self.metadata = metadata
@@ -250,7 +261,10 @@ final class BrewPulseAnalytics: AnalyticsTracking {
     }
 
     private func deliverNextBatch() async {
-        guard isCollectionEnabled, let endpoint, !queue.isEmpty else { return }
+        guard isCollectionEnabled,
+              let endpoint,
+              let healthEndpoint,
+              !queue.isEmpty else { return }
         let now = Date()
         let eligible = queue.filter { $0.nextAttemptAt <= now }
         guard !eligible.isEmpty else { return }
@@ -261,6 +275,11 @@ final class BrewPulseAnalytics: AnalyticsTracking {
         )
         guard !batch.events.isEmpty else {
             removeEvents(withIDs: [eligible[0].eventID])
+            return
+        }
+        let eventIDs = batch.events.map(\.eventID)
+        guard await isServiceHealthy(at: healthEndpoint) else {
+            deferDelivery(eventIDs)
             return
         }
 
@@ -277,10 +296,32 @@ final class BrewPulseAnalytics: AnalyticsTracking {
                 statusCode: response.statusCode,
                 headers: response.allHeaderFields,
                 data: data,
-                eventIDs: batch.events.map(\.eventID)
+                eventIDs: eventIDs
             )
         } catch {
-            markForRetry(batch.events.map(\.eventID), retryAfter: nil)
+            markForRetry(eventIDs, retryAfter: nil)
+        }
+    }
+
+    private func isServiceHealthy(at endpoint: URL) async -> Bool {
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 15
+        request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        do {
+            let (data, response) = try await transport.send(request)
+            guard response.statusCode == 200,
+                  let health = try? Self.decoder.decode(
+                      AnalyticsHealthResponse.self,
+                      from: data
+                  ) else { return false }
+            return health.status == "ok" &&
+                health.deploymentVersion == Self.healthDeploymentVersion &&
+                health.schemaVersion == Self.schemaVersion
+        } catch {
+            return false
         }
     }
 
@@ -364,6 +405,18 @@ final class BrewPulseAnalytics: AnalyticsTracking {
             )
             let delay = retryAfter ?? Double.random(in: 0...maximumDelay)
             queue[index].nextAttemptAt = now.addingTimeInterval(max(1, delay))
+        }
+        saveQueue()
+    }
+
+    private func deferDelivery(_ eventIDs: [String]) {
+        let identifiers = Set(eventIDs)
+        let nextCheck = Date().addingTimeInterval(Self.healthRetryDelay)
+        for index in queue.indices where identifiers.contains(queue[index].eventID) {
+            queue[index].nextAttemptAt = max(
+                queue[index].nextAttemptAt,
+                nextCheck
+            )
         }
         saveQueue()
     }
@@ -520,6 +573,18 @@ nonisolated private struct AnalyticsIngestionResponse: Decodable {
         case status
         case acceptedEventIDs = "accepted_event_ids"
         case rejectedEvents = "rejected_events"
+    }
+}
+
+nonisolated private struct AnalyticsHealthResponse: Decodable {
+    let status: String
+    let deploymentVersion: String
+    let schemaVersion: Int
+
+    enum CodingKeys: String, CodingKey {
+        case status
+        case deploymentVersion = "deployment_version"
+        case schemaVersion = "schema_version"
     }
 }
 

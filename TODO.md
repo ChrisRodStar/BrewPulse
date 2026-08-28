@@ -18,8 +18,8 @@ The core workflow is implemented and locally verified. On August 25, 2026, all 9
 | Accessibility and UI edge cases | In progress |
 | Signed in-app updates | Complete |
 | Unsigned 0.2.3 release | Complete |
-| Unsigned 0.2.4 BrewPulse Cloud analytics release | Complete |
-| Anonymous product analytics | Production received a launch event from the packaged 0.2.4 app; complete archived flow pending |
+| Unsigned 0.2.5 health-gated analytics release | In progress |
+| Anonymous product analytics | Production received a launch event from the packaged 0.2.4 app; verify the complete archived 0.2.5 flow after publication |
 | Restore the existing Sparkle private key and publish the signed 0.2.3 updater feed | Complete |
 
 Only the **Now** section should drive the next code task. The later sections record release gates and boundaries without pretending they are active work.
@@ -39,6 +39,7 @@ Do not change the event names or privacy boundary in `docs/ANALYTICS.md` while c
 - [x] Persist a small bounded queue so events survive ordinary network failures and app relaunches. Delete queued events immediately when the user turns analytics off.
 - [x] Batch delivery, retry transient failures with backoff, and never block launch, menu interaction, refresh, update, or uninstall work on analytics.
 - [x] Treat unknown server responses and permanent validation failures as dropped analytics, not user-facing app failures.
+- [x] Verify the Cloud health contract before sending a batch, and defer without posting telemetry when the service is unavailable or incompatible.
 - [x] Keep local and unconfigured source builds offline by requiring an explicit release endpoint configuration.
 - [x] Add focused tests for opt-out, queue limits, batching, retry, idempotency, relaunch recovery, malformed responses, and unavailable service behavior.
 - [x] Confirm event parity against the approved contract, then remove the TelemetryDeck package, app identifier, release configuration, and provider-specific code.
