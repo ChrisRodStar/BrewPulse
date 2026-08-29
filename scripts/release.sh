@@ -179,7 +179,6 @@ sign_ad_hoc_app_bundle() {
     local target_app="$1"
     local sparkle_framework="$target_app/Contents/Frameworks/Sparkle.framework"
     local sparkle_version="$sparkle_framework/Versions/B"
-    local app_entitlements="$repository_root/macOS/BrewPulse/BrewPulse.entitlements"
 
     # Xcode strips development-only Sparkle resources while archiving. Re-sign
     # every nested component inside out so the final app seal describes the
@@ -214,26 +213,7 @@ sign_ad_hoc_app_bundle() {
     codesign \
         --force \
         --sign - \
-        --options runtime \
-        --entitlements "$app_entitlements" \
         "$target_app"
-}
-
-verify_enhanced_security_entitlements() {
-    local target_app="$1"
-    local extracted_entitlements="$temporary_directory/BrewPulse-entitlements.plist"
-
-    codesign -d --entitlements "$extracted_entitlements" --xml "$target_app" 2>/dev/null
-    if [[ "$(/usr/libexec/PlistBuddy -c 'Print :com.apple.security.hardened-process' "$extracted_entitlements")" != "true" ]] ||
-        [[ "$(/usr/libexec/PlistBuddy -c 'Print :com.apple.security.hardened-process.enhanced-security-version-string' "$extracted_entitlements")" != "2" ]] ||
-        [[ "$(/usr/libexec/PlistBuddy -c 'Print :com.apple.security.hardened-process.hardened-heap' "$extracted_entitlements")" != "true" ]] ||
-        [[ "$(/usr/libexec/PlistBuddy -c 'Print :com.apple.security.hardened-process.dyld-ro' "$extracted_entitlements")" != "true" ]] ||
-        [[ "$(/usr/libexec/PlistBuddy -c 'Print :com.apple.security.hardened-process.platform-restrictions-string' "$extracted_entitlements")" != "2" ]] ||
-        [[ "$(/usr/libexec/PlistBuddy -c 'Print :com.apple.security.hardened-process.checked-allocations' "$extracted_entitlements")" != "true" ]] ||
-        [[ "$(/usr/libexec/PlistBuddy -c 'Print :com.apple.security.hardened-process.checked-allocations.soft-mode' "$extracted_entitlements")" != "true" ]]; then
-        echo "Packaged app is missing the expected Enhanced Security entitlements." >&2
-        exit 1
-    fi
 }
 
 verify_ad_hoc_signature() {
@@ -333,7 +313,6 @@ build_disk_image() {
     else
         verify_developer_id_signature "$app_path"
     fi
-    verify_enhanced_security_entitlements "$app_path"
 
     mkdir -p "$image_root"
     ditto "$app_path" "$image_root/BrewPulse.app"
@@ -410,7 +389,6 @@ build_disk_image() {
     else
         verify_developer_id_signature "$mounted_app"
     fi
-    verify_enhanced_security_entitlements "$mounted_app"
     if [[ "$mode" == "notarized" ]]; then
         spctl --assess \
             --type execute \

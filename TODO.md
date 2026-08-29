@@ -6,7 +6,7 @@ BrewPulse is the public macOS client and the shared Homebrew implementation used
 
 ## Current state
 
-The core workflow is implemented and locally verified. On August 25, 2026, all 93 tests passed with Xcode 27.0, the optimized command-builder regression suite passed, the Release build passed, and static analysis passed.
+The core workflow is implemented and locally verified. On August 28, 2026, the full Debug test suite passed with Xcode 27.0, the optimized command-builder regression suite passed, the Release build and static analysis passed, and the unsigned 0.2.6 Apple Silicon app launched successfully from its verified DMG.
 
 | Area | Status |
 | --- | --- |
@@ -18,8 +18,8 @@ The core workflow is implemented and locally verified. On August 25, 2026, all 9
 | Accessibility and UI edge cases | In progress |
 | Signed in-app updates | Complete |
 | Unsigned 0.2.3 release | Complete |
-| Unsigned 0.2.5 health-gated analytics release | Complete |
-| Anonymous product analytics | Production received a launch event from the packaged 0.2.4 app; verify the complete archived 0.2.5 flow after publication |
+| Unsigned 0.2.6 launch-compatibility release | In progress |
+| Anonymous product analytics | Production received a launch event from the packaged 0.2.4 app; verify the complete archived 0.2.6 flow after publication |
 | Restore the existing Sparkle private key and publish the signed 0.2.3 updater feed | Complete |
 
 Only the **Now** section should drive the next code task. The later sections record release gates and boundaries without pretending they are active work.
@@ -85,7 +85,8 @@ These checks improve the preview and remain required for the later signed beta. 
 - [x] Test a complete cask update.
 - [ ] Test a cask that opens an installer or requests administrator approval when practical.
 - [ ] Test formula and cask uninstall without `--zap`, force, or dependency overrides.
-- [ ] Test Apple Silicon and Intel Homebrew installations on supported macOS versions.
+- [x] Test Apple Silicon Homebrew installations on supported macOS versions. The unsigned app launches and runs correctly on two Apple Silicon Macs.
+- [ ] Test an Intel Homebrew installation on a supported macOS version.
 - [ ] Verify launch at login and ordinary relaunch after a macOS restart.
 - [ ] Measure idle and refresh CPU, memory, wakeups, and battery impact with the menu closed and open.
 - [ ] Repeat the keyboard, VoiceOver, and larger-text checks on the archived Release build.

@@ -7,20 +7,18 @@
 ## Baseline
 
 - Hardened Runtime is enabled for the BrewPulse app target.
-- Enhanced Security is enabled at the project level.
-- The BrewPulse target uses `BrewPulse/BrewPulse.entitlements` with the Enhanced Security runtime protections and Hardware Memory Tagging in soft mode.
+- Enhanced Security is disabled because unsigned, ad-hoc releases must load the embedded Sparkle framework at launch.
 - App-owned source is Swift; the C and Objective-C diagnostic settings in this audit do not materially apply.
 - The existing full validation passes: tests, focused Release tests, Release build, and static analysis.
 
 ## Proposed Xcode security changes
 
 - **Enhanced Security**
-  - [x] Enable Enhanced Security at the project level for the BrewPulse app.
-  - [x] Create and configure the BrewPulse entitlements file required by Enhanced Security.
-- [x] Enable Hardware Memory Tagging in soft mode for supported hardware.
+  - [ ] Do not enable it for unsigned BrewPulse releases; its additional dynamic-library restrictions reject the embedded Sparkle framework before app launch.
+- [ ] Do not enable Hardware Memory Tagging for unsigned releases.
 - [ ] Enable additional C and Objective-C diagnostics. Leave unchecked because app-owned source is Swift.
 
-Execution completed in Xcode. Pointer authentication is disabled only for the BrewPulse target because Sparkle 2.9.6 does not ship an `arm64e` slice; all other Enhanced Security protections remain enabled.
+Hardened Runtime remains enabled. Enhanced Security can be reconsidered only if the distribution model can satisfy its embedded-library requirements.
 
 ## Audit findings
 
@@ -41,8 +39,8 @@ These items are findings, not part of the checked Xcode-settings execution:
 1. Accepted exception: Developer ID signing and notarization are deferred because the project does not have a paid Apple Developer account. Revisit only if the distribution model changes.
 2. Weekly Swift dependency update automation is included in this app branch.
 3. Cloud dependency auditing, GitHub Actions updates, immutable CI action pins, rate-limit tests, and free health monitoring are live on cloud `main`. A destructive restore rehearsal remains a manual operation against a disposable deployment.
-4. Final Xcode security decisions are recorded in `xcode-security-settings.md`, including the narrow Sparkle pointer-authentication exception.
+4. Final Xcode security decisions are recorded in `xcode-security-settings.md`.
 
 ## Execution result
 
-The checked changes were applied in the security worktrees. Full Debug tests, focused Release tests, the Release build, and Debug static analysis all passed. The final decisions are recorded in `xcode-security-settings.md`.
+Enhanced Security was removed after version 0.2.5 revealed that its dynamic-library restrictions reject Sparkle in unsigned releases. Full Debug tests, focused Release tests, the Release build, and Debug static analysis passed; validate the final DMG before publishing the replacement release.

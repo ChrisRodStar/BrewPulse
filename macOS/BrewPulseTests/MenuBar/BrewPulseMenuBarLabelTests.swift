@@ -26,4 +26,15 @@ struct BrewPulseMenuBarLabelTests {
                 == "BrewPulse, 3 updates available"
         )
     }
+
+    @Test("Describes a pending BrewPulse update")
+    func pendingAppUpdate() {
+        #expect(
+            BrewPulseMenuBarLabelPresentation(
+                updateCount: 1,
+                hasPendingAppUpdate: true
+            ).accessibilityLabel
+                == "BrewPulse, 1 update available, BrewPulse update ready"
+        )
+    }
 }

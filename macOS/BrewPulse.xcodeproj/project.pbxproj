@@ -115,7 +115,6 @@
 
 /* Begin PBXFileReference section */
 		056D19A9B5994E2B83DF0EC9 /* AppUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdater.swift; sourceTree = "<group>"; };
-		83597FD5304148FF00F15C99 /* BrewPulse.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BrewPulse.entitlements; sourceTree = "<group>"; };
 		A20000000000000000000001 /* BrewPulseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewPulseApp.swift; sourceTree = "<group>"; };
 		A20000000000000000000002 /* StatusMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMenuView.swift; sourceTree = "<group>"; };
 		A20000000000000000000003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -260,7 +259,6 @@
 		A40000000000000000000002 /* BrewPulse */ = {
 			isa = PBXGroup;
 			children = (
-				83597FD5304148FF00F15C99 /* BrewPulse.entitlements */,
 				A20000000000000000000001 /* BrewPulseApp.swift */,
 				AN4000000000000000000001 /* Analytics */,
 				7B40DFA5D57640F4AB502289 /* AppUpdates */,
@@ -725,7 +723,6 @@
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_ENHANCED_SECURITY = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -775,7 +772,6 @@
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_ENHANCED_SECURITY = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -800,22 +796,19 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = BrewPulse;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				BREWPULSE_ANALYTICS_INGESTION_URL = "";
-				CODE_SIGN_ENTITLEMENTS = BrewPulse/BrewPulse.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_APP_SANDBOX = NO;
-				ENABLE_ENHANCED_SECURITY = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_POINTER_AUTHENTICATION = NO;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BrewPulse/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.2.5;
+				MARKETING_VERSION = 0.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chrisrodstar.BrewPulse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
@@ -831,22 +824,19 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = BrewPulse;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				BREWPULSE_ANALYTICS_INGESTION_URL = "https://content-hound-396.convex.site";
-				CODE_SIGN_ENTITLEMENTS = BrewPulse/BrewPulse.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_APP_SANDBOX = NO;
-				ENABLE_ENHANCED_SECURITY = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_POINTER_AUTHENTICATION = NO;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BrewPulse/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.2.5;
+				MARKETING_VERSION = 0.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chrisrodstar.BrewPulse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;

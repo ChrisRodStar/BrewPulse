@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.6 - 2026-08-28
+
+### Changed
+
+- Scheduled app-update checks now use Sparkle's gentle-reminder flow. BrewPulse shows an update indicator in the menu bar and a Review action instead of relying on a background alert.
+- The shared Debug scheme suppresses noisy Apple framework activity logs while preserving breakpoints, crashes, standard output, and LLDB debugging.
+
+### Fixed
+
+- Unsigned releases no longer enable Enhanced Security protections that prevent the embedded Sparkle framework from loading before BrewPulse starts.
+- Final unsigned app bundles receive a complete ordinary ad-hoc signature without the incompatible Hardened Runtime signing option.
+
+### Known limitations
+
+- This release is not signed with an Apple Developer ID and is not notarized. macOS still requires the user to allow its first launch in Privacy & Security.
+- Users on 0.1.0 Beta 3 or the affected 0.2.0 build must install 0.2.6 manually. Versions 0.2.1 through 0.2.5 can update to this release from inside BrewPulse.
+- Scheduling and background Homebrew update notifications are not included.
+- Cask installers may require interaction in another window or administrator approval.
+
 ## 0.2.5 - 2026-08-28
 
 ### Changed

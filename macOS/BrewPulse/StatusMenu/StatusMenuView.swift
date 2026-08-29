@@ -7,6 +7,7 @@ struct StatusMenuView: View {
     private var applicationPresentation
     @Environment(PackageOperationReviewPresentation.self)
     private var operationReviewPresentation
+    @EnvironmentObject private var updater: AppUpdater
     @Environment(\.openWindow) private var openWindow
     @State private var presentedSheet: PresentedStatusMenuSheet?
     @State private var operationPreparationErrorMessage = ""
@@ -20,6 +21,10 @@ struct StatusMenuView: View {
                 updateCount: store.state.report?.inventory.availableUpdateCount
             )
             Divider()
+            if updater.hasPendingScheduledUpdate {
+                AppUpdateReminderBanner(checkForUpdates: updater.checkForUpdates)
+                Divider()
+            }
             if let activePlan = store.operationState.activePlan {
                 PackageOperationProgressBanner(
                     plan: activePlan,
@@ -150,6 +155,35 @@ struct StatusMenuView: View {
             operationPreparationErrorMessage = error.localizedDescription
             isShowingOperationPreparationError = true
         }
+    }
+}
+
+private struct AppUpdateReminderBanner: View {
+    let checkForUpdates: () -> Void
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 10) {
+            Image(systemName: "arrow.down.circle.fill")
+                .foregroundStyle(CivicSignalTheme.updateStrong)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("BrewPulse update available")
+                    .font(.subheadline.weight(.semibold))
+                Text("Review the update when you’re ready.")
+                    .font(.caption)
+                    .foregroundStyle(CivicSignalTheme.secondaryText)
+            }
+
+            Spacer()
+
+            Button("Review", action: checkForUpdates)
+                .controlSize(.small)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(CivicSignalTheme.updateSurface)
+        .accessibilityElement(children: .contain)
     }
 }
 

@@ -2,22 +2,22 @@
 
 ## Supported setup
 
-BrewPulse 0.2.5 requires:
+BrewPulse 0.2.6 requires:
 
 - macOS 14 Sonoma or newer
 - an Apple Silicon or Intel Mac
 - the current stable Homebrew release installed in `/opt/homebrew/bin/brew` or `/usr/local/bin/brew`
 
-The beta is verified against Homebrew 6.0.18. BrewPulse relies on Homebrew's structured JSON output, so older Homebrew installations may return data the app cannot read. Update Homebrew before reporting a parsing problem.
+The beta is verified against Homebrew 6.0.20. BrewPulse relies on Homebrew's structured JSON output, so older Homebrew installations may return data the app cannot read. Update Homebrew before reporting a parsing problem.
 
 ## Install
 
-The 0.2.5 download is unsigned by Apple and has not passed Apple's notarization service. macOS will block its first launch because it cannot verify the developer or check the app for known malicious software.
+The 0.2.6 download is unsigned by Apple and has not passed Apple's notarization service. macOS will block its first launch because it cannot verify the developer or check the app for known malicious software.
 
-Only download BrewPulse from the [official GitHub release](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.2.5). If you do not want to override Gatekeeper for an unsigned app, build from source.
+Only download BrewPulse from the [official GitHub release](https://github.com/ChrisRodStar/BrewPulse/releases/tag/v0.2.6). If you do not want to override Gatekeeper for an unsigned app, build from source.
 
 1. Download the Apple Silicon or Intel DMG for your Mac and its matching `.sha256` file from the release.
-2. In Terminal, change to the download directory and run the matching command. Use `shasum -a 256 -c BrewPulse-0.2.5-macos-arm64-unsigned.dmg.sha256` for Apple Silicon or `shasum -a 256 -c BrewPulse-0.2.5-macos-x64-unsigned.dmg.sha256` for Intel. Continue only if it reports `OK`.
+2. In Terminal, change to the download directory and run the matching command. Use `shasum -a 256 -c BrewPulse-0.2.6-macos-arm64-unsigned.dmg.sha256` for Apple Silicon or `shasum -a 256 -c BrewPulse-0.2.6-macos-x64-unsigned.dmg.sha256` for Intel. Continue only if it reports `OK`.
 3. Open the verified DMG and drag `BrewPulse.app` to the Applications shortcut.
 4. Try to open BrewPulse from Applications. macOS will block it.
 5. Open System Settings, choose Privacy & Security, scroll to Security, and select Open Anyway for BrewPulse. Confirm the warning and authenticate if macOS asks.
@@ -38,13 +38,13 @@ BrewPulse does not install a privileged helper, background daemon, browser exten
 
 ## Updates
 
-Versions 0.2.1 through 0.2.4 can update to 0.2.5 from inside BrewPulse. Users on 0.1.0 Beta 3 must install it manually because that preview did not include the updater. Users on the affected 0.2.0 build must also install it manually because the damaged app cannot launch its updater. BrewPulse checks for new versions when it opens and at least once per day, shows the release notes, and waits for approval before downloading or installing an update.
+Versions 0.2.1 through 0.2.5 can update to 0.2.6 from inside BrewPulse. Users on 0.1.0 Beta 3 must install it manually because that preview did not include the updater. Users on the affected 0.2.0 build must also install it manually because the damaged app cannot launch its updater. BrewPulse checks for new versions when it opens and at least once per day, shows the release notes, and waits for approval before downloading or installing an update.
 
 Apple Developer ID signing and Sparkle update signing are separate. The app has only an ad-hoc integrity signature, but BrewPulse verifies update downloads with its embedded Sparkle EdDSA public key before installing them.
 
 ## Known limitations
 
-- The 0.2.5 installers are ad-hoc signed for bundle integrity, but they are not signed with an Apple Developer ID or notarized. Apple Developer ID signing is deferred.
+- The 0.2.6 installers are ad-hoc signed for bundle integrity, but they are not signed with an Apple Developer ID or notarized. Apple Developer ID signing is deferred.
 - BrewPulse can review one update or all currently actionable updates. It does not include scheduling.
 - Cask operations may open another installer or ask macOS for administrator approval.
 - Cancelling an active action asks the entire Homebrew process group to stop, but Homebrew or an external installer may take a few seconds to exit.

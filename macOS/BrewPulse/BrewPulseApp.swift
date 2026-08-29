@@ -20,8 +20,12 @@ struct BrewPulseApp: App {
                 .environment(store)
                 .environment(presentation)
                 .environment(operationReviewPresentation)
+                .environmentObject(updater)
         } label: {
-            BrewPulseMenuBarLabel(updateCount: store.state.availableUpdateCount)
+            BrewPulseMenuBarLabel(
+                updateCount: store.state.availableUpdateCount,
+                hasPendingAppUpdate: updater.hasPendingScheduledUpdate
+            )
         }
         .menuBarExtraStyle(.window)
 
